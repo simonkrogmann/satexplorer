@@ -1,5 +1,7 @@
 #include <ogdf/basic/graph_generators.h>
+#include <ogdf/basic/GraphAttributes.h>
 #include <ogdf/layered/DfsAcyclicSubgraph.h>
+#include <ogdf/energybased/FMMMLayout.h>
 #include <ogdf/fileformats/GraphIO.h>
 #include <boost/program_options.hpp>
 
@@ -8,6 +10,11 @@ namespace po = boost::program_options;
 #include <iostream>
 #include <iterator>
 #include <string>
+#include <fstream>
+
+namespace {
+    static constexpr auto OUTPUT_FILENAME = "converted-graph.gml";
+}
 
 int main(int ac, char* av[])
 {
@@ -37,11 +44,34 @@ int main(int ac, char* av[])
         }
         std::string filename = vm["file"].as<std::string>();
 
+        std::cout << "reading graph" << std::endl;
+
         ogdf::Graph graph;
         ogdf::GraphIO::read(graph, filename, ogdf::GraphIO::readGraphML);
 
         std::cout << "Nodes: " << graph.numberOfNodes()
             << " Edges: " << graph.numberOfEdges() << std::endl;
+
+        auto graphAttributes = ogdf::GraphAttributes(graph);
+        ogdf::FMMMLayout layout;
+        
+        layout.newInitialPlacement(true);
+        layout.useHighLevelOptions(true);
+        layout.unitEdgeLength(20.0);
+
+        std::cout << "generating layout" << std::endl;
+        layout.call(graphAttributes);
+        std::cout << "layout complete" << std::endl;
+        std::cout << "layouting took " << layout.getCpuTime() << " seconds" << std::endl;
+
+        std::cout << "writing graph";
+        std::fstream file(OUTPUT_FILENAME, file.out);
+        if(!file.is_open()) {
+            std::cout << "Could not open " << OUTPUT_FILENAME << " for writing. Aborting." << std::endl;
+            exit(1);
+        }
+        ogdf::GraphIO::writeGML(graphAttributes, file);
+        std::cout << " ...done." << std::endl;
     }
     catch(std::exception& e) {
         std::cerr << "error: " << e.what() << "\n";
