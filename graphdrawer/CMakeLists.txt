@@ -4,10 +4,14 @@ set(target graphdrawer-bin)
 
 set(sources
     main.cpp
+    cfg.cpp
+    ogdfWrapper.cpp
 )
 
 set(includes
-    
+    types.hpp
+    cfg.hpp
+    ogdfWrapper.hpp
 )
 
 set(libraries
