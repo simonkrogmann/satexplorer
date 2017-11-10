@@ -19,6 +19,7 @@ void cfg::init_options() {
         ("gml", "output a .gml file")
         ("file", po::value<std::string>(), "input file in graphml format")
         ("out", po::value<std::string>(), "output filename")
+        ("cull", po::value<int>(), "remove nodes with degree > arg");
     ;
 }
 
@@ -59,6 +60,14 @@ bool cfg::validate_config() const {
         std::cout << "No input file specified" << std::endl;
         std::cout << _desc << std::endl;
         return 1;
+    }
+    return 0;
+}
+
+int cfg::cull_graph() const {
+    if (_vm.count("cull")) {
+        int val = _vm["cull"].as<int>();
+        return val > 0 ? val : 0;
     }
     return 0;
 }

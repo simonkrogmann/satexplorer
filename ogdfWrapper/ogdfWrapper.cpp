@@ -1,7 +1,9 @@
 #include <ogdf/layered/DfsAcyclicSubgraph.h>
 #include <ogdf/fileformats/GraphIO.h>
 #include <ogdfWrapper.hpp>
+#include <ogdf/basic/graphics.h>
 #include <iostream>
+
 
 namespace graphdrawer {
 
@@ -9,12 +11,48 @@ void ogdfWrapper::readGraph(std::string filename) {
     std::cout << "reading graph" << std::endl;
     
     _p_graph = std::make_unique<ogdf::Graph>();
-    ogdf::GraphIO::read(*_p_graph, filename, ogdf::GraphIO::readGraphML);
+    _p_graphAttributes = std::make_unique<ogdf::GraphAttributes>(*_p_graph, 
+        ogdf::GraphAttributes::nodeLabel | 
+        ogdf::GraphAttributes::nodeGraphics | 
+        ogdf::GraphAttributes::edgeGraphics |
+        ogdf::GraphAttributes::nodeStyle
+    );
+    ogdf::GraphIO::read(*_p_graphAttributes, *_p_graph, filename, ogdf::GraphIO::readGML);
 
     std::cout << "Nodes: " << _p_graph->numberOfNodes()
         << " Edges: " << _p_graph->numberOfEdges() << std::endl;
 
-    _p_graphAttributes = std::make_unique<ogdf::GraphAttributes>(*_p_graph);
+    _p_graph->allNodes(_m_nodes);
+    // what the f ?
+    // std::cout << _p_graph->firstNode()->graphOf() << " " <<  _p_graph.get();
+    // for(auto node_p : _m_nodes) {
+    //     std::cout << (node_p->graphOf() == _p_graph.get()) << std::endl;
+    //     auto & color = _p_graphAttributes->fillColor(node_p);
+    //     //color = ogdf::Color(ogdf::Color::Name::Gold);
+    // }
+}
+
+void ogdfWrapper::colorNodes() {
+    for(auto node_p : _m_nodes) {
+        std::cout << (node_p->graphOf() == _p_graph.get()) << std::endl;
+        auto & color = _p_graphAttributes->fillColor(node_p);
+        //color = ogdf::Color(ogdf::Color::Name::Gold);
+    }
+}
+
+int ogdfWrapper::removeNodes(int maxDegree) {
+    //ogdfVector<ogdf::NodeElement*> nodesTooLarge;
+
+    int removedNodes = 0;
+    for(auto node_p : _m_nodes) {
+        if(node_p->degree() > maxDegree) {
+            _p_graph->delNode(node_p);
+            ++removedNodes;
+        }
+    }
+    _p_graph->allNodes(_m_nodes);
+    std::cout << "removed " << removedNodes << " Nodes." << std::endl;
+    return removedNodes;
 }
 
 void ogdfWrapper::layout() {

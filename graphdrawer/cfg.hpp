@@ -15,6 +15,7 @@ public:
     std::string output_filename() const;
     filetype output_filetype() const;
     bool validate_config() const;
+    int cull_graph() const;
 
 private:
     boost::program_options::variables_map _vm;
