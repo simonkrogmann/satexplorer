@@ -1,5 +1,5 @@
 #!/usr/bin/python
-"Converts variable incidence graph format to graphml format"
+"Converts variable incidence graph format to gml format"
 
 import sys
 import os
@@ -13,4 +13,4 @@ INPUT_FILENAME = os.path.basename(sys.argv[1])
 INPUT_FILEBASENAME = os.path.splitext(INPUT_FILENAME)[0]
 INPUT_DIR = os.path.dirname(sys.argv[1])
 G = nx.read_edgelist(sys.argv[1])
-nx.write_graphml(G, INPUT_DIR + "/" + INPUT_FILEBASENAME + ".graphml")
+nx.write_gml(G, INPUT_DIR + "/" + INPUT_FILEBASENAME + ".gml")
