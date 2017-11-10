@@ -17,7 +17,7 @@ void ogdfWrapper::readGraph(std::string filename) {
     _p_graphAttributes = std::make_unique<ogdf::GraphAttributes>(*_p_graph);
 }
 
-void ogdfWrapper::process() {
+void ogdfWrapper::layout() {
     ogdf::FMMMLayout layout;
     set_options(layout);
 

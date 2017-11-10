@@ -10,9 +10,13 @@ public:
     // read graph from file in graphml format
     void readGraph(std::string filename);
 
-    void process();
+    // set layout options and layout the graph
+    // using FMMM Layout
+    void layout();
 
+    // write the graph to <filename>.<format>
     void writeGraph(std::string filename, filetype format);
+
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
     std::unique_ptr<ogdf::GraphAttributes> _p_graphAttributes;

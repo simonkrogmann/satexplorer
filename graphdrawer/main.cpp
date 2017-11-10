@@ -22,7 +22,7 @@ int main(int ac, char* av[])
 
         graphdrawer::ogdfWrapper wrapper;
         wrapper.readGraph(cfg.input_filename());
-        wrapper.process();
+        wrapper.layout();
         wrapper.writeGraph(cfg.output_filename(), cfg.output_filetype());
     }
     catch(std::exception& e) {
