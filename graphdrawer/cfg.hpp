@@ -1,6 +1,6 @@
 #include <string>
 #include <boost/program_options.hpp>
-#include <types.hpp>
+#include <ogdfWrapper/types.hpp>
 
 namespace graphdrawer {
 

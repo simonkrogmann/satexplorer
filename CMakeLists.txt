@@ -36,3 +36,4 @@ endif()
 # endif()
 
 add_subdirectory(graphdrawer)
+add_subdirectory(ogdfWrapper)
