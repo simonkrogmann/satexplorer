@@ -15,7 +15,8 @@ void ogdfWrapper::readGraph(std::string filename) {
         ogdf::GraphAttributes::nodeLabel | 
         ogdf::GraphAttributes::nodeGraphics | 
         ogdf::GraphAttributes::edgeGraphics |
-        ogdf::GraphAttributes::nodeStyle
+        ogdf::GraphAttributes::nodeStyle |
+        ogdf::GraphAttributes::edgeStyle
     );
     ogdf::GraphIO::read(*_p_graphAttributes, *_p_graph, filename, ogdf::GraphIO::readGML);
 
@@ -23,26 +24,32 @@ void ogdfWrapper::readGraph(std::string filename) {
         << " Edges: " << _p_graph->numberOfEdges() << std::endl;
 
     _p_graph->allNodes(_m_nodes);
-    // what the f ?
-    // std::cout << _p_graph->firstNode()->graphOf() << " " <<  _p_graph.get();
-    // for(auto node_p : _m_nodes) {
-    //     std::cout << (node_p->graphOf() == _p_graph.get()) << std::endl;
-    //     auto & color = _p_graphAttributes->fillColor(node_p);
-    //     //color = ogdf::Color(ogdf::Color::Name::Gold);
-    // }
+    _p_graph->allEdges(_m_edges);
 }
 
 void ogdfWrapper::colorNodes() {
     for(auto node_p : _m_nodes) {
-        std::cout << (node_p->graphOf() == _p_graph.get()) << std::endl;
-        auto & color = _p_graphAttributes->fillColor(node_p);
-        //color = ogdf::Color(ogdf::Color::Name::Gold);
+        auto & stroke_color = _p_graphAttributes->strokeColor(node_p);
+        stroke_color = ogdf::Color(ogdf::Color::Name::Black);
+        auto & fill_color = _p_graphAttributes->fillColor(node_p);
+        fill_color = ogdf::Color(ogdf::Color::Name::Green);
+        auto& width = _p_graphAttributes->width(node_p);
+        width = 50.0;
+        auto& height = _p_graphAttributes->height(node_p);
+        height = 50.0;
+    }
+}
+
+void ogdfWrapper::colorEdges() {
+    for(auto node_p : _m_edges) {
+        auto & stroke_color = _p_graphAttributes->strokeColor(node_p);
+        stroke_color = ogdf::Color(ogdf::Color::Name::Yellow);
+        auto & stroke_width = _p_graphAttributes->strokeWidth(node_p);
+        stroke_width = 10.f;
     }
 }
 
 int ogdfWrapper::removeNodes(int maxDegree) {
-    //ogdfVector<ogdf::NodeElement*> nodesTooLarge;
-
     int removedNodes = 0;
     for(auto node_p : _m_nodes) {
         if(node_p->degree() > maxDegree) {

@@ -1,3 +1,7 @@
+#pragma once
+
+#include <ogdf/basic/basic.h>
+
 #include <ogdf/basic/graph_generators.h>
 #include <ogdf/basic/GraphAttributes.h>
 #include <ogdf/energybased/FMMMLayout.h>
@@ -25,10 +29,13 @@ public:
 
     void colorNodes();
 
+    void colorEdges();
+
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
     std::unique_ptr<ogdf::GraphAttributes> _p_graphAttributes;
     ogdfVector<ogdf::NodeElement*> _m_nodes;
+    ogdfVector<ogdf::EdgeElement*> _m_edges;
 
     void set_options(ogdf::FMMMLayout& layout);
     

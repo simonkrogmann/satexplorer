@@ -1,4 +1,3 @@
-
 #include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
@@ -26,6 +25,7 @@ int main(int ac, char* av[])
             wrapper.removeNodes(cfg.cull_graph());
         }
         wrapper.colorNodes();
+        wrapper.colorEdges();
         wrapper.layout();
         wrapper.writeGraph(cfg.output_filename(), cfg.output_filetype());
     }
