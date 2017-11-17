@@ -39,3 +39,4 @@ endif()
 
 add_subdirectory(graphdrawer)
 add_subdirectory(satviewer)
+add_subdirectory(ogdfWrapper)
