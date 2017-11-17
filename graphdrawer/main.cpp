@@ -15,7 +15,7 @@ int main(int ac, char* av[])
     try {
         
         graphdrawer::cfg cfg(ac,av);
-        if(cfg.validate_config()) { // returns 1 if failure
+        if(!cfg.config_valid()) {
             return 1;
         }
 
@@ -24,9 +24,12 @@ int main(int ac, char* av[])
         if(cfg.cull_graph()) {
             wrapper.removeNodes(cfg.cull_graph());
         }
-        wrapper.colorNodes();
-        wrapper.colorEdges();
         wrapper.layout();
+        wrapper.colorNodes(graphdrawer::ogdfWrapper::nodeColor::UNPROCESSED);
+        wrapper.colorNode(34, graphdrawer::ogdfWrapper::nodeColor::PROCESSED);
+        wrapper.setNodeShape(34, cfg.node_width(), cfg.node_height());
+        wrapper.colorNode(18, graphdrawer::ogdfWrapper::nodeColor::STEP_SELECTED);
+        wrapper.setNodeShape(18, cfg.node_width(), cfg.node_height());
         wrapper.writeGraph(cfg.output_filename(), cfg.output_filetype());
     }
     catch(std::exception& e) {
