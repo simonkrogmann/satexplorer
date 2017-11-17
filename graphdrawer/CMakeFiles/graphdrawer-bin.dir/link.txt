@@ -1,0 +1,1 @@
+/usr/bin/g++   -Wall -Wextra -Wpedantic -Wfloat-equal -Wold-style-cast -Wno-sign-compare  -rdynamic CMakeFiles/graphdrawer-bin.dir/main.cpp.o CMakeFiles/graphdrawer-bin.dir/cfg.cpp.o CMakeFiles/graphdrawer-bin.dir/ogdfWrapper.cpp.o  -o ../graphdrawer-bin -logdf /usr/lib/x86_64-linux-gnu/libboost_program_options.so 

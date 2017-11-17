@@ -13,7 +13,9 @@ function(create_library project name sources includes libraries)
     install (DIRECTORY ${CMAKE_CURRENT_LIST_DIR} DESTINATION include/${project} FILES_MATCHING REGEX ".*\\.h(pp)?")
 endfunction()
 
-include_directories(SYSTEM ${CMAKE_SOURCE_DIR} graphdrawer)
+include_directories(SYSTEM ${CMAKE_SOURCE_DIR} 
+    graphdrawer
+    satviewer)
 
 function(create_executable project name sources includes libraries)
     set(files ${sources} ${includes})
@@ -36,3 +38,4 @@ endif()
 # endif()
 
 add_subdirectory(graphdrawer)
+add_subdirectory(satviewer)
