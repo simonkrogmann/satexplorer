@@ -11,8 +11,8 @@
 #include <ogdf/energybased/FMMMLayout.h>
 #include <ogdf/basic/Graph_d.h>
 #include <ogdf/basic/Array.h>
-#include <ogdfVector.hpp>
-#include <types.hpp>
+#include "ogdfVector.hpp"
+#include "types.hpp"
 
 
 namespace graphdrawer {

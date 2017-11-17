@@ -1,4 +1,4 @@
-set(libname
+set(target
     ogdfWrapper
 )
 
@@ -15,6 +15,5 @@ set(libraries
     OGDF
 )
 
-add_library(${libname} "${sources}" "${includes}")
-target_link_libraries(${libname} PUBLIC "${libraries}")
-target_include_directories (${libname} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+create_library(${project} ${target} "${sources}" "${includes}" "${libraries}")
+

@@ -7,8 +7,8 @@ namespace po = boost::program_options;
 #include <string>
 #include <fstream>
 
-#include <cfg.hpp>
-#include <ogdfWrapper.hpp>
+#include "cfg.hpp"
+#include <ogdfWrapper/ogdfWrapper.hpp>
 
 int main(int ac, char* av[])
 {

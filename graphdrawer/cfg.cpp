@@ -81,7 +81,7 @@ std::string cfg::output_filename() const {
     std::string filename = _vm["out"].as<std::string>();
     switch(type) {
         case filetype::GML : return filename + ".gml";
-        case filetype::SVG : return filename + ".svg"; 
+        case filetype::SVG : return filename + ".svg";
     }
 }
 
