@@ -16,10 +16,13 @@ public:
     filetype output_filetype() const;
     bool validate_config() const;
     int cull_graph() const;
+    int node_width() const;
+    int node_height() const;
+    bool config_valid() const;
 
 private:
     boost::program_options::variables_map _vm;
-    boost::program_options::options_description _desc;
+    bool _config_valid;
 
     void init_options();
 };
