@@ -7,6 +7,11 @@ set(target satviewer-bin)
 
 set(sources
     main.cpp
+    SatWindow.cpp
+    SatWindow.h
+    Stepper.cpp
+    Stepper.h
+
 )
 
 set(includes
