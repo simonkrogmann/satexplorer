@@ -32,7 +32,7 @@ def main():
 
 
 	with open(args.outputFile, 'w') as cnf:
-		cnf.write(f"c converted from {args.inputFile}\n")
+		cnf.write("c converted from {args.inputFile}\n")
 		cnf.write("p cnf {} {} \n".format(len(variables), len(clauses)))
 		for clause in clauses:
 			cnf.write(" ".join([str(x) for x in clause]) + " 0\n")
