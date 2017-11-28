@@ -7,8 +7,8 @@ import os
 from itertools import product
 import networkx as nx
 
-if len(sys.argv) != 2:
-    print("Usage: vigToGraphml </path/to/file.csv>")
+if len(sys.argv) != 3:
+    print("Usage: vigToGraphml </path/to/file.csv> </path/to/output.gml>")
     exit(1)
 
 INPUT_FILENAME = os.path.basename(sys.argv[1])
@@ -36,4 +36,4 @@ with open(sys.argv[1], 'r') as cnffile:
 print(g.nodes())
 print(g.edges())
 
-nx.write_gml(g, INPUT_DIR + "/" + INPUT_FILEBASENAME + ".gml")
+nx.write_gml(g, sys.argv[2])

@@ -1,14 +1,15 @@
 #include <QApplication>
-#include<QSvgWidget>
-#include<QFileDialog>
+#include <QSvgWidget>
+#include <QFileDialog>
+
+#include "SatWindow.hpp"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QSvgWidget* window = new QSvgWidget();
-    QString path = QFileDialog::getOpenFileName(window, "Open Image", "/home/", "Image Files (*.svg)");
-    window->load(path);
-    window->show();
+    SatWindow window;
+    window.run();
+    window.show();
 
     return a.exec();
 }

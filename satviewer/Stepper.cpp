@@ -1,27 +1,31 @@
 #include "Stepper.hpp"
 
+#include <cassert>
+
 #include <QApplication>
 #include <QSvgWidget>
 #include <QFileDialog>
 #include <QProcess>
+#include <QFileInfo>
 
-void Stepper::initialize(String cnfPath){
+void Stepper::initialize(std::string cnfPath){
+    auto cnfFilename = QFileInfo(QString::fromStdString(cnfPath)).baseName().toStdString();
+    auto solutionPath = outputPath + cnfFilename + ".solution";
+    auto tracePath = outputPath + cnfFilename + ".trace";
+    auto gmlPath = outputPath + cnfFilename + ".gml";
+
     QProcess process;
-    auto conversionCmd = conversionSkript + " " + cnfPath;
-    log("Convert to gml for layouting");
-    log(conversionCmd);
+    auto conversionCmd = scriptPath + conversionScript + " " + cnfPath + " " + gmlPath;
+    std::cout << "Convert to gml for layouting" << std::endl;
+    std::cout << conversionCmd << std::endl;
     process.start(QString::fromStdString(conversionCmd));
     std::cout << "converting..." << std::endl;
     process.waitForFinished(-1);
     std::cout << "Done." << std::endl;
 
-    // TODO: write lambda that gets rid of the ".cnf" at the end before adding any more
-    m_solutionPath = cnfPath + "Solution";
-    m_tracePath = cnfPath + "Trace";
-
-    auto satCmd = minisat + " " + cnfPath + m_solutionPath + m_tracePath;
-    log("solve SAT instance");
-    log(satCmd);
+    auto satCmd = minisat + " " + cnfPath + solutionPath + tracePath;
+    std::cout << "solve SAT instance" << std::endl;
+    std::cout << satCmd << std::endl;
     process.start(QString::fromStdString(satCmd));
     std::cout << "solving..." << std::endl;
     process.waitForFinished(-1);
@@ -29,11 +33,11 @@ void Stepper::initialize(String cnfPath){
 
     // read Trace and solve into m_steps
 
-    m_graph->readGraph("wherever we save the .gml to");
-    m_graph->layout();
+    m_graph.readGraph(gmlPath);
+    m_graph.layout();
 }
 
-void Stepper::Step() {
+void Stepper::step() {
 
 }
 

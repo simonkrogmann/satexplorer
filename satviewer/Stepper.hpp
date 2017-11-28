@@ -1,23 +1,23 @@
 #include <QApplication>
 #include <QSvgWidget>
 #include <QFileDialog>
-#include <ogdfWrapper>
+#include <ogdfWrapper/ogdfWrapper.hpp>
 
 class ogdfWrapper;
 
 class Stepper {
 public:
-    void initialize(String cnfPath);
+    void initialize(std::string cnfPath);
     void step();
 
 protected:
-    std::vector<String> m_steps;
+    std::vector<std::string> m_steps;
     size_t m_lastStep;
-    ogdfWrapper m_graph;
+    graphdrawer::ogdfWrapper m_graph;
 
-    const String conversionSkript = "../cnfToGML.py";
-    const String minisat = "./minisat";
-    String m_solutionPath;
-    String m_tracePath;
+    const std::string conversionScript = "cnfToGML.py";
+    const std::string minisat = "./minisat";
+    const std::string outputPath = "data/";
+    const std::string scriptPath = "../scripts/";
 };
 

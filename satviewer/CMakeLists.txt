@@ -8,16 +8,16 @@ set(target satviewer-bin)
 set(sources
     main.cpp
     SatWindow.cpp
-    SatWindow.h
+    SatWindow.hpp
     Stepper.cpp
-    Stepper.h
-
+    Stepper.hpp
 )
 
 set(includes
 )
 
 set(libraries
+    ogdfWrapper
     Qt5::Widgets
     Qt5::Svg
     Qt5::Core

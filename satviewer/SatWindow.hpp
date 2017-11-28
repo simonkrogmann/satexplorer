@@ -5,7 +5,7 @@
 
 class ogdfWrapper;
 
-class SatWindow : QSvgWidget {
+class SatWindow : public QSvgWidget {
 public:
     void run();
 
