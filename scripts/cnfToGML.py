@@ -12,7 +12,7 @@ if len(sys.argv) != 3:
     exit(1)
 
 OUTPUT_DIR = os.path.dirname(sys.argv[2])
-if not os.path.isdir(OUTPUT_DIR):
+if OUTPUT_DIR and not os.path.isdir(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
 
 g = nx.Graph()
@@ -23,17 +23,25 @@ def strip_minus(n):
     return n
 
 with open(sys.argv[1], 'r') as cnffile:
-    for line in cnffile:
-        if line[0] == "c" or line[0] == "p":
-            continue
-        # skip last entry - it is always 0
-        nodes = line.strip().split(' ')[0:-1]
-        nodes = list(map(strip_minus, nodes))
-        for node in nodes:
-            g.add_node(node)
-        for node1, node2 in product(nodes, nodes):
-            if node1 != node2:
-                g.add_edge(node1, node2)
+    lines = cnffile.readlines()
+    without_comments = [line for line in lines if line[0] != "c" and line[0] != "p"]
+    unify = " ".join(without_comments)
+    tokens = unify.split()
+    clauses = []
+    clause = []
+    for n in tokens:
+        if n != '0':
+            clause.append(n)
+        else:
+            clauses.append(clause)
+            clause = []
+    print(clauses)
+    for clause in clauses:
+        for literal in clause:
+            g.add_node(literal)
+        for literal1, literal2 in product(clause, clause):
+            if literal1 != literal2:
+                g.add_edge(literal1, literal2)
 print(g.nodes())
 print(g.edges())
 
