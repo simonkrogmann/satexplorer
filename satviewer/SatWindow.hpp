@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QSvgWidget>
 #include <QFileDialog>
-#include "Stepper.h"
+#include "Stepper.hpp"
 
 class ogdfWrapper;
 

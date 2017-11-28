@@ -1,7 +1,8 @@
+#include "Stepper.hpp"
+
 #include <QApplication>
 #include <QSvgWidget>
 #include <QFileDialog>
-#include <Stepper.h>
 #include <QProcess>
 
 void Stepper::initialize(String cnfPath){

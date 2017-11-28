@@ -15,7 +15,7 @@ protected:
     size_t m_lastStep;
     ogdfWrapper m_graph;
 
-    const String conversionSkript = "./cnfToGlm.py";
+    const String conversionSkript = "../cnfToGML.py";
     const String minisat = "./minisat";
     String m_solutionPath;
     String m_tracePath;
