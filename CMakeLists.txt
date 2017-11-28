@@ -37,3 +37,6 @@ endif()
 
 add_subdirectory(graphdrawer)
 add_subdirectory(ogdfWrapper)
+add_subdirectory(bcsat)
+add_subdirectory(minisat)
+add_subdirectory(tseytin)
