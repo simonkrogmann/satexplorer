@@ -41,11 +41,7 @@ void ogdfWrapper::_updateGraph() {
 
 void ogdfWrapper::colorNodes(nodeColor color) {
     for(auto node_p : _m_nodes) {
-        auto colorName = getColor(color);
-        auto & stroke_color = _p_graphAttributes->strokeColor(node_p);
-        stroke_color = ogdf::Color(colorName);
-        auto & fill_color = _p_graphAttributes->fillColor(node_p);
-        fill_color = ogdf::Color(colorName);
+        colorNode(node_p, color);
     }
 }
 
@@ -65,21 +61,25 @@ void ogdfWrapper::setNodeShapeAll(double width, double height) {
     }
 }
 
-void ogdfWrapper::colorNode(int nodeID, nodeColor color) {
-    auto& node_p = _label_map.at(std::to_string(nodeID));
+void ogdfWrapper::colorNode(ogdf::NodeElement* node_p, nodeColor color) {
     auto colorName = getColor(color);
     auto & stroke_color = _p_graphAttributes->strokeColor(node_p);
-    stroke_color = ogdf::Color(colorName);
+    stroke_color = ogdf::Color(ogdf::Color::Name::Black);
     auto & fill_color = _p_graphAttributes->fillColor(node_p);
     fill_color = ogdf::Color(colorName);
+}
+
+void ogdfWrapper::colorNode(int nodeID, nodeColor color) {
+    auto& node_p = _label_map.at(std::to_string(nodeID));
+    colorNode(node_p, color);
 }
 
 void ogdfWrapper::colorEdges() {
     for(auto node_p : _m_edges) {
         auto & stroke_color = _p_graphAttributes->strokeColor(node_p);
-        stroke_color = ogdf::Color(ogdf::Color::Name::Yellow);
+        stroke_color = ogdf::Color(ogdf::Color::Name::Black);
         auto & stroke_width = _p_graphAttributes->strokeWidth(node_p);
-        stroke_width = 10.f;
+        stroke_width = 1.f;
     }
 }
 
@@ -127,7 +127,7 @@ void ogdfWrapper::writeGraph(std::string filename, filetype format) {
 
 ogdf::Color::Name ogdfWrapper::getColor(nodeColor color) {
     switch(color) {
-        case nodeColor::UNPROCESSED: return ogdf::Color::Name::Black;
+        case nodeColor::UNPROCESSED: return ogdf::Color::Name::White;
         case nodeColor::PROCESSED: return ogdf::Color::Name::Blue;
         case nodeColor::STEP_SELECTED: return ogdf::Color::Name::Orange;
     }

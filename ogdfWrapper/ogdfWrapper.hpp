@@ -39,9 +39,9 @@ public:
 
     void colorNodes(nodeColor color);
 
-    void setNodeShapeAll(double width, double height);
+    void setNodeShapeAll(double width = 20.0, double height = 20.0);
 
-    void setNodeShape(int nodeID, double width, double height);
+    void setNodeShape(int nodeID, double width = 20.0, double height = 20.0);
 
     void colorNode(int nodeID, nodeColor color);
 
@@ -59,6 +59,8 @@ private:
     void _setOptions(ogdf::FMMMLayout& layout);
     void _updateGraph();
     ogdf::Color::Name getColor(nodeColor color);
+    void colorNode(ogdf::NodeElement* node_p, nodeColor color);
+
     
 };
 }
