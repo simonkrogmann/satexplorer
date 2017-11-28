@@ -7,7 +7,7 @@ class ogdfWrapper;
 
 class Stepper {
 public:
-    void initialize(std::string cnfPath);
+    std::string initialize(std::string cnfPath);
     void step();
 
 protected:

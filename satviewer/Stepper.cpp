@@ -7,12 +7,15 @@
 #include <QFileDialog>
 #include <QProcess>
 #include <QFileInfo>
+#include <ogdfWrapper/types.hpp>
 
-void Stepper::initialize(std::string cnfPath){
+
+std::string Stepper::initialize(std::string cnfPath){
     auto cnfFilename = QFileInfo(QString::fromStdString(cnfPath)).baseName().toStdString();
     auto solutionPath = outputPath + cnfFilename + ".solution";
     auto tracePath = outputPath + cnfFilename + ".trace";
     auto gmlPath = outputPath + cnfFilename + ".gml";
+    auto svgPath = outputPath + cnfFilename + ".svg";
 
     QProcess process;
     auto conversionCmd = scriptPath + conversionScript + " " + cnfPath + " " + gmlPath;
@@ -35,6 +38,9 @@ void Stepper::initialize(std::string cnfPath){
 
     m_graph.readGraph(gmlPath);
     m_graph.layout();
+    m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
+
+    return svgPath;
 }
 
 void Stepper::step() {

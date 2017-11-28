@@ -11,9 +11,10 @@ if len(sys.argv) != 3:
     print("Usage: vigToGraphml </path/to/file.csv> </path/to/output.gml>")
     exit(1)
 
-INPUT_FILENAME = os.path.basename(sys.argv[1])
-INPUT_FILEBASENAME = os.path.splitext(INPUT_FILENAME)[0]
-INPUT_DIR = os.path.dirname(sys.argv[1])
+OUTPUT_DIR = os.path.dirname(sys.argv[2])
+if not os.path.isdir(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
+
 g = nx.Graph()
 
 def strip_minus(n):
