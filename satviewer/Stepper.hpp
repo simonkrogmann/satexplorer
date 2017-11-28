@@ -5,13 +5,19 @@
 
 class ogdfWrapper;
 
+enum class Step { SET, UNSET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
+
 class Stepper {
 public:
     std::string initialize(std::string cnfPath);
     void step();
 
 protected:
-    std::vector<std::string> m_steps;
+
+    void writeSvg(std::string glmPath, std::string svgPath);
+    void readTrace(std::string tracePath);
+
+    std::vector<std::pair<Step, int>> m_steps;
     size_t m_lastStep;
     graphdrawer::ogdfWrapper m_graph;
 
@@ -19,5 +25,6 @@ protected:
     const std::string minisat = "./minisat";
     const std::string outputPath = "data/";
     const std::string scriptPath = "../scripts/";
+
 };
 
