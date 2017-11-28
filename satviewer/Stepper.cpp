@@ -66,13 +66,6 @@ void Stepper::writeSvg(std::string gmlPath, std::string svgPath) {
     m_graph.colorEdges();
     m_graph.removeNodes(10);
     m_graph.layout();
-    m_graph.colorNodes(graphdrawer::ogdfWrapper::nodeColor::UNPROCESSED);
-    m_graph.colorNode(1, graphdrawer::ogdfWrapper::nodeColor::PROCESSED);
-    m_graph.setNodeShape(1);
-    m_graph.colorNode(2, graphdrawer::ogdfWrapper::nodeColor::STEP_SELECTED);
-    m_graph.setNodeShape(2);
-
-    m_graph.layout();
     m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
 }
 
