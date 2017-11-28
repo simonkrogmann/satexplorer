@@ -3,8 +3,8 @@
 
 import sys
 import os
-import math
 
+from itertools import product
 import networkx as nx
 
 if len(sys.argv) != 2:
@@ -16,10 +16,10 @@ INPUT_FILEBASENAME = os.path.splitext(INPUT_FILENAME)[0]
 INPUT_DIR = os.path.dirname(sys.argv[1])
 g = nx.Graph()
 
-def stripMinus(x):
-    if x[0] == "-":
-        return x[1:]
-    return x
+def strip_minus(n):
+    if n[0] == "-":
+        return n[1:]
+    return n
 
 with open(sys.argv[1], 'r') as cnffile:
     for line in cnffile:
@@ -27,13 +27,13 @@ with open(sys.argv[1], 'r') as cnffile:
             continue
         # skip last entry - it is always 0
         nodes = line.strip().split(' ')[0:-1]
-        print(nodes)
-        for node1 in nodes:
-            n1 = stripMinus(node1)
-            g.add_node(n1, label=n1)
-            for node2 in nodes:
-                n2 = stripMinus(node1)
-                if n1 != n2:
-                    g.add_edge(n1, n2)
+        nodes = list(map(strip_minus, nodes))
+        for node in nodes:
+            g.add_node(node)
+        for node1, node2 in product(nodes, nodes):
+            if node1 != node2:
+                g.add_edge(node1, node2)
+print(g.nodes())
+print(g.edges())
 
 nx.write_gml(g, INPUT_DIR + "/" + INPUT_FILEBASENAME + ".gml")
