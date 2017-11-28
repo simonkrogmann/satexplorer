@@ -26,7 +26,7 @@ protected:
     graphdrawer::ogdfWrapper m_graph;
 
     const std::string conversionScript = "cnfToGML.py";
-    const std::string minisat = "../minisat/build/minisat";
+    const std::string minisat = "./minisat-solver";
     const std::string outputPath = "data/";
     const std::string scriptPath = "../scripts/";
 
