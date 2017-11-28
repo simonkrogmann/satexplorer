@@ -6,8 +6,16 @@
 #include <QProcess>
 #include <QPalette>
 #include <QColor>
+#include <QSvgRenderer>
 
-SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m_stepper(), m_stepButton("Step", this) {}
+SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m_stepper(), m_stepButton("Step", this), m_dockWidget(tr("Graph"), this) {
+    setCentralWidget(&m_svgWidget);
+    m_dockWidget.setAllowedAreas(Qt::LeftDockWidgetArea |
+                                Qt::RightDockWidgetArea);
+    m_dockWidget.setWidget(&m_stepButton);
+    addDockWidget(Qt::BottomDockWidgetArea, &m_dockWidget);
+    setWindowTitle(tr("SatExplorer"));
+}
 
 void SatWindow::run(){
     QPalette pal;
@@ -18,6 +26,7 @@ void SatWindow::run(){
     QString cnfPath = QFileDialog::getOpenFileName(this, "Open Image", "/home/", "Image Files (*.cnf)");
     auto svgPath = m_stepper.initialize(cnfPath.toStdString());
     m_svgWidget.setAutoFillBackground(true);
+    m_svgWidget.renderer()->setViewBox(QRect(QPoint(0, 0), QSize(500, 500)));
 
     m_svgWidget.load(QString::fromStdString(svgPath));
 

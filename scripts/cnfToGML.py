@@ -31,7 +31,7 @@ with open(sys.argv[1], 'r') as cnffile:
     clause = []
     for n in tokens:
         if n != '0':
-            clause.append(n)
+            clause.append(strip_minus(n))
         else:
             clauses.append(clause)
             clause = []

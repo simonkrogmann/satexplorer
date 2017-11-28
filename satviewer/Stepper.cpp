@@ -62,6 +62,7 @@ std::string Stepper::step() {
         auto [type, data] = m_steps[m_lastStep];
         ++m_lastStep;
         stepFinished = true;
+        std::cout << data << std::endl;
         switch(type) {
             case StepType::SET:
                 m_graph.colorNode(data, graphdrawer::nodeColor::PROCESSED);
@@ -82,7 +83,7 @@ void Stepper::writeSvg(std::string gmlPath, std::string svgPath) {
     m_graph.setNodeShapeAll();
     m_graph.colorEdges();
     m_graph.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
-    m_graph.removeNodes(10);
+    //m_graph.removeNodes(10);
     m_graph.layout();
     m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
 }

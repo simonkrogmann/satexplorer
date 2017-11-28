@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QPushButton>
 #include <QMainWindow>
+#include <QDockWidget>
 #include "Stepper.hpp"
 
 class ogdfWrapper;
@@ -19,6 +20,7 @@ protected:
     QSvgWidget m_svgWidget;
     Stepper m_stepper;
     QPushButton m_stepButton;
+    QDockWidget m_dockWidget;
 
 private slots:
     void handleStepButton();
