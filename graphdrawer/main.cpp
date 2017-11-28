@@ -25,10 +25,10 @@ int main(int ac, char* av[])
             wrapper.removeNodes(cfg.cull_graph());
         }
         wrapper.layout();
-        wrapper.colorNodes(graphdrawer::ogdfWrapper::nodeColor::UNPROCESSED);
-        wrapper.colorNode(34, graphdrawer::ogdfWrapper::nodeColor::PROCESSED);
+        wrapper.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
+        wrapper.colorNode(34, graphdrawer::nodeColor::PROCESSED);
         wrapper.setNodeShape(34, cfg.node_width(), cfg.node_height());
-        wrapper.colorNode(18, graphdrawer::ogdfWrapper::nodeColor::STEP_SELECTED);
+        wrapper.colorNode(18, graphdrawer::nodeColor::STEP_SELECTED);
         wrapper.setNodeShape(18, cfg.node_width(), cfg.node_height());
         wrapper.writeGraph(cfg.output_filename(), cfg.output_filetype());
     }

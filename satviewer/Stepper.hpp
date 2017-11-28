@@ -3,9 +3,13 @@
 #include <QFileDialog>
 #include <ogdfWrapper/ogdfWrapper.hpp>
 
-class ogdfWrapper;
+struct Step {
+    StepType type;
+    // either node or backtrack level or restart number
+    int data;
+};
 
-enum class Step { SET, UNSET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
+enum class StepType { SET, UNSET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
 
 class Stepper {
 public:
@@ -17,7 +21,7 @@ protected:
     void writeSvg(std::string glmPath, std::string svgPath);
     void readTrace(std::string tracePath);
 
-    std::vector<std::pair<Step, int>> m_steps;
+    std::vector<Step> m_steps;
     size_t m_lastStep;
     graphdrawer::ogdfWrapper m_graph;
 

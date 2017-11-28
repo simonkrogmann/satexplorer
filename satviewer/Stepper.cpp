@@ -14,15 +14,15 @@
 #include <ogdfWrapper/types.hpp>
 
 
-std::map <std::string , Step> stepToEnum
+std::map <std::string , StepType> stepToEnum
         {
-                {"Backtrack", Step::BACKTRACK},
-                {"Set", Step::SET},
-                {"Unset", Step::UNSET},
-                {"Conflict", Step::CONFLICT},
-                {"Enter", Step::LEVEL},
-                {"Branch", Step::BRANCH},
-                {"Restart", Step::RESTART}
+                {"Backtrack", StepType::BACKTRACK},
+                {"Set", StepType::SET},
+                {"Unset", StepType::UNSET},
+                {"Conflict", StepType::CONFLICT},
+                {"Enter", StepType::LEVEL},
+                {"Branch", StepType::BRANCH},
+                {"Restart", StepType::RESTART}
         };
 
 
@@ -57,7 +57,22 @@ std::string Stepper::initialize(std::string cnfPath){
 }
 
 void Stepper::step() {
-
+    bool stepFinished = false;
+    while(m_lastStep < m_steps.size() && !stepFinished) {
+        auto [type, data] = m_steps[m_lastStep];
+        ++m_lastStep;
+        stepFinished = true;
+        switch(type) {
+            case StepType::SET:
+                m_graph.colorNode(data, graphdrawer::nodeColor::PROCESSED);
+                break;
+            case StepType::UNSET:
+                m_graph.colorNode(data, graphdrawer::nodeColor::UNPROCESSED);
+                break;
+            default:
+                stepFinished = false;
+        }
+    }
 }
 
 void Stepper::writeSvg(std::string gmlPath, std::string svgPath) {
@@ -87,8 +102,7 @@ void Stepper::readTrace(std::string tracePath) {
             auto numberStart = line.rfind(" ");
             auto number = line.substr(numberStart + 1);
 
-            auto step = std::make_pair(stepToEnum.at(word), std::stoi(number));
-            m_steps.push_back(step);
+            m_steps.push_back({stepToEnum.at(word), std::stoi(number)});
         }
     }
     traceFile.close();

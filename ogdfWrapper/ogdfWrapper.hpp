@@ -17,13 +17,15 @@
 
 namespace graphdrawer {
 
-class ogdfWrapper {
-public:
-    enum class nodeColor {
+enum class nodeColor {
         UNPROCESSED,
         PROCESSED,
         STEP_SELECTED
     };
+
+class ogdfWrapper {
+public:
+    
     // read graph from file in graphml format
     void readGraph(std::string filename);
 
