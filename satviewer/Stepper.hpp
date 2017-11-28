@@ -3,18 +3,18 @@
 #include <QFileDialog>
 #include <ogdfWrapper/ogdfWrapper.hpp>
 
+enum class StepType { SET, UNSET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
+
 struct Step {
     StepType type;
     // either node or backtrack level or restart number
     int data;
 };
 
-enum class StepType { SET, UNSET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
-
 class Stepper {
 public:
     std::string initialize(std::string cnfPath);
-    void step();
+    std::string step();
 
 protected:
 
@@ -26,9 +26,11 @@ protected:
     graphdrawer::ogdfWrapper m_graph;
 
     const std::string conversionScript = "cnfToGML.py";
-    const std::string minisat = "./minisat";
+    const std::string minisat = "../minisat/build/minisat";
     const std::string outputPath = "data/";
     const std::string scriptPath = "../scripts/";
+
+    std::string svgPath;
 
 };
 
