@@ -1,3 +1,6 @@
 [submodule "minisat"]
 	path = minisat
 	url = git@github.com:simonkrogmann/minisat.git
+[submodule "bcsat"]
+	path = bcsat
+	url = git@github.com:simonkrogmann/bcsat.git
