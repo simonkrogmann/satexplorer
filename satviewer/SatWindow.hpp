@@ -24,5 +24,6 @@ protected:
 
 private slots:
     void handleStepButton();
+    void startTimer();
 };
 

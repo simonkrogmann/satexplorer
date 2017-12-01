@@ -7,6 +7,7 @@
 #include <QPalette>
 #include <QColor>
 #include <QSvgRenderer>
+#include <QTimer>
 
 SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m_stepper(), m_stepButton("Step", this), m_dockWidget(tr("Graph"), this) {
     setCentralWidget(&m_svgWidget);
@@ -32,7 +33,7 @@ void SatWindow::run(){
 
     // button for stepping through the solving process
     m_stepButton.setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
-    connect(&m_stepButton, SIGNAL (clicked()), this, SLOT (handleStepButton()));
+    connect(&m_stepButton, SIGNAL (clicked()), this, SLOT (startTimer()));
 
     show();
 
@@ -41,6 +42,12 @@ void SatWindow::run(){
 void SatWindow::handleStepButton() {
     auto path = m_stepper.step();
     m_svgWidget.load(QString::fromStdString(path));
+}
+
+void SatWindow::startTimer() {
+    QTimer* timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(handleStepButton()));
+    timer->start(100);
 }
 
 
