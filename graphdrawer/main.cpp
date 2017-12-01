@@ -26,7 +26,7 @@ int main(int ac, char* av[])
         }
         wrapper.layout();
         wrapper.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
-        wrapper.colorNode(34, graphdrawer::nodeColor::PROCESSED);
+        wrapper.colorNode(34, graphdrawer::nodeColor::SET_TRUE);
         wrapper.setNodeShape(34, cfg.node_width(), cfg.node_height());
         wrapper.colorNode(18, graphdrawer::nodeColor::STEP_SELECTED);
         wrapper.setNodeShape(18, cfg.node_width(), cfg.node_height());
