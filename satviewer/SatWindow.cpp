@@ -9,12 +9,11 @@
 #include <QSvgRenderer>
 #include <QTimer>
 
-SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m_stepper(), m_stepButton("Step", this), m_dockWidget(tr("Graph"), this) {
+SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m_stepper(), m_toolbar(tr("Graph"), this) {
     setCentralWidget(&m_svgWidget);
-    m_dockWidget.setAllowedAreas(Qt::LeftDockWidgetArea |
-                                Qt::RightDockWidgetArea);
-    m_dockWidget.setWidget(&m_stepButton);
-    addDockWidget(Qt::BottomDockWidgetArea, &m_dockWidget);
+    m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
+    m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
+    addToolBar(Qt::BottomToolBarArea, &m_toolbar);
     setWindowTitle(tr("SatExplorer"));
 }
 
@@ -31,16 +30,16 @@ void SatWindow::run(){
 
     m_svgWidget.load(QString::fromStdString(svgPath));
 
-    // button for stepping through the solving process
-    m_stepButton.setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
-    connect(&m_stepButton, SIGNAL (clicked()), this, SLOT (startTimer()));
-
     show();
 
 }
 
 void SatWindow::handleStepButton() {
     auto path = m_stepper.step();
+    m_svgWidget.load(QString::fromStdString(path));
+}
+void SatWindow::handleBranchButton() {
+    auto path = m_stepper.branch();
     m_svgWidget.load(QString::fromStdString(path));
 }
 

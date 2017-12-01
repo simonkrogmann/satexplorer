@@ -1,9 +1,8 @@
 #include <QApplication>
 #include <QSvgWidget>
 #include <QFileDialog>
-#include <QPushButton>
 #include <QMainWindow>
-#include <QDockWidget>
+#include <QToolBar>
 #include "Stepper.hpp"
 
 class ogdfWrapper;
@@ -19,11 +18,11 @@ public:
 protected:
     QSvgWidget m_svgWidget;
     Stepper m_stepper;
-    QPushButton m_stepButton;
-    QDockWidget m_dockWidget;
+    QToolBar m_toolbar;
 
 private slots:
     void handleStepButton();
+    void handleBranchButton();
     void startTimer();
 };
 

@@ -61,22 +61,58 @@ std::string Stepper::step() {
     while(!m_tracefile.eof() && !stepFinished) {
         auto& step = readTraceLine();
         ++m_lastStep;
-        if(!m_graph.hasNode(step.node)) continue;
-        stepFinished = true;
-        switch(step.type) {
-            case StepType::SET:
-                if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::nodeColor::SET_TRUE);
-                else m_graph.colorNode(step.node, graphdrawer::nodeColor::SET_FALSE);
-                break;
-            case StepType::UNSET:
-                m_graph.colorNode(step.node, graphdrawer::nodeColor::UNPROCESSED);
-                break;
-            default:
-                stepFinished = false;
+        stepFinished = parseStep(step);
+    }
+    m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
+    return svgPath;
+}
+
+std::string Stepper::branch() {
+    bool branchFinished = false;
+    bool lastWasBranch = false;
+    while(!m_tracefile.eof() && !branchFinished) {
+        auto& step = readTraceLine();
+        ++m_lastStep;
+        if(step.type == StepType::BACKTRACK) {
+            branchFinished = true;
+        }
+        else
+        {
+            if(!lastWasBranch) {
+                parseStep(step);
+            }
+            else
+            {
+                lastWasBranch = false;
+            }
+        }
+        if(step.type == StepType::BRANCH) {
+            lastWasBranch = true;
         }
     }
     m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
     return svgPath;
+}
+
+bool Stepper::parseStep(Step step) {
+    if(!m_graph.hasNode(step.node)) return false;
+    bool nodeColored = true;
+    switch(step.type) {
+        case StepType::SET:
+            if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::nodeColor::SET_TRUE);
+            else m_graph.colorNode(step.node, graphdrawer::nodeColor::SET_FALSE);
+            break;
+        case StepType::UNSET:
+            m_graph.colorNode(step.node, graphdrawer::nodeColor::UNPROCESSED);
+            break;
+        case StepType::BRANCH:
+            if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::nodeColor::BRANCH_TRUE);
+            else m_graph.colorNode(step.node, graphdrawer::nodeColor::BRANCH_FALSE);
+            break;
+        default:
+            nodeColored = false;
+    }
+    return nodeColored;
 }
 
 void Stepper::writeSvg(std::string gmlPath, std::string svgPath) {
@@ -100,6 +136,7 @@ Step& Stepper::readTraceLine() {
         std::string line;
 
         std::getline(m_tracefile, line);
+        std::cout << line << std::endl;
         if (!line.empty()) {
             // convert to pair of enum and int
             auto wordEnd = line.find(" ");

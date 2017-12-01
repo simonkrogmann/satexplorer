@@ -131,6 +131,8 @@ ogdf::Color::Name ogdfWrapper::getColor(nodeColor color) {
         case nodeColor::SET_TRUE: return ogdf::Color::Name::Green;
         case nodeColor::SET_FALSE: return ogdf::Color::Name::Red;
         case nodeColor::STEP_SELECTED: return ogdf::Color::Name::Blue;
+        case nodeColor::BRANCH_TRUE: return ogdf::Color::Name::Blue;
+        case nodeColor::BRANCH_FALSE: return ogdf::Color::Name::Orange;
     }
 }
 

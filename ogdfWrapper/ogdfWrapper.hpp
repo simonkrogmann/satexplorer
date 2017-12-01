@@ -21,6 +21,8 @@ enum class nodeColor {
         UNPROCESSED,
         SET_TRUE,
         SET_FALSE,
+        BRANCH_TRUE,
+        BRANCH_FALSE,
         STEP_SELECTED
     };
 

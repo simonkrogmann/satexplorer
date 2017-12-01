@@ -21,12 +21,15 @@ class Stepper {
 public:
     std::string initialize(std::string cnfPath);
     std::string step();
+    std::string branch();
 
 protected:
 
     void writeSvg(std::string glmPath, std::string svgPath);
     void readTrace(std::string tracePath);
     Step& readTraceLine();
+    // returns true if a node has been colored
+    bool parseStep(Step step);
 
     std::vector<Step> m_steps;
     size_t m_lastStep;
