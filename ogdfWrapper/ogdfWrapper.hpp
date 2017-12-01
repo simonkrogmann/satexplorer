@@ -50,6 +50,7 @@ public:
 
     void colorEdges();
 
+    bool hasNode(int nodeID);
 
 
 private:

@@ -134,4 +134,8 @@ ogdf::Color::Name ogdfWrapper::getColor(nodeColor color) {
     }
 }
 
+bool ogdfWrapper::hasNode(int nodeID) {
+    return _label_map.count(std::to_string(nodeID)) > 0;
+}
+
 }
