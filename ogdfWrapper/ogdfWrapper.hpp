@@ -19,7 +19,8 @@ namespace graphdrawer {
 
 enum class nodeColor {
         UNPROCESSED,
-        PROCESSED,
+        SET_TRUE,
+        SET_FALSE,
         STEP_SELECTED
     };
 

@@ -128,8 +128,9 @@ void ogdfWrapper::writeGraph(std::string filename, filetype format) {
 ogdf::Color::Name ogdfWrapper::getColor(nodeColor color) {
     switch(color) {
         case nodeColor::UNPROCESSED: return ogdf::Color::Name::White;
-        case nodeColor::PROCESSED: return ogdf::Color::Name::Blue;
-        case nodeColor::STEP_SELECTED: return ogdf::Color::Name::Orange;
+        case nodeColor::SET_TRUE: return ogdf::Color::Name::Green;
+        case nodeColor::SET_FALSE: return ogdf::Color::Name::Red;
+        case nodeColor::STEP_SELECTED: return ogdf::Color::Name::Blue;
     }
 }
 

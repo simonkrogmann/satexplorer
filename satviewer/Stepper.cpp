@@ -62,10 +62,9 @@ std::string Stepper::step() {
         auto [type, data] = m_steps[m_lastStep];
         ++m_lastStep;
         stepFinished = true;
-        std::cout << data << std::endl;
         switch(type) {
             case StepType::SET:
-                m_graph.colorNode(data, graphdrawer::nodeColor::PROCESSED);
+                m_graph.colorNode(data, graphdrawer::nodeColor::SET_TRUE);
                 break;
             case StepType::UNSET:
                 m_graph.colorNode(data, graphdrawer::nodeColor::UNPROCESSED);
