@@ -59,15 +59,17 @@ std::string Stepper::initialize(std::string cnfPath){
 std::string Stepper::step() {
     bool stepFinished = false;
     while(m_lastStep < m_steps.size() && !stepFinished) {
-        auto [type, data] = m_steps[m_lastStep];
+        auto& step = m_steps[m_lastStep];
         ++m_lastStep;
+        if(!m_graph.hasNode(step.node)) continue;
         stepFinished = true;
-        switch(type) {
+        switch(step.type) {
             case StepType::SET:
-                m_graph.colorNode(data, graphdrawer::nodeColor::SET_TRUE);
+                if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::nodeColor::SET_TRUE);
+                else m_graph.colorNode(step.node, graphdrawer::nodeColor::SET_FALSE);
                 break;
             case StepType::UNSET:
-                m_graph.colorNode(data, graphdrawer::nodeColor::UNPROCESSED);
+                m_graph.colorNode(step.node, graphdrawer::nodeColor::UNPROCESSED);
                 break;
             default:
                 stepFinished = false;
@@ -82,7 +84,7 @@ void Stepper::writeSvg(std::string gmlPath, std::string svgPath) {
     m_graph.setNodeShapeAll();
     m_graph.colorEdges();
     m_graph.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
-    //m_graph.removeNodes(10);
+    m_graph.removeNodes(10);
     m_graph.layout();
     m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
 }
@@ -102,10 +104,13 @@ void Stepper::readTrace(std::string tracePath) {
             auto wordEnd = line.find(" ");
             auto word = line.substr(0, wordEnd);
 
+            bool value = false;
+            if(line.substr(wordEnd + 1, 3) == "not") value = true;
+
             auto numberStart = line.rfind(" ");
             auto number = line.substr(numberStart + 1);
 
-            m_steps.push_back({stepToEnum.at(word), std::stoi(number)});
+            m_steps.push_back({stepToEnum.at(word), std::stoi(number), value});
         }
     }
     traceFile.close();

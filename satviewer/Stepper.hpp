@@ -8,7 +8,13 @@ enum class StepType { SET, UNSET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
 struct Step {
     StepType type;
     // either node or backtrack level or restart number
-    int data;
+    union {
+        int data; // for where we don't care what kind of step it is
+        int level;
+        int node;
+        int numberOfRestarts;
+    };
+    bool nodeValue;
 };
 
 class Stepper {

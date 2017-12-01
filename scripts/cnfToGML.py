@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python3
 "Converts cnf files to GML files"
 
 import sys

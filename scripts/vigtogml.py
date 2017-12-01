@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 "Converts variable incidence graph format to gml format"
 
 import sys
