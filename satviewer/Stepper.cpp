@@ -58,8 +58,8 @@ std::string Stepper::initialize(std::string cnfPath){
 
 std::string Stepper::step() {
     bool stepFinished = false;
-    while(m_lastStep < m_steps.size() && !stepFinished) {
-        auto& step = m_steps[m_lastStep];
+    while(!m_tracefile.eof() && !stepFinished) {
+        auto& step = readTraceLine();
         ++m_lastStep;
         if(!m_graph.hasNode(step.node)) continue;
         stepFinished = true;
@@ -90,15 +90,16 @@ void Stepper::writeSvg(std::string gmlPath, std::string svgPath) {
 }
 
 void Stepper::readTrace(std::string tracePath) {
-    std::ifstream traceFile;
-    traceFile.open(tracePath);
-    assert(traceFile.is_open());
+    m_tracefile.open(tracePath);
+    assert(m_tracefile.is_open());
+}
 
-    while(!traceFile.eof() && traceFile.is_open())
+Step& Stepper::readTraceLine() {
+    if(!m_tracefile.eof() && m_tracefile.is_open())
     {
         std::string line;
 
-        std::getline(traceFile, line);
+        std::getline(m_tracefile, line);
         if (!line.empty()) {
             // convert to pair of enum and int
             auto wordEnd = line.find(" ");
@@ -111,7 +112,8 @@ void Stepper::readTrace(std::string tracePath) {
             auto number = line.substr(numberStart + 1);
 
             m_steps.push_back({stepToEnum.at(word), std::stoi(number), value});
+            return m_steps.back();
         }
     }
-    traceFile.close();
+    throw std::runtime_error("End of tracefile or tracefile is closed");
 }

@@ -26,10 +26,12 @@ protected:
 
     void writeSvg(std::string glmPath, std::string svgPath);
     void readTrace(std::string tracePath);
+    Step& readTraceLine();
 
     std::vector<Step> m_steps;
     size_t m_lastStep;
     graphdrawer::ogdfWrapper m_graph;
+    std::ifstream m_tracefile;
 
     const std::string conversionScript = "cnfToGML.py";
     const std::string minisat = "./minisat-solver";
