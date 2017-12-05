@@ -35,14 +35,11 @@ with open(sys.argv[1], 'r') as cnffile:
         else:
             clauses.append(clause)
             clause = []
-    print(clauses)
     for clause in clauses:
         for literal in clause:
             g.add_node(literal)
         for literal1, literal2 in product(clause, clause):
             if literal1 != literal2:
                 g.add_edge(literal1, literal2)
-print(g.nodes())
-print(g.edges())
 
 nx.write_gml(g, sys.argv[2])
