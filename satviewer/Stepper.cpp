@@ -169,7 +169,10 @@ bool Stepper::isFinished() {
 }
 
 std::string Stepper::cull(int degree) {
-    if(m_lastCull < degree) { writeSvg(m_gmlPath, m_svgPath); }
+    if(m_lastCull < degree) {
+        writeSvg(m_gmlPath, m_svgPath);
+        for(auto& step : m_steps) { parseStep(step); }
+    }
     m_lastCull = degree;
     m_graph.removeNodes(degree);
     m_graph.layout();
