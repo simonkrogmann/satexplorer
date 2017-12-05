@@ -59,7 +59,7 @@ std::string Stepper::initialize(std::string cnfPath){
 std::string Stepper::step() {
     bool stepFinished = false;
     while(!m_tracefile.eof() && !stepFinished) {
-        auto& step = readTraceLine();
+        auto& step = readTraceStep();
         ++m_lastStep;
         stepFinished = parseStep(step);
     }
@@ -71,7 +71,7 @@ std::string Stepper::branch() {
     bool branchFinished = false;
     bool lastWasBranch = false;
     while(!m_tracefile.eof() && !branchFinished) {
-        auto& step = readTraceLine();
+        auto& step = readTraceStep();
         ++m_lastStep;
         if(step.type == StepType::BACKTRACK) {
             branchFinished = true;
@@ -120,37 +120,48 @@ void Stepper::writeSvg(std::string gmlPath, std::string svgPath) {
     m_graph.setNodeShapeAll();
     m_graph.colorEdges();
     m_graph.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
-    m_graph.removeNodes(10);
+    //m_graph.removeNodes(10);
     m_graph.layout();
     m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
 }
 
+
+// opens the tracefile
 void Stepper::readTrace(std::string tracePath) {
-    m_tracefile.open(tracePath);
+    m_tracefile.open(tracePath, std::ios::binary | std::ios::in);
     assert(m_tracefile.is_open());
 }
 
-Step& Stepper::readTraceLine() {
+
+// tracefile is encoded in binary
+// structure is char followed by int
+// char denotes StepType, int denotes Node
+Step& Stepper::readTraceStep() {
     if(!m_tracefile.eof() && m_tracefile.is_open())
     {
-        std::string line;
+        char type;
+        int data;
 
-        std::getline(m_tracefile, line);
-        std::cout << line << std::endl;
-        if (!line.empty()) {
-            // convert to pair of enum and int
-            auto wordEnd = line.find(" ");
-            auto word = line.substr(0, wordEnd);
+        m_tracefile.read(&type, sizeof(type));
+        m_tracefile.read(reinterpret_cast<char*>(&data), sizeof(data));
 
-            bool value = false;
-            if(line.substr(wordEnd + 1, 3) == "not") value = true;
+        std::cout << type << " " << data << std::endl;
+        bool value = data >= 0;
 
-            auto numberStart = line.rfind(" ");
-            auto number = line.substr(numberStart + 1);
-
-            m_steps.push_back({stepToEnum.at(word), std::stoi(number), value});
-            return m_steps.back();
+        StepType stepType;
+        switch(type) {
+            case '+': stepType = StepType::SET; break;
+            case '-': stepType = StepType::UNSET; break;
+            case '>': stepType = StepType::LEVEL; break;
+            case '<': stepType = StepType::BACKTRACK; break;
+            case 'R': stepType = StepType::RESTART; break;
+            case 'C': stepType = StepType::CONFLICT; break;
+            case 'B': stepType = StepType::BRANCH; break;
         }
+
+        m_steps.push_back({stepType, abs(data), value});
+
+        return m_steps.back();
     }
     throw std::runtime_error("End of tracefile or tracefile is closed");
 }

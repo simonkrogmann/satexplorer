@@ -27,7 +27,7 @@ protected:
 
     void writeSvg(std::string glmPath, std::string svgPath);
     void readTrace(std::string tracePath);
-    Step& readTraceLine();
+    Step& readTraceStep();
     // returns true if a node has been colored
     bool parseStep(Step step);
 
@@ -44,4 +44,3 @@ protected:
     std::string svgPath;
 
 };
-
