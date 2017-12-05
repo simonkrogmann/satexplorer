@@ -71,18 +71,13 @@ std::string Stepper::branch()
         auto& step = readTraceStep();
         if(step.type == StepType::BACKTRACK)
         {
-            m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
+            m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
             parseStep(step);
             break;
         }
         parseStep(step);
     }
-<<<<<<< HEAD
-    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
     return m_svgPath;
-=======
-    return svgPath;
->>>>>>> Decrease trace file size
 }
 
 void Stepper::backtrack(int level)
