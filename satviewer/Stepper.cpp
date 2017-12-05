@@ -179,3 +179,4 @@ std::string Stepper::cull(int degree) {
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
     return m_svgPath;
 }
+

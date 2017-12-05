@@ -7,10 +7,11 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m
     setCentralWidget(&m_svgWidget);
     m_stepAction = m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
     m_branchAction = m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
+    m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
     m_validator.setBottom(0);
     m_cullBox.setValidator(&m_validator);
-    m_cullBox.setPlaceholderText("degree");
+    m_cullBox.setPlaceholderText("cull git degree");
     connect(&m_cullBox, SIGNAL(editingFinished()), this, SLOT(handleCullInput()));
 
     m_toolbar.addWidget(&m_cullBox);
@@ -68,6 +69,11 @@ void SatWindow::endOfTrace(bool eof) {
 void SatWindow::handleCullInput() {
     int degree = m_cullBox.text().toInt();
     auto path = m_stepper.cull(degree);
+    m_svgWidget.load(QString::fromStdString(path));
+}
+
+void SatWindow::handleShowAllButton() {
+    auto path = m_stepper.cull(std::numeric_limits<int>::max());
     m_svgWidget.load(QString::fromStdString(path));
 }
 

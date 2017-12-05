@@ -39,6 +39,7 @@ private slots:
     void handleStepButton();
     void handleBranchButton();
     void handleCullInput();
+    void handleShowAllButton();
     void startTimer();
 };
 
