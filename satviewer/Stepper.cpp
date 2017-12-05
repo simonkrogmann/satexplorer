@@ -6,9 +6,6 @@
 #include <string>
 #include <utility>
 
-#include <QApplication>
-#include <QSvgWidget>
-#include <QFileDialog>
 #include <QProcess>
 #include <QFileInfo>
 #include <ogdfWrapper/types.hpp>
@@ -27,14 +24,15 @@ std::map <std::string , StepType> stepToEnum
 
 
 std::string Stepper::initialize(std::string cnfPath){
+    m_lastCull = std::numeric_limits<int>::max();
     auto cnfFilename = QFileInfo(QString::fromStdString(cnfPath)).baseName().toStdString();
     auto solutionPath = outputPath + cnfFilename + ".solution";
     auto tracePath = outputPath + cnfFilename + ".trace";
-    auto gmlPath = outputPath + cnfFilename + ".gml";
-    svgPath = outputPath + cnfFilename + ".svg";
+    m_gmlPath = outputPath + cnfFilename + ".gml";
+    m_svgPath = outputPath + cnfFilename + ".svg";
 
     QProcess process;
-    auto conversionCmd = scriptPath + conversionScript + " " + cnfPath + " " + gmlPath;
+    auto conversionCmd = scriptPath + conversionScript + " " + cnfPath + " " + m_gmlPath;
     std::cout << "Convert to gml for layouting" << std::endl;
     std::cout << conversionCmd << std::endl;
     process.start(QString::fromStdString(conversionCmd));
@@ -51,9 +49,9 @@ std::string Stepper::initialize(std::string cnfPath){
     std::cout << "Done." << std::endl;
 
     readTrace(tracePath);
-    writeSvg(gmlPath, svgPath);
+    writeSvg(m_gmlPath, m_svgPath);
 
-    return svgPath;
+    return m_svgPath;
 }
 
 std::string Stepper::step() {
@@ -63,8 +61,8 @@ std::string Stepper::step() {
         ++m_lastStep;
         stepFinished = parseStep(step);
     }
-    m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
-    return svgPath;
+    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+    return m_svgPath;
 }
 
 std::string Stepper::branch() {
@@ -90,8 +88,8 @@ std::string Stepper::branch() {
             lastWasBranch = true;
         }
     }
-    m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
-    return svgPath;
+    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+    return m_svgPath;
 }
 
 bool Stepper::parseStep(Step step) {
@@ -168,4 +166,13 @@ Step& Stepper::readTraceStep() {
 
 bool Stepper::isFinished() {
     return m_tracefile.eof();
+}
+
+std::string Stepper::cull(int degree) {
+    if(m_lastCull < degree) { writeSvg(m_gmlPath, m_svgPath); }
+    m_lastCull = degree;
+    m_graph.removeNodes(degree);
+    m_graph.layout();
+    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+    return m_svgPath;
 }

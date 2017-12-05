@@ -1,6 +1,4 @@
 #include <QApplication>
-#include <QSvgWidget>
-#include <QFileDialog>
 #include <ogdfWrapper/ogdfWrapper.hpp>
 
 enum class StepType { SET, UNSET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
@@ -23,6 +21,7 @@ public:
     std::string step();
     std::string branch();
     bool isFinished();
+    std::string cull(int degree);
 
 protected:
 
@@ -42,6 +41,9 @@ protected:
     const std::string outputPath = "data/";
     const std::string scriptPath = "../scripts/";
 
-    std::string svgPath;
+    std::string m_svgPath;
+    std::string m_gmlPath;
+
+    int m_lastCull;
 
 };

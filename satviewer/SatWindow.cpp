@@ -1,11 +1,5 @@
 #include "SatWindow.hpp"
 
-#include <QApplication>
-#include <QSvgWidget>
-#include <QFileDialog>
-#include <QProcess>
-#include <QPalette>
-#include <QColor>
 #include <QSvgRenderer>
 #include <QTimer>
 
@@ -13,6 +7,15 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m
     setCentralWidget(&m_svgWidget);
     m_stepAction = m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
     m_branchAction = m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
+
+    m_validator.setBottom(0);
+    m_cullBox.setValidator(&m_validator);
+    m_cullBox.setPlaceholderText("degree");
+    connect(&m_cullBox, SIGNAL(editingFinished()), this, SLOT(handleCullInput()));
+
+    m_toolbar.addWidget(&m_cullBox);
+
+
     addToolBar(Qt::BottomToolBarArea, &m_toolbar);
     setWindowTitle(tr("SatExplorer"));
 }
@@ -47,9 +50,9 @@ void SatWindow::handleBranchButton() {
 }
 
 void SatWindow::startTimer() {
-    QTimer* timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(handleStepButton()));
-    timer->start(100);
+    QTimer timer;
+    connect(&timer, SIGNAL(timeout()), this, SLOT(handleStepButton()));
+    timer.start(100);
 }
 
 void SatWindow::endOfTrace(bool eof) {
@@ -57,6 +60,12 @@ void SatWindow::endOfTrace(bool eof) {
         m_stepAction->setDisabled(true);
         m_branchAction->setDisabled(true);
     }
+}
+
+void SatWindow::handleCullInput() {
+    int degree = m_cullBox.text().toInt();
+    auto path = m_stepper.cull(degree);
+    m_svgWidget.load(QString::fromStdString(path));
 }
 
 

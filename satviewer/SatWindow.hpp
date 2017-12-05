@@ -3,9 +3,13 @@
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QToolBar>
+#include <QLineEdit>
+#include <QIntValidator>
 #include "Stepper.hpp"
 
 class ogdfWrapper;
+class QLineEdit;
+class QIntValidator;
 
 class SatWindow : public QMainWindow {
     Q_OBJECT
@@ -21,12 +25,17 @@ protected:
     QToolBar m_toolbar;
 
     void endOfTrace(bool eof);
+    // These pointers belong to the QToolbar and are its responsibility
     QAction* m_stepAction;
     QAction* m_branchAction;
+
+    QLineEdit m_cullBox;
+    QIntValidator m_validator;
 
 private slots:
     void handleStepButton();
     void handleBranchButton();
+    void handleCullInput();
     void startTimer();
 };
 
