@@ -23,8 +23,11 @@ void SatWindow::run(){
     m_svgWidget.setPalette(pal);
 
     // Button to open File dialogue?
-    QString cnfPath = QFileDialog::getOpenFileName(this, "Open Image", "/home/", "Image Files (*.cnf)");
-    auto svgPath = m_stepper.initialize(cnfPath.toStdString());
+    if (m_filename == "")
+    {
+        m_filename = QFileDialog::getOpenFileName(this, "Open Image", "/home/", "Image Files (*.cnf)").toStdString();
+    }
+    auto svgPath = m_stepper.initialize(m_filename);
     m_svgWidget.setAutoFillBackground(true);
     m_svgWidget.renderer()->setViewBox(QRect(QPoint(0, 0), QSize(500, 500)));
 
@@ -59,4 +62,7 @@ void SatWindow::endOfTrace(bool eof) {
     }
 }
 
-
+void SatWindow::setFilename(std::string filename)
+{
+    m_filename = filename;
+}

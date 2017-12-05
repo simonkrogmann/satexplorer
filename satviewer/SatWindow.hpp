@@ -15,6 +15,8 @@ public:
     explicit SatWindow(QWidget * parent = 0);
     virtual ~SatWindow() = default;
 
+    void setFilename(std::string filename);
+
 protected:
     QSvgWidget m_svgWidget;
     Stepper m_stepper;
@@ -23,6 +25,7 @@ protected:
     void endOfTrace(bool eof);
     QAction* m_stepAction;
     QAction* m_branchAction;
+    std::string m_filename;
 
 private slots:
     void handleStepButton();
