@@ -20,6 +20,10 @@ protected:
     Stepper m_stepper;
     QToolBar m_toolbar;
 
+    void endOfTrace(bool eof);
+    QAction* m_stepAction;
+    QAction* m_branchAction;
+
 private slots:
     void handleStepButton();
     void handleBranchButton();

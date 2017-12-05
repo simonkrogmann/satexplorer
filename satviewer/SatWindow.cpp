@@ -11,8 +11,8 @@
 
 SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m_stepper(), m_toolbar(tr("Graph"), this) {
     setCentralWidget(&m_svgWidget);
-    m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
-    m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
+    m_stepAction = m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
+    m_branchAction = m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
     addToolBar(Qt::BottomToolBarArea, &m_toolbar);
     setWindowTitle(tr("SatExplorer"));
 }
@@ -37,10 +37,13 @@ void SatWindow::run(){
 void SatWindow::handleStepButton() {
     auto path = m_stepper.step();
     m_svgWidget.load(QString::fromStdString(path));
+    endOfTrace(m_stepper.isFinished());
+
 }
 void SatWindow::handleBranchButton() {
     auto path = m_stepper.branch();
     m_svgWidget.load(QString::fromStdString(path));
+    endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::startTimer() {
@@ -49,5 +52,11 @@ void SatWindow::startTimer() {
     timer->start(100);
 }
 
+void SatWindow::endOfTrace(bool eof) {
+    if(eof) {
+        m_stepAction->setDisabled(true);
+        m_branchAction->setDisabled(true);
+    }
+}
 
 

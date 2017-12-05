@@ -22,6 +22,7 @@ public:
     std::string initialize(std::string cnfPath);
     std::string step();
     std::string branch();
+    bool isFinished();
 
 protected:
 

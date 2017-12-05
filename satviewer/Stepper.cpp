@@ -165,3 +165,7 @@ Step& Stepper::readTraceStep() {
     }
     throw std::runtime_error("End of tracefile or tracefile is closed");
 }
+
+bool Stepper::isFinished() {
+    return m_tracefile.eof();
+}
