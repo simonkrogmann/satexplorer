@@ -107,10 +107,11 @@ void ogdfWrapper::layout() {
 }
 
 void ogdfWrapper::_setOptions(ogdf::FMMMLayout& layout) {
-    layout.newInitialPlacement(true);
     layout.useHighLevelOptions(true);
-    layout.unitEdgeLength(20.0);
-    layout.repForcesStrength(layout.repForcesStrength() * 2);
+    layout.unitEdgeLength(30.0);
+    layout.newInitialPlacement(true);
+    layout.qualityVersusSpeed(ogdf::FMMMOptions::QualityVsSpeed::GorgeousAndEfficient);
+    //layout.repForcesStrength(layout.repForcesStrength() * 2);
     //layout.springStrength(layout.springStrength() * 2);
 }
 
