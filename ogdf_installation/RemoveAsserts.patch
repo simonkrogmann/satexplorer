@@ -1,0 +1,46 @@
+diff --git a/include/ogdf/basic/basic.h b/include/ogdf/basic/basic.h
+index 239f0b4..931391c 100644
+--- a/include/ogdf/basic/basic.h
++++ b/include/ogdf/basic/basic.h
+@@ -43,41 +43,6 @@
+ //! @ingroup macros
+ #define OGDF_HEAVY_ASSERT(expr)
+ 
+-#ifdef OGDF_DEBUG
+-# ifdef OGDF_HEAVY_DEBUG
+-#  undef OGDF_HEAVY_ASSERT
+-#  define OGDF_HEAVY_ASSERT(expr) OGDF_ASSERT(expr)
+-# endif
+-# undef OGDF_ASSERT
+-# ifndef OGDF_USE_ASSERT_EXCEPTIONS
+-#  include <cassert>
+-#  define OGDF_ASSERT(expr) assert(expr)
+-# else
+-#  include <stdexcept>
+-#  include <sstream>
+-
+-namespace ogdf {
+-/**
+- * A trivial exception for failed assertions.
+- * Only available if the macro OGDF_USE_ASSERT_EXCEPTIONS is defined.
+- */
+-class AssertionFailed : public std::runtime_error {
+-	using std::runtime_error::runtime_error;
+-};
+-}
+-
+-#  define OGDF_ASSERT(expr) do { \
+-	if (!(expr)) { \
+-		std::stringstream ogdf_assert_ss; \
+-		ogdf_assert_ss \
+-		 << "OGDF assertion `" #expr "' failed at " __FILE__ ":" \
+-		 << __LINE__ \
+-		 << "(" << OGDF_FUNCTION_NAME << ")"; \
+-		ogdf::get_stacktrace(ogdf_assert_ss); \
+-		throw ogdf::AssertionFailed(ogdf_assert_ss.str()); \
+-	} } while (false)
+-# endif
+-#endif
+ 
+ //! @}
+ 
