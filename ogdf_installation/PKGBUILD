@@ -9,7 +9,7 @@ license=('GPL')
 makedepends=('git' 'cmake' 'doxygen' 'graphviz' 'bash')
 conflicts=('ogdf' 'ogdf-snapshot' 'coin-or-clp' 'coin-or-osi' 'coin-or-coinutils')
 source=("${pkgname}::git+https://github.com/ogdf/ogdf.git" "${pkgname}.patch")
-md5sums=('SKIP' '3430dc3a28b92a4449042b3c01bda6e4')
+md5sums=('SKIP' 'b40de368d354990f978717b266e4d632')
 
 pkgver() {
   cd "$pkgname"
