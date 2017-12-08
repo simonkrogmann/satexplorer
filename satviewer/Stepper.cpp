@@ -90,8 +90,10 @@ void Stepper::backtrack(int level)
         const auto step = m_eventStack.back();
         m_eventStack.pop_back();
         switch(step.type) {
-            case StepType::SET:
             case StepType::BRANCH:
+                m_branchCount--;
+                [[fallthrough]];
+            case StepType::SET:
                 if(m_graph.hasNode(step.node)) {
                     m_graph.colorNode(step.node, graphdrawer::NodeColor::UNPROCESSED);
                     m_graph.setNodeShape(step.node, 20.0, 20.0);
@@ -108,6 +110,7 @@ void Stepper::backtrack(int level)
 
 bool Stepper::parseStep(const Step & step) {
     bool NodeColored = true;
+    int nodeSize;
     switch(step.type) {
         case StepType::SET:
             if(!m_graph.hasNode(step.node)) return false;
@@ -120,7 +123,9 @@ bool Stepper::parseStep(const Step & step) {
             if(!m_graph.hasNode(step.node)) return false;
             if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_TRUE);
             else m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_FALSE);
-            m_graph.setNodeShape(step.node, 40.0, 40.0);
+            nodeSize = std::max(1, 10- m_branchCount) * 10 + 40;
+            m_graph.setNodeShape(step.node, nodeSize, nodeSize);
+            m_branchCount++;
             break;
         default:
             NodeColored = false;
@@ -129,6 +134,7 @@ bool Stepper::parseStep(const Step & step) {
 }
 
 void Stepper::loadFromGML(std::string gmlPath) {
+    m_branchCount = 0;
     m_graph.readGraph(gmlPath);
     m_graph.setNodeShapeAll();
     //m_graph.setStrokeWidth(0.1f);

@@ -45,5 +45,6 @@ protected:
     std::string m_gmlPath;
 
     int m_lastCull;
+    int m_branchCount;
 
 };
