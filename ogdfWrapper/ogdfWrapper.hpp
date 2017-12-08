@@ -6,13 +6,17 @@
 #include <unordered_map>
 #include <string>
 
-#include <ogdf/basic/graph_generators.h>
-#include <ogdf/basic/GraphAttributes.h>
-#include <ogdf/energybased/FMMMLayout.h>
-#include <ogdf/basic/Graph_d.h>
-#include <ogdf/basic/Array.h>
 #include "ogdfVector.hpp"
 #include "types.hpp"
+
+namespace ogdf
+{
+    class Graph;
+    class GraphAttributes;
+    class EdgeElement;
+    class NodeElement;
+    class FMMMLayout;
+}
 
 
 namespace graphdrawer {
@@ -28,6 +32,9 @@ enum class NodeColor {
 
 class ogdfWrapper {
 public:
+
+    ogdfWrapper();
+    ~ogdfWrapper();
 
     // read graph from file in graphml format
     void readGraph(std::string filename);
@@ -66,7 +73,6 @@ private:
 
     void _setOptions(ogdf::FMMMLayout& layout);
     void _updateGraph();
-    ogdf::Color::Name getColor(NodeColor color);
     void colorNode(ogdf::NodeElement* node_p, NodeColor color);
 
 

@@ -6,8 +6,40 @@
 #include <ogdf/layered/DfsAcyclicSubgraph.h>
 #include <ogdf/fileformats/GraphIO.h>
 #include <ogdf/basic/graphics.h>
+#include <ogdf/basic/graph_generators.h>
+#include <ogdf/basic/GraphAttributes.h>
+#include <ogdf/energybased/FMMMLayout.h>
+#include <ogdf/basic/Graph_d.h>
+#include <ogdf/basic/Array.h>
+
 
 namespace graphdrawer {
+
+namespace {
+
+ogdf::Color::Name getColor(NodeColor color) {
+    std::unordered_map<NodeColor, ogdf::Color::Name> ogdfColors {
+        { NodeColor::UNPROCESSED, ogdf::Color::Name::White },
+        { NodeColor::SET_TRUE, ogdf::Color::Name::Green },
+        { NodeColor::SET_FALSE, ogdf::Color::Name::Red },
+        { NodeColor::STEP_SELECTED, ogdf::Color::Name::Blue },
+        { NodeColor::BRANCH_TRUE, ogdf::Color::Name::Blue },
+        { NodeColor::BRANCH_FALSE, ogdf::Color::Name::Orange },
+    };
+    return ogdfColors[color];
+}
+
+}
+
+ogdfWrapper::ogdfWrapper()
+{
+
+}
+
+ogdfWrapper::~ogdfWrapper()
+{
+
+}
 
 void ogdfWrapper::readGraph(std::string filename) {
     std::cout << "reading graph" << std::endl;
@@ -140,19 +172,6 @@ void ogdfWrapper::writeGraph(std::string filename, filetype format) {
         default : throw std::invalid_argument("Unknown filetype");
     }
     std::cout << " ...done." << std::endl;
-}
-
-
-ogdf::Color::Name ogdfWrapper::getColor(NodeColor color) {
-    std::unordered_map<NodeColor, ogdf::Color::Name> ogdfColors {
-        { NodeColor::UNPROCESSED, ogdf::Color::Name::White },
-        { NodeColor::SET_TRUE, ogdf::Color::Name::Green },
-        { NodeColor::SET_FALSE, ogdf::Color::Name::Red },
-        { NodeColor::STEP_SELECTED, ogdf::Color::Name::Blue },
-        { NodeColor::BRANCH_TRUE, ogdf::Color::Name::Blue },
-        { NodeColor::BRANCH_FALSE, ogdf::Color::Name::Orange },
-    };
-    return ogdfColors[color];
 }
 
 bool ogdfWrapper::hasNode(int nodeID) {
