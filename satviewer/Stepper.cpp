@@ -92,8 +92,10 @@ void Stepper::backtrack(int level)
         switch(step.type) {
             case StepType::SET:
             case StepType::BRANCH:
-                if(m_graph.hasNode(step.node))
+                if(m_graph.hasNode(step.node)) {
                     m_graph.colorNode(step.node, graphdrawer::NodeColor::UNPROCESSED);
+                    m_graph.setNodeShape(step.node, 20.0, 20.0);
+                }
                 break;
             case StepType::LEVEL:
                 if (step.level == level)
@@ -118,6 +120,7 @@ bool Stepper::parseStep(const Step & step) {
             if(!m_graph.hasNode(step.node)) return false;
             if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_TRUE);
             else m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_FALSE);
+            m_graph.setNodeShape(step.node, 40.0, 40.0);
             break;
         default:
             NodeColored = false;
@@ -130,7 +133,7 @@ void Stepper::loadFromGML(std::string gmlPath) {
     m_graph.setNodeShapeAll();
     //m_graph.setStrokeWidth(0.1f);
     m_graph.colorEdges();
-    m_graph.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
+    m_graph.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
     m_graph.layout();
 }
 

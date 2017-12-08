@@ -12,7 +12,7 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m
     m_validator.setBottom(0);
     m_cullBox.setValidator(&m_validator);
     m_cullBox.setPlaceholderText("cull degree");
-    connect(&m_cullBox, SIGNAL(editingFinished()), this, SLOT(handleCullInput()));
+    connect(&m_cullBox, SIGNAL(returnPressed()), this, SLOT(handleCullInput()));
 
     m_toolbar.addWidget(&m_cullBox);
 
