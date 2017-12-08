@@ -1,29 +1,3 @@
-diff --git a/.gitignore b/.gitignore
-index a753a8c..3c61f69 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -28,3 +28,5 @@
- /*.vcxproj
- /*.vcxproj.filters
- /doc/html
-+.vscode
-+*.patch
-diff --git a/include/ogdf/basic/Graph_d.h b/include/ogdf/basic/Graph_d.h
-index ffd2700..17bfbaf 100644
---- a/include/ogdf/basic/Graph_d.h
-+++ b/include/ogdf/basic/Graph_d.h
-@@ -212,9 +212,9 @@ public:
- 	adjEntry lastAdj () const { return adjEntries.tail(); }
- 
- 	//! Returns the successor in the list of all nodes.
--	node succ() const { return static_cast<node>(m_next); }
-+	node succ() const { return static_cast<node>(m_prev); } // adj list is somehow reversed ..
- 	//! Returns the predecessor in the list of all nodes.
--	node pred() const { return static_cast<node>(m_prev); }
-+	node pred() const { return static_cast<node>(m_next); }
- 
- 	//! Returns a list with all adjacency entries of this node.
- 	/**
 diff --git a/include/ogdf/basic/basic.h b/include/ogdf/basic/basic.h
 index 239f0b4..931391c 100644
 --- a/include/ogdf/basic/basic.h
