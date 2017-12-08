@@ -1,5 +1,6 @@
 #!/bin/sh
 git apply RemoveAsserts.patch
+git apply CompressSVG.patch
 mkdir -p build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
