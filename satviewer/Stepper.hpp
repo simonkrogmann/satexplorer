@@ -26,7 +26,7 @@ public:
 
 protected:
 
-    void writeSvg(std::string glmPath, std::string svgPath);
+    void loadFromGML(std::string glmPath);
     void readTrace(std::string tracePath);
     Step& readTraceStep();
     // returns true if a node has been colored

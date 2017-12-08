@@ -51,7 +51,8 @@ std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
     }
 
     readTrace(tracePath);
-    writeSvg(m_gmlPath, m_svgPath);
+    loadFromGML(m_gmlPath);
+    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
 
     return m_svgPath;
 }
@@ -124,15 +125,13 @@ bool Stepper::parseStep(const Step & step) {
     return NodeColored;
 }
 
-void Stepper::writeSvg(std::string gmlPath, std::string svgPath) {
+void Stepper::loadFromGML(std::string gmlPath) {
     m_graph.readGraph(gmlPath);
     m_graph.setNodeShapeAll();
     //m_graph.setStrokeWidth(0.1f);
     m_graph.colorEdges();
-    m_graph.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
-    //m_graph.removeNodes(10);
+    m_graph.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
     m_graph.layout();
-    m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
 }
 
 
@@ -172,9 +171,12 @@ bool Stepper::isFinished() {
 }
 
 std::string Stepper::cull(int degree) {
+    if(m_lastCull == degree) {
+        return m_svgPath;
+    }
     if(m_lastCull < degree) {
-        writeSvg(m_gmlPath, m_svgPath);
-        for(const auto& step : m_eventStack)
+        loadFromGML(m_gmlPath);
+        for(auto& step : m_eventStack)
         {
             parseStep(step);
         }
