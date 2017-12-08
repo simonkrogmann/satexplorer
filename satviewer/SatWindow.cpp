@@ -74,6 +74,7 @@ void SatWindow::handleCullInput() {
 
 void SatWindow::handleShowAllButton() {
     auto path = m_stepper.cull(std::numeric_limits<int>::max());
+    m_cullBox.clear();
     m_svgWidget.load(QString::fromStdString(path));
 }
 
