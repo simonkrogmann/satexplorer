@@ -130,7 +130,7 @@ void Stepper::loadFromGML(std::string gmlPath) {
     m_graph.setNodeShapeAll();
     //m_graph.setStrokeWidth(0.1f);
     m_graph.colorEdges();
-    m_graph.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
+    m_graph.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
     m_graph.layout();
 }
 
