@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <ogdfWrapper/types.hpp>
 
+namespace {
 
 std::unordered_map <char, StepType> stepFromCharacter
 {
@@ -20,6 +21,14 @@ std::unordered_map <char, StepType> stepFromCharacter
     {'B', StepType::BRANCH},
     {'R', StepType::RESTART}
 };
+
+bool shouldColor(StepType type)
+{
+    if (type == StepType::SET || type == StepType::BRANCH) return true;
+    return false;
+}
+
+}
 
 std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
     m_lastCull = std::numeric_limits<int>::max();
@@ -69,6 +78,9 @@ std::string Stepper::step() {
 
 std::string Stepper::branch()
 {
+    int propagateCount = 0;
+    int branchCount = 0;
+    int invisibleCount = 0;
     while(!m_tracefile.eof())
     {
         const auto& step = readTraceStep();
@@ -78,8 +90,14 @@ std::string Stepper::branch()
             parseStep(step);
             break;
         }
-        parseStep(step);
+        auto nodeColored = parseStep(step);
+        if (step.type == StepType::SET) ++propagateCount;
+        if (step.type == StepType::BRANCH) ++branchCount;
+        if (shouldColor(step.type) && !nodeColored) ++invisibleCount;
     }
+    std::cout << "guessed " << branchCount << " vars" <<  std::endl;
+    std::cout << "propagated " << propagateCount << " vars" <<  std::endl;
+    std::cout << invisibleCount << " invisible vars" <<  std::endl;
     return m_svgPath;
 }
 
