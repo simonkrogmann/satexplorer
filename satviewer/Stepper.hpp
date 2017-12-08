@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <ogdfWrapper/ogdfWrapper.hpp>
 
-enum class StepType { SET, UNSET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
+enum class StepType { SET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
 
 struct Step {
     StepType type;
@@ -30,7 +30,7 @@ protected:
     void readTrace(std::string tracePath);
     Step& readTraceStep();
     // returns true if a node has been colored
-    bool parseStep(Step step);
+    bool parseStep(const Step & step);
 
     std::vector<Step> m_eventStack;
     graphdrawer::ogdfWrapper m_graph;

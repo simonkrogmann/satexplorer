@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <fstream>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <utility>
 
@@ -11,17 +11,15 @@
 #include <ogdfWrapper/types.hpp>
 
 
-std::map <std::string , StepType> stepToEnum
-        {
-                {"Backtrack", StepType::BACKTRACK},
-                {"Set", StepType::SET},
-                {"Unset", StepType::UNSET},
-                {"Conflict", StepType::CONFLICT},
-                {"Enter", StepType::LEVEL},
-                {"Branch", StepType::BRANCH},
-                {"Restart", StepType::RESTART}
-        };
-
+std::unordered_map <char, StepType> stepFromCharacter
+{
+    {'<', StepType::BACKTRACK},
+    {'+', StepType::SET},
+    {'C', StepType::CONFLICT},
+    {'>', StepType::LEVEL},
+    {'B', StepType::BRANCH},
+    {'R', StepType::RESTART}
+};
 
 std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
     m_lastCull = std::numeric_limits<int>::max();
@@ -61,7 +59,7 @@ std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
 std::string Stepper::step() {
     bool stepFinished = false;
     while(!m_tracefile.eof() && !stepFinished) {
-        auto& step = readTraceStep();
+        const auto& step = readTraceStep();
         stepFinished = parseStep(step);
     }
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
@@ -72,7 +70,7 @@ std::string Stepper::branch()
 {
     while(!m_tracefile.eof())
     {
-        auto& step = readTraceStep();
+        const auto& step = readTraceStep();
         if(step.type == StepType::BACKTRACK)
         {
             m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
@@ -88,13 +86,13 @@ void Stepper::backtrack(int level)
 {
     while (true)
     {
-        auto step = m_eventStack.back();
+        const auto step = m_eventStack.back();
         m_eventStack.pop_back();
         switch(step.type) {
             case StepType::SET:
             case StepType::BRANCH:
                 if(m_graph.hasNode(step.node))
-                    m_graph.colorNode(step.node, graphdrawer::nodeColor::UNPROCESSED);
+                    m_graph.colorNode(step.node, graphdrawer::NodeColor::UNPROCESSED);
                 break;
             case StepType::LEVEL:
                 if (step.level == level)
@@ -105,32 +103,33 @@ void Stepper::backtrack(int level)
     }
 }
 
-bool Stepper::parseStep(Step step) {
-    bool nodeColored = true;
+bool Stepper::parseStep(const Step & step) {
+    bool NodeColored = true;
     switch(step.type) {
         case StepType::SET:
             if(!m_graph.hasNode(step.node)) return false;
-            m_graph.colorNode(step.node, step.nodeValue ? graphdrawer::nodeColor::SET_TRUE : graphdrawer::nodeColor::SET_FALSE);
+            m_graph.colorNode(step.node, step.nodeValue ? graphdrawer::NodeColor::SET_TRUE : graphdrawer::NodeColor::SET_FALSE);
             break;
         case StepType::BACKTRACK:
             backtrack(step.level);
             break;
         case StepType::BRANCH:
             if(!m_graph.hasNode(step.node)) return false;
-            if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::nodeColor::BRANCH_TRUE);
-            else m_graph.colorNode(step.node, graphdrawer::nodeColor::BRANCH_FALSE);
+            if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_TRUE);
+            else m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_FALSE);
             break;
         default:
-            nodeColored = false;
+            NodeColored = false;
     }
-    return nodeColored;
+    return NodeColored;
 }
 
 void Stepper::writeSvg(std::string gmlPath, std::string svgPath) {
     m_graph.readGraph(gmlPath);
     m_graph.setNodeShapeAll();
+    //m_graph.setStrokeWidth(0.1f);
     m_graph.colorEdges();
-    m_graph.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
+    m_graph.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
     //m_graph.removeNodes(10);
     m_graph.layout();
     m_graph.writeGraph(svgPath, graphdrawer::filetype::SVG);
@@ -148,7 +147,8 @@ void Stepper::readTrace(std::string tracePath) {
 // structure is char followed by int
 // char denotes StepType, int denotes Node
 Step& Stepper::readTraceStep() {
-    if(!m_tracefile.eof() && m_tracefile.is_open())
+    assert(m_tracefile.is_open());
+    if(!m_tracefile.eof())
     {
         char type;
         int data;
@@ -157,19 +157,9 @@ Step& Stepper::readTraceStep() {
         m_tracefile.read(reinterpret_cast<char*>(&data), sizeof(data));
 
         std::cout << type << " " << data << std::endl;
-        bool value = data >= 0;
+        const bool value = data >= 0;
 
-        StepType stepType;
-        switch(type) {
-            case '+': stepType = StepType::SET; break;
-            case '-': stepType = StepType::UNSET; break;
-            case '>': stepType = StepType::LEVEL; break;
-            case '<': stepType = StepType::BACKTRACK; break;
-            case 'R': stepType = StepType::RESTART; break;
-            case 'C': stepType = StepType::CONFLICT; break;
-            case 'B': stepType = StepType::BRANCH; break;
-        }
-
+        const auto stepType = stepFromCharacter[type];
         m_eventStack.push_back({stepType, abs(data), value});
 
         return m_eventStack.back();
@@ -184,7 +174,7 @@ bool Stepper::isFinished() {
 std::string Stepper::cull(int degree) {
     if(m_lastCull < degree) {
         writeSvg(m_gmlPath, m_svgPath);
-        for(auto& step : m_eventStack)
+        for(const auto& step : m_eventStack)
         {
             parseStep(step);
         }

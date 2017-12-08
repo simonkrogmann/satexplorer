@@ -3,7 +3,7 @@
 #include <ogdf/basic/basic.h>
 
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <string>
 
 #include <ogdf/basic/graph_generators.h>
@@ -17,7 +17,7 @@
 
 namespace graphdrawer {
 
-enum class nodeColor {
+enum class NodeColor {
         UNPROCESSED,
         SET_TRUE,
         SET_FALSE,
@@ -28,7 +28,7 @@ enum class nodeColor {
 
 class ogdfWrapper {
 public:
-    
+
     // read graph from file in graphml format
     void readGraph(std::string filename);
 
@@ -42,13 +42,15 @@ public:
     // removes all Nodes with degree > maxDegree from the Graph
     int removeNodes(int maxDegree);
 
-    void colorNodes(nodeColor color);
+    void colorNodes(NodeColor color);
 
     void setNodeShapeAll(double width = 20.0, double height = 20.0);
 
     void setNodeShape(int nodeID, double width = 20.0, double height = 20.0);
 
-    void colorNode(int nodeID, nodeColor color);
+    void setStrokeWidth(float width);
+
+    void colorNode(int nodeID, NodeColor color);
 
     void colorEdges();
 
@@ -60,13 +62,13 @@ private:
     std::unique_ptr<ogdf::GraphAttributes> _p_graphAttributes;
     ogdfVector<ogdf::NodeElement*> _m_nodes;
     ogdfVector<ogdf::EdgeElement*> _m_edges;
-    std::map<std::string, ogdf::NodeElement*> _label_map;
+    std::unordered_map<std::string, ogdf::NodeElement*> _label_map;
 
     void _setOptions(ogdf::FMMMLayout& layout);
     void _updateGraph();
-    ogdf::Color::Name getColor(nodeColor color);
-    void colorNode(ogdf::NodeElement* node_p, nodeColor color);
+    ogdf::Color::Name getColor(NodeColor color);
+    void colorNode(ogdf::NodeElement* node_p, NodeColor color);
 
-    
+
 };
 }

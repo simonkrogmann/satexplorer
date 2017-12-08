@@ -11,11 +11,11 @@ namespace graphdrawer {
 
 void ogdfWrapper::readGraph(std::string filename) {
     std::cout << "reading graph" << std::endl;
-    
+
     _p_graph = std::make_unique<ogdf::Graph>();
-    _p_graphAttributes = std::make_unique<ogdf::GraphAttributes>(*_p_graph, 
-        ogdf::GraphAttributes::nodeLabel | 
-        ogdf::GraphAttributes::nodeGraphics | 
+    _p_graphAttributes = std::make_unique<ogdf::GraphAttributes>(*_p_graph,
+        ogdf::GraphAttributes::nodeLabel |
+        ogdf::GraphAttributes::nodeGraphics |
         ogdf::GraphAttributes::edgeGraphics |
         ogdf::GraphAttributes::nodeStyle |
         ogdf::GraphAttributes::edgeStyle
@@ -39,7 +39,7 @@ void ogdfWrapper::_updateGraph() {
     }
 }
 
-void ogdfWrapper::colorNodes(nodeColor color) {
+void ogdfWrapper::colorNodes(NodeColor color) {
     for(auto node_p : _m_nodes) {
         colorNode(node_p, color);
     }
@@ -61,7 +61,19 @@ void ogdfWrapper::setNodeShapeAll(double width, double height) {
     }
 }
 
-void ogdfWrapper::colorNode(ogdf::NodeElement* node_p, nodeColor color) {
+void ogdfWrapper::setStrokeWidth(float width)
+{
+    for(auto node_p : _m_nodes)  {
+        auto& strokeWidth = _p_graphAttributes->strokeWidth(node_p);
+        strokeWidth = width;
+    }
+    for(auto edge_p : _m_edges)  {
+        auto& strokeWidth = _p_graphAttributes->strokeWidth(edge_p);
+        strokeWidth = width;
+    }
+}
+
+void ogdfWrapper::colorNode(ogdf::NodeElement* node_p, NodeColor color) {
     auto colorName = getColor(color);
     auto & stroke_color = _p_graphAttributes->strokeColor(node_p);
     stroke_color = ogdf::Color(ogdf::Color::Name::Black);
@@ -69,7 +81,7 @@ void ogdfWrapper::colorNode(ogdf::NodeElement* node_p, nodeColor color) {
     fill_color = ogdf::Color(colorName);
 }
 
-void ogdfWrapper::colorNode(int nodeID, nodeColor color) {
+void ogdfWrapper::colorNode(int nodeID, NodeColor color) {
     auto& node_p = _label_map.at(std::to_string(nodeID));
     colorNode(node_p, color);
 }
@@ -118,23 +130,29 @@ void ogdfWrapper::_setOptions(ogdf::FMMMLayout& layout) {
 void ogdfWrapper::writeGraph(std::string filename, filetype format) {
     std::cout << "writing " << filename;
     std::fstream file(filename, file.out);
+    ogdf::GraphIO::SVGSettings settings;
     switch(format) {
         case filetype::GML : ogdf::GraphIO::writeGML(*_p_graphAttributes, file); break;
-        case filetype::SVG : ogdf::GraphIO::drawSVG(*_p_graphAttributes, file); break;
+        case filetype::SVG :
+            //settings.fontSize(2);
+            ogdf::GraphIO::drawSVG(*_p_graphAttributes, file, settings);
+            break;
         default : throw std::invalid_argument("Unknown filetype");
     }
     std::cout << " ...done." << std::endl;
 }
 
-ogdf::Color::Name ogdfWrapper::getColor(nodeColor color) {
-    switch(color) {
-        case nodeColor::UNPROCESSED: return ogdf::Color::Name::White;
-        case nodeColor::SET_TRUE: return ogdf::Color::Name::Green;
-        case nodeColor::SET_FALSE: return ogdf::Color::Name::Red;
-        case nodeColor::STEP_SELECTED: return ogdf::Color::Name::Blue;
-        case nodeColor::BRANCH_TRUE: return ogdf::Color::Name::Blue;
-        case nodeColor::BRANCH_FALSE: return ogdf::Color::Name::Orange;
-    }
+
+ogdf::Color::Name ogdfWrapper::getColor(NodeColor color) {
+    std::unordered_map<NodeColor, ogdf::Color::Name> ogdfColors {
+        { NodeColor::UNPROCESSED, ogdf::Color::Name::White },
+        { NodeColor::SET_TRUE, ogdf::Color::Name::Green },
+        { NodeColor::SET_FALSE, ogdf::Color::Name::Red },
+        { NodeColor::STEP_SELECTED, ogdf::Color::Name::Blue },
+        { NodeColor::BRANCH_TRUE, ogdf::Color::Name::Blue },
+        { NodeColor::BRANCH_FALSE, ogdf::Color::Name::Orange },
+    };
+    return ogdfColors[color];
 }
 
 bool ogdfWrapper::hasNode(int nodeID) {

@@ -13,7 +13,7 @@ namespace po = boost::program_options;
 int main(int ac, char* av[])
 {
     try {
-        
+
         graphdrawer::cfg cfg(ac,av);
         if(!cfg.config_valid()) {
             return 1;
@@ -25,10 +25,10 @@ int main(int ac, char* av[])
             wrapper.removeNodes(cfg.cull_graph());
         }
         wrapper.layout();
-        wrapper.colorNodes(graphdrawer::nodeColor::UNPROCESSED);
-        wrapper.colorNode(34, graphdrawer::nodeColor::SET_TRUE);
+        wrapper.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
+        wrapper.colorNode(34, graphdrawer::NodeColor::SET_TRUE);
         wrapper.setNodeShape(34, cfg.node_width(), cfg.node_height());
-        wrapper.colorNode(18, graphdrawer::nodeColor::STEP_SELECTED);
+        wrapper.colorNode(18, graphdrawer::NodeColor::STEP_SELECTED);
         wrapper.setNodeShape(18, cfg.node_width(), cfg.node_height());
         wrapper.writeGraph(cfg.output_filename(), cfg.output_filetype());
     }
