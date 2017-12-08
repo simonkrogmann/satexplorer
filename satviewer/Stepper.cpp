@@ -61,6 +61,7 @@ std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
 
     readTrace(tracePath);
     loadFromGML(m_gmlPath);
+    m_graph.layout();
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
 
     return m_svgPath;
@@ -127,18 +128,16 @@ void Stepper::backtrack(int level)
 }
 
 bool Stepper::parseStep(const Step & step) {
-    bool NodeColored = true;
+    if (shouldColor(step.type) && !m_graph.hasNode(step.node)) return false;
     int nodeSize;
     switch(step.type) {
         case StepType::SET:
-            if(!m_graph.hasNode(step.node)) return false;
             m_graph.colorNode(step.node, step.nodeValue ? graphdrawer::NodeColor::SET_TRUE : graphdrawer::NodeColor::SET_FALSE);
             break;
         case StepType::BACKTRACK:
             backtrack(step.level);
             break;
         case StepType::BRANCH:
-            if(!m_graph.hasNode(step.node)) return false;
             if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_TRUE);
             else m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_FALSE);
             nodeSize = std::max(1, 10- m_branchCount) * 10 + 40;
@@ -146,19 +145,17 @@ bool Stepper::parseStep(const Step & step) {
             m_branchCount++;
             break;
         default:
-            NodeColored = false;
+            return false;
     }
-    return NodeColored;
+    return true;
 }
 
 void Stepper::loadFromGML(std::string gmlPath) {
     m_branchCount = 0;
     m_graph.readGraph(gmlPath);
     m_graph.setNodeShapeAll();
-    //m_graph.setStrokeWidth(0.1f);
     m_graph.colorEdges();
     m_graph.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
-    m_graph.layout();
 }
 
 
@@ -201,16 +198,14 @@ std::string Stepper::cull(int degree) {
     if(m_lastCull == degree) {
         return m_svgPath;
     }
-    if(m_lastCull < degree) {
-        loadFromGML(m_gmlPath);
-        for(auto& step : m_eventStack)
-        {
-            parseStep(step);
-        }
-    }
+    loadFromGML(m_gmlPath);
     m_lastCull = degree;
     m_graph.removeNodes(degree, true);
     m_graph.layout();
+    for(auto& step : m_eventStack)
+    {
+        parseStep(step);
+    }
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
     return m_svgPath;
 }

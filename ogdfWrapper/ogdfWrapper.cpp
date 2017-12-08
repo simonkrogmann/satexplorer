@@ -128,8 +128,10 @@ void ogdfWrapper::colorEdges() {
 }
 
 int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
+    onlyEdges = false;
     int removedEntities = 0;
     std::set<ogdf::EdgeElement*> edgesToRemove;
+    std::vector<ogdf::NodeElement*> nodesToRemove;
     for(auto node_p : _m_nodes) {
         if(node_p->degree() > maxDegree) {
             if(onlyEdges) {
@@ -140,10 +142,10 @@ int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
                 }
             }
             else {
-                _p_graph->delNode(node_p);
+                nodesToRemove.push_back(node_p);
                 ++removedEntities;
             }
-            
+
         }
     }
     if(onlyEdges) {
@@ -151,13 +153,15 @@ int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
             _p_graph->delEdge(edge_p);
         }
     }
+    else
+    {
+        for(auto node_p : nodesToRemove) {
+            _p_graph->delNode(node_p);
+        }
+    }
     _updateGraph();
-    if(onlyEdges) {
-        std::cout << "removed " << removedEntities << " Edges." << std::endl;
-    }
-    else {
-        std::cout << "removed " << removedEntities << " Nodes." << std::endl;
-    }
+    std::cout << "removed " << removedEntities
+        << (onlyEdges ? " Edges." : " Nodes.") << std::endl;
     return removedEntities;
 }
 
