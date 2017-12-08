@@ -187,7 +187,8 @@ void ogdfWrapper::writeGraph(std::string filename, filetype format) {
     switch(format) {
         case filetype::GML : ogdf::GraphIO::writeGML(*_p_graphAttributes, file); break;
         case filetype::SVG :
-            //settings.fontSize(2);
+            // rebuild ogdf with updated CompressSVG.patch if textRendering is not found
+            settings.textRendering(false);
             ogdf::GraphIO::drawSVG(*_p_graphAttributes, file, settings);
             break;
         default : throw std::invalid_argument("Unknown filetype");
