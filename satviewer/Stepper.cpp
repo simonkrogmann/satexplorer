@@ -24,7 +24,8 @@ std::unordered_map <char, StepType> stepFromCharacter
 
 bool shouldColor(StepType type)
 {
-    if (type == StepType::SET || type == StepType::BRANCH) return true;
+    if (type == StepType::SET || type == StepType::BRANCH
+        || type == StepType::CONFLICT) return true;
     return false;
 }
 
@@ -112,6 +113,8 @@ void Stepper::backtrack(int level)
             case StepType::BRANCH:
                 m_branchCount--;
                 [[fallthrough]];
+            case StepType::CONFLICT:
+                [[fallthrough]];
             case StepType::SET:
                 if(m_graph.hasNode(step.node)) {
                     m_graph.colorNode(step.node, graphdrawer::NodeColor::UNPROCESSED);
@@ -132,17 +135,22 @@ bool Stepper::parseStep(const Step & step) {
     int nodeSize;
     switch(step.type) {
         case StepType::SET:
-            m_graph.colorNode(step.node, step.nodeValue ? graphdrawer::NodeColor::SET_TRUE : graphdrawer::NodeColor::SET_FALSE);
+            m_graph.colorNode(step.node,
+                step.nodeValue? graphdrawer::NodeColor::SET_TRUE : graphdrawer::NodeColor::SET_FALSE);
             break;
         case StepType::BACKTRACK:
             backtrack(step.level);
             break;
         case StepType::BRANCH:
-            if(step.nodeValue) m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_TRUE);
-            else m_graph.colorNode(step.node, graphdrawer::NodeColor::BRANCH_FALSE);
+            m_graph.colorNode(step.node,
+                step.nodeValue ? graphdrawer::NodeColor::BRANCH_TRUE : graphdrawer::NodeColor::BRANCH_FALSE);
             nodeSize = std::max(1, 10- m_branchCount) * 10 + 40;
             m_graph.setNodeShape(step.node, nodeSize, nodeSize);
             m_branchCount++;
+            break;
+        case StepType::CONFLICT:
+            m_graph.colorNode(step.node, graphdrawer::NodeColor::CONFLICT);
+            m_graph.setNodeShape(step.node, 100, 100);
             break;
         default:
             return false;
@@ -170,24 +178,19 @@ void Stepper::readTrace(std::string tracePath) {
 // structure is char followed by int
 // char denotes StepType, int denotes Node
 Step& Stepper::readTraceStep() {
-    assert(m_tracefile.is_open());
-    if(!m_tracefile.eof())
-    {
-        char type;
-        int data;
+    assert(m_tracefile.is_open() && !m_tracefile.eof());
 
-        m_tracefile.read(&type, sizeof(type));
-        m_tracefile.read(reinterpret_cast<char*>(&data), sizeof(data));
+    char type;
+    int data;
+    m_tracefile.read(&type, sizeof(type));
+    m_tracefile.read(reinterpret_cast<char*>(&data), sizeof(data));
 
-        std::cout << type << " " << data << std::endl;
-        const bool value = data >= 0;
+    std::cout << type << " " << data << std::endl;
+    const bool value = data >= 0;
+    const auto stepType = stepFromCharacter[type];
+    m_eventStack.push_back({stepType, abs(data), value});
 
-        const auto stepType = stepFromCharacter[type];
-        m_eventStack.push_back({stepType, abs(data), value});
-
-        return m_eventStack.back();
-    }
-    throw std::runtime_error("End of tracefile or tracefile is closed");
+    return m_eventStack.back();
 }
 
 bool Stepper::isFinished() {

@@ -27,6 +27,7 @@ enum class NodeColor {
         SET_FALSE,
         BRANCH_TRUE,
         BRANCH_FALSE,
+        CONFLICT,
         STEP_SELECTED
     };
 
@@ -70,7 +71,7 @@ private:
     std::unique_ptr<ogdf::GraphAttributes> _p_graphAttributes;
     ogdfVector<ogdf::NodeElement*> _m_nodes;
     ogdfVector<ogdf::EdgeElement*> _m_edges;
-    std::unordered_map<std::string, ogdf::NodeElement*> _label_map;
+    std::unordered_map<int, ogdf::NodeElement*> _label_map;
 
     void _setOptions(ogdf::FMMMLayout& layout);
     void _updateGraph();

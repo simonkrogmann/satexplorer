@@ -25,6 +25,7 @@ ogdf::Color::Name getColor(NodeColor color) {
         { NodeColor::STEP_SELECTED, ogdf::Color::Name::Blue },
         { NodeColor::BRANCH_TRUE, ogdf::Color::Name::Blue },
         { NodeColor::BRANCH_FALSE, ogdf::Color::Name::Orange },
+        { NodeColor::CONFLICT, ogdf::Color::Name::Black },
     };
     return ogdfColors[color];
 }
@@ -66,7 +67,7 @@ void ogdfWrapper::_updateGraph() {
 
     _label_map.clear();
     for(auto node_p : _m_nodes) {
-        std::string& label = _p_graphAttributes->label(node_p);
+        const auto label = std::stoi(_p_graphAttributes->label(node_p));
         _label_map.emplace(std::make_pair(label, node_p));
     }
 }
@@ -78,7 +79,7 @@ void ogdfWrapper::colorNodes(NodeColor color) {
 }
 
 void ogdfWrapper::setNodeShape(int nodeID, double width, double height) {
-    auto& node_p = _label_map.at(std::to_string(nodeID));
+    auto& node_p = _label_map.at(nodeID);
     _p_graphAttributes->width(node_p) = width;
     _p_graphAttributes->height(node_p) = height;
     _p_graphAttributes->shape(node_p) = ogdf::Shape::Ellipse;
@@ -114,7 +115,7 @@ void ogdfWrapper::colorNode(ogdf::NodeElement* node_p, NodeColor color) {
 }
 
 void ogdfWrapper::colorNode(int nodeID, NodeColor color) {
-    auto& node_p = _label_map.at(std::to_string(nodeID));
+    auto& node_p = _label_map.at(nodeID);
     colorNode(node_p, color);
 }
 
@@ -201,7 +202,7 @@ void ogdfWrapper::writeGraph(std::string filename, filetype format) {
 }
 
 bool ogdfWrapper::hasNode(int nodeID) {
-    return _label_map.count(std::to_string(nodeID)) > 0;
+    return _label_map.find(nodeID) != _label_map.end();
 }
 
 }
