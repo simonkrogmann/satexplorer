@@ -17,7 +17,7 @@ struct Step {
 
 class Stepper {
 public:
-    std::string initialize(std::string cnfPath);
+    std::string initialize(std::string cnfPath, bool foceSolve);
     std::string step();
     std::string branch();
     bool isFinished();

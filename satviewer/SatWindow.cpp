@@ -11,7 +11,7 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m
 
     m_validator.setBottom(0);
     m_cullBox.setValidator(&m_validator);
-    m_cullBox.setPlaceholderText("cull git degree");
+    m_cullBox.setPlaceholderText("cull degree");
     connect(&m_cullBox, SIGNAL(editingFinished()), this, SLOT(handleCullInput()));
 
     m_toolbar.addWidget(&m_cullBox);
@@ -31,7 +31,7 @@ void SatWindow::run(){
     {
         m_filename = QFileDialog::getOpenFileName(this, "Open Image", "/home/", "Image Files (*.cnf)").toStdString();
     }
-    auto svgPath = m_stepper.initialize(m_filename);
+    auto svgPath = m_stepper.initialize(m_filename, m_forceSolve);
     m_svgWidget.setAutoFillBackground(true);
     m_svgWidget.renderer()->setViewBox(QRect(QPoint(0, 0), QSize(500, 500)));
 
@@ -80,5 +80,9 @@ void SatWindow::handleShowAllButton() {
 void SatWindow::setFilename(std::string filename)
 {
     m_filename = filename;
+}
+
+void SatWindow::setForceSolve(bool forceSolve){
+    m_forceSolve = forceSolve;
 }
 

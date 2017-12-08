@@ -20,6 +20,7 @@ public:
     virtual ~SatWindow() = default;
 
     void setFilename(std::string filename);
+    void setForceSolve(bool forceSolve);
 
 protected:
     QSvgWidget m_svgWidget;
@@ -31,6 +32,7 @@ protected:
     QAction* m_stepAction;
     QAction* m_branchAction;
     std::string m_filename;
+    bool m_forceSolve;
 
     QLineEdit m_cullBox;
     QIntValidator m_validator;

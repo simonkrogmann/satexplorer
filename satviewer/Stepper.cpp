@@ -23,7 +23,7 @@ std::map <std::string , StepType> stepToEnum
         };
 
 
-std::string Stepper::initialize(std::string cnfPath){
+std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
     m_lastCull = std::numeric_limits<int>::max();
     auto cnfFilename = QFileInfo(QString::fromStdString(cnfPath)).baseName().toStdString();
     auto solutionPath = outputPath + cnfFilename + ".solution";
@@ -32,21 +32,25 @@ std::string Stepper::initialize(std::string cnfPath){
     m_svgPath = outputPath + cnfFilename + ".svg";
 
     QProcess process;
-    auto conversionCmd = scriptPath + conversionScript + " " + cnfPath + " " + m_gmlPath;
-    std::cout << "Convert to gml for layouting" << std::endl;
-    std::cout << conversionCmd << std::endl;
-    process.start(QString::fromStdString(conversionCmd));
-    std::cout << "converting..." << std::endl;
-    process.waitForFinished(-1);
-    std::cout << "Done." << std::endl;
+    if(!std::ifstream(m_gmlPath) || forceSolve) { // check if conversion for this file has already taken place
+        auto conversionCmd = scriptPath + conversionScript + " " + cnfPath + " " + m_gmlPath;
+        std::cout << "Convert to gml for layouting" << std::endl;
+        std::cout << conversionCmd << std::endl;
+        process.start(QString::fromStdString(conversionCmd));
+        std::cout << "converting..." << std::endl;
+        process.waitForFinished(-1);
+        std::cout << "Done." << std::endl;
+    }
 
-    auto satCmd = minisat + " " + cnfPath + " " + solutionPath + " " + tracePath;
-    std::cout << "solve SAT instance" << std::endl;
-    std::cout << satCmd << std::endl;
-    process.start(QString::fromStdString(satCmd));
-    std::cout << "solving..." << std::endl;
-    process.waitForFinished(-1);
-    std::cout << "Done." << std::endl;
+    if(!std::ifstream(tracePath) || forceSolve) { // check if this file has already been solved
+        auto satCmd = minisat + " " + cnfPath + " " + solutionPath + " " + tracePath;
+        std::cout << "solve SAT instance" << std::endl;
+        std::cout << satCmd << std::endl;
+        process.start(QString::fromStdString(satCmd));
+        std::cout << "solving..." << std::endl;
+        process.waitForFinished(-1);
+        std::cout << "Done." << std::endl;
+    }
 
     readTrace(tracePath);
     writeSvg(m_gmlPath, m_svgPath);
