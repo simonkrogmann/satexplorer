@@ -1,4 +1,5 @@
 #!/bin/sh
+git apply adjList.patch
 git apply RemoveAsserts.patch
 git apply CompressSVG.patch
 mkdir -p build

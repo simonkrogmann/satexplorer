@@ -1,3 +1,29 @@
+diff --git a/.gitignore b/.gitignore
+index a753a8c..3c61f69 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -28,3 +28,5 @@
+ /*.vcxproj
+ /*.vcxproj.filters
+ /doc/html
++.vscode
++*.patch
+diff --git a/include/ogdf/basic/Graph_d.h b/include/ogdf/basic/Graph_d.h
+index ffd2700..17bfbaf 100644
+--- a/include/ogdf/basic/Graph_d.h
++++ b/include/ogdf/basic/Graph_d.h
+@@ -212,9 +212,9 @@ public:
+ 	adjEntry lastAdj () const { return adjEntries.tail(); }
+ 
+ 	//! Returns the successor in the list of all nodes.
+-	node succ() const { return static_cast<node>(m_next); }
++	node succ() const { return static_cast<node>(m_prev); } // adj list is somehow reversed ..
+ 	//! Returns the predecessor in the list of all nodes.
+-	node pred() const { return static_cast<node>(m_prev); }
++	node pred() const { return static_cast<node>(m_next); }
+ 
+ 	//! Returns a list with all adjacency entries of this node.
+ 	/**
 diff --git a/include/ogdf/basic/basic.h b/include/ogdf/basic/basic.h
 index 239f0b4..931391c 100644
 --- a/include/ogdf/basic/basic.h
@@ -43,4 +69,54 @@ index 239f0b4..931391c 100644
 -#endif
  
  //! @}
+ 
+diff --git a/src/ogdf/fileformats/SvgPrinter.cpp b/src/ogdf/fileformats/SvgPrinter.cpp
+index 93dd20d..a4fc87d 100644
+--- a/src/ogdf/fileformats/SvgPrinter.cpp
++++ b/src/ogdf/fileformats/SvgPrinter.cpp
+@@ -63,7 +63,7 @@ bool SvgPrinter::draw(std::ostream &os)
+ 	drawEdges(rootNode);
+ 	drawNodes(rootNode);
+ 
+-	doc.save(os);
++	doc.save(os, "");
+ 
+ 	return true;
+ }
+@@ -143,7 +143,7 @@ void SvgPrinter::drawNode(pugi::xml_node xmlNode, node v)
+ 	std::stringstream is;
+ 	double x = m_attr.x(v);
+ 	double y = m_attr.y(v);
+-	xmlNode = xmlNode.append_child("g");
++	//xmlNode = xmlNode.append_child("g");
+ 
+ 	// values are precomputed to save expensive sin/cos calls
+ 	switch (m_attr.shape(v)) {
+@@ -327,7 +327,8 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
+ 
+ 	while(!queue.empty()) {
+ 		cluster c = queue.pop();
+-		drawCluster(xmlNode.append_child("g"), c);
++		//drawCluster(xmlNode.append_child("g"), c);
++		drawCluster(xmlNode, c);
+ 
+ 		for(cluster child : c->children) {
+ 			queue.append(child);
+@@ -338,7 +339,7 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
+ void SvgPrinter::drawEdges(pugi::xml_node xmlNode)
+ {
+ 	if (m_attr.has(GraphAttributes::edgeGraphics)) {
+-		xmlNode = xmlNode.append_child("g");
++		//xmlNode = xmlNode.append_child("g");
+ 
+ 		for(edge e : m_attr.constGraph().edges) {
+ 			drawEdge(xmlNode, e);
+@@ -423,7 +424,7 @@ void SvgPrinter::drawEdge(pugi::xml_node xmlNode, edge e) {
+ 		}
+ 	}
+ 
+-	xmlNode = xmlNode.append_child("g");
++	//xmlNode = xmlNode.append_child("g");
+ 	bool drawLabel = m_attr.has(GraphAttributes::edgeLabel) && !m_attr.label(e).empty();
+ 	pugi::xml_node label;
  
