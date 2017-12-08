@@ -185,7 +185,7 @@ std::string Stepper::cull(int degree) {
         }
     }
     m_lastCull = degree;
-    m_graph.removeNodes(degree);
+    m_graph.removeNodes(degree, true);
     m_graph.layout();
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
     return m_svgPath;

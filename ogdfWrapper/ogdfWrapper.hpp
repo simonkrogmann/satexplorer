@@ -47,7 +47,8 @@ public:
     void writeGraph(std::string filename, filetype format);
 
     // removes all Nodes with degree > maxDegree from the Graph
-    int removeNodes(int maxDegree);
+    // onlyEdges will keep the high degree Nodes and just remove their edges
+    int removeNodes(int maxDegree, bool onlyEdges = false);
 
     void colorNodes(NodeColor color);
 
