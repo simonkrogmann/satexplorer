@@ -1,96 +1,216 @@
-diff --git a/include/ogdf/basic/basic.h b/include/ogdf/basic/basic.h
-index 239f0b4..931391c 100644
---- a/include/ogdf/basic/basic.h
-+++ b/include/ogdf/basic/basic.h
-@@ -43,41 +43,6 @@
- //! @ingroup macros
- #define OGDF_HEAVY_ASSERT(expr)
+diff --git a/ogdf_installation/PKGBUILD b/ogdf_installation/PKGBUILD
+index c1d1a18..eabcd0d 100644
+--- a/ogdf_installation/PKGBUILD
++++ b/ogdf_installation/PKGBUILD
+@@ -9,7 +9,7 @@ license=('GPL')
+ makedepends=('git' 'cmake' 'doxygen' 'graphviz' 'bash')
+ conflicts=('ogdf' 'ogdf-snapshot' 'coin-or-clp' 'coin-or-osi' 'coin-or-coinutils')
+ source=("${pkgname}::git+https://github.com/ogdf/ogdf.git" "${pkgname}.patch")
+-md5sums=('SKIP' '9b07fdf1f1a5d8e8445e6b73d78514db')
++md5sums=('SKIP' 'SKIP')
  
--#ifdef OGDF_DEBUG
--# ifdef OGDF_HEAVY_DEBUG
--#  undef OGDF_HEAVY_ASSERT
--#  define OGDF_HEAVY_ASSERT(expr) OGDF_ASSERT(expr)
--# endif
--# undef OGDF_ASSERT
--# ifndef OGDF_USE_ASSERT_EXCEPTIONS
--#  include <cassert>
--#  define OGDF_ASSERT(expr) assert(expr)
--# else
--#  include <stdexcept>
--#  include <sstream>
--
--namespace ogdf {
--/**
-- * A trivial exception for failed assertions.
-- * Only available if the macro OGDF_USE_ASSERT_EXCEPTIONS is defined.
-- */
--class AssertionFailed : public std::runtime_error {
--	using std::runtime_error::runtime_error;
--};
--}
--
--#  define OGDF_ASSERT(expr) do { \
--	if (!(expr)) { \
--		std::stringstream ogdf_assert_ss; \
--		ogdf_assert_ss \
--		 << "OGDF assertion `" #expr "' failed at " __FILE__ ":" \
--		 << __LINE__ \
--		 << "(" << OGDF_FUNCTION_NAME << ")"; \
--		ogdf::get_stacktrace(ogdf_assert_ss); \
--		throw ogdf::AssertionFailed(ogdf_assert_ss.str()); \
--	} } while (false)
--# endif
--#endif
- 
- //! @}
- 
-diff --git a/src/ogdf/fileformats/SvgPrinter.cpp b/src/ogdf/fileformats/SvgPrinter.cpp
-index 93dd20d..a4fc87d 100644
---- a/src/ogdf/fileformats/SvgPrinter.cpp
-+++ b/src/ogdf/fileformats/SvgPrinter.cpp
-@@ -63,7 +63,7 @@ bool SvgPrinter::draw(std::ostream &os)
- 	drawEdges(rootNode);
- 	drawNodes(rootNode);
- 
--	doc.save(os);
-+	doc.save(os, "");
- 
- 	return true;
- }
-@@ -143,7 +143,7 @@ void SvgPrinter::drawNode(pugi::xml_node xmlNode, node v)
- 	std::stringstream is;
- 	double x = m_attr.x(v);
- 	double y = m_attr.y(v);
--	xmlNode = xmlNode.append_child("g");
-+	//xmlNode = xmlNode.append_child("g");
- 
- 	// values are precomputed to save expensive sin/cos calls
- 	switch (m_attr.shape(v)) {
-@@ -327,7 +327,8 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
- 
- 	while(!queue.empty()) {
- 		cluster c = queue.pop();
--		drawCluster(xmlNode.append_child("g"), c);
-+		//drawCluster(xmlNode.append_child("g"), c);
-+		drawCluster(xmlNode, c);
- 
- 		for(cluster child : c->children) {
- 			queue.append(child);
-@@ -338,7 +339,7 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
- void SvgPrinter::drawEdges(pugi::xml_node xmlNode)
- {
- 	if (m_attr.has(GraphAttributes::edgeGraphics)) {
--		xmlNode = xmlNode.append_child("g");
-+		//xmlNode = xmlNode.append_child("g");
- 
- 		for(edge e : m_attr.constGraph().edges) {
- 			drawEdge(xmlNode, e);
-@@ -423,7 +424,7 @@ void SvgPrinter::drawEdge(pugi::xml_node xmlNode, edge e) {
- 		}
- 	}
- 
--	xmlNode = xmlNode.append_child("g");
-+	//xmlNode = xmlNode.append_child("g");
- 	bool drawLabel = m_attr.has(GraphAttributes::edgeLabel) && !m_attr.label(e).empty();
- 	pugi::xml_node label;
- 
+ pkgver() {
+   cd "$pkgname"
+diff --git a/ogdf_installation/ogdf-git.patch b/ogdf_installation/ogdf-git.patch
+index bd19a62..0dcc061 100644
+--- a/ogdf_installation/ogdf-git.patch
++++ b/ogdf_installation/ogdf-git.patch
+@@ -44,11 +44,66 @@ index 239f0b4..931391c 100644
+  
+  //! @}
+  
++diff --git a/include/ogdf/fileformats/GraphIO.h b/include/ogdf/fileformats/GraphIO.h
++index 32c42cf..51155b3 100644
++--- a/include/ogdf/fileformats/GraphIO.h
+++++ b/include/ogdf/fileformats/GraphIO.h
++@@ -74,6 +74,7 @@ public:
++ 		string m_fontFamily;
++ 		string m_width;
++ 		string m_height;
+++		bool m_textRendering;
++ 
++ 	public:
++ 		SVGSettings();
++@@ -102,6 +103,9 @@ public:
++ 		//! Returns the default height
++ 		const string &height() const { return m_height; }
++ 
+++		//! Returns if text rendering is enabled
+++		const bool &textRendering() const { return m_textRendering; }
+++
++ 		//! Sets the size of the margin around the drawing to \p m.
++ 		void margin(double m) { m_margin = m; }
++ 
++@@ -136,6 +140,9 @@ public:
++ 		 * The value should include a unit of measure (e.g., percentage for relative height or pixel values).
++ 		 */
++ 		void height(const string &height) { m_height = height; }
+++
+++		//! Sets if text rendering is enabled.
+++		void textRendering(bool textRendering) { m_textRendering = textRendering; }
++ 	};
++ 
++ 	/**
+ diff --git a/src/ogdf/fileformats/SvgPrinter.cpp b/src/ogdf/fileformats/SvgPrinter.cpp
+-index 93dd20d..a4fc87d 100644
++index 93dd20d..59fda7f 100644
+ --- a/src/ogdf/fileformats/SvgPrinter.cpp
+ +++ b/src/ogdf/fileformats/SvgPrinter.cpp
+-@@ -63,7 +63,7 @@ bool SvgPrinter::draw(std::ostream &os)
++@@ -49,12 +49,22 @@ GraphIO::SVGSettings::SVGSettings()
++ 	m_fontFamily = "Arial";
++ 	m_width = "";
++ 	m_height = "";
+++	m_textRendering = true;
++ }
++ 
++ bool SvgPrinter::draw(std::ostream &os)
++ {
++ 	pugi::xml_document doc;
++ 	pugi::xml_node rootNode = writeHeader(doc);
+++	rootNode = rootNode.append_child("g");
+++	rootNode.append_attribute("stroke") = "#000000";
+++	if (m_settings.textRendering())
+++	{
+++		rootNode.append_attribute("text-anchor") = "middle";
+++		rootNode.append_attribute("dominant-baseline") = "middle";
+++		rootNode.append_attribute("font-family") = "Arial";
+++		rootNode.append_attribute("font-size") = "10";
+++	}
++ 
++ 	if(m_clsAttr) {
++ 		drawClusters(rootNode);
++@@ -63,7 +73,7 @@ bool SvgPrinter::draw(std::ostream &os)
+  	drawEdges(rootNode);
+  	drawNodes(rootNode);
+  
+@@ -57,7 +112,7 @@ index 93dd20d..a4fc87d 100644
+  
+  	return true;
+  }
+-@@ -143,7 +143,7 @@ void SvgPrinter::drawNode(pugi::xml_node xmlNode, node v)
++@@ -143,7 +153,7 @@ void SvgPrinter::drawNode(pugi::xml_node xmlNode, node v)
+  	std::stringstream is;
+  	double x = m_attr.x(v);
+  	double y = m_attr.y(v);
+@@ -66,7 +121,49 @@ index 93dd20d..a4fc87d 100644
+  
+  	// values are precomputed to save expensive sin/cos calls
+  	switch (m_attr.shape(v)) {
+-@@ -327,7 +327,8 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
++@@ -254,27 +264,27 @@ void SvgPrinter::drawNode(pugi::xml_node xmlNode, node v)
++ 
++ 	if (m_attr.has(GraphAttributes::nodeStyle)) {
++ 		shape.append_attribute("fill") = m_attr.fillColor(v).toString().c_str();
++-		shape.append_attribute("stroke-width") = (to_string(m_attr.strokeWidth(v)) + "px").c_str();
+++		// shape.append_attribute("stroke-width") = (to_string(m_attr.strokeWidth(v)) + "px").c_str();
++ 
++-		StrokeType lineStyle = m_attr.has(GraphAttributes::nodeStyle) ? m_attr.strokeType(v) : StrokeType::Solid;
+++		// StrokeType lineStyle = m_attr.has(GraphAttributes::nodeStyle) ? m_attr.strokeType(v) : StrokeType::Solid;
++ 
++-		if(lineStyle == StrokeType::None) {
++-			shape.append_attribute("stroke") = "none";
++-		} else {
++-			shape.append_attribute("stroke") = m_attr.strokeColor(v).toString().c_str();
++-			writeDashArray(shape, lineStyle, m_attr.strokeWidth(v));
++-		}
+++		// if(lineStyle == StrokeType::None) {
+++		// 	shape.append_attribute("stroke") = "none";
+++		// } else {
+++		// 	shape.append_attribute("stroke") = m_attr.strokeColor(v).toString().c_str();
+++		// 	writeDashArray(shape, lineStyle, m_attr.strokeWidth(v));
+++		// }
++ 	}
++ 
++-	if (m_attr.has(GraphAttributes::nodeLabel)) {
+++	if (m_settings.textRendering() && m_attr.has(GraphAttributes::nodeLabel)) {
++ 		pugi::xml_node label = xmlNode.append_child("text");
++ 		label.append_attribute("x") = m_attr.x(v);
++ 		label.append_attribute("y") = m_attr.y(v);
++-		label.append_attribute("text-anchor") = "middle";
++-		label.append_attribute("dominant-baseline") = "middle";
++-		label.append_attribute("font-family") = m_settings.fontFamily().c_str();
++-		label.append_attribute("font-size") = m_settings.fontSize();
++-		label.append_attribute("fill") = m_settings.fontColor().c_str();
+++		// label.append_attribute("text-anchor") = "middle";
+++		// label.append_attribute("dominant-baseline") = "middle";
+++		// label.append_attribute("font-family") = m_settings.fontFamily().c_str();
+++		// label.append_attribute("font-size") = m_settings.fontSize();
+++		// label.append_attribute("fill") = m_settings.fontColor().c_str();
++ 		label.text() = m_attr.label(v).c_str();
++ 
++ 		if(m_attr.has(GraphAttributes::nodeLabelPosition)) {
++@@ -327,7 +337,8 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
+  
+  	while(!queue.empty()) {
+  		cluster c = queue.pop();
+@@ -76,7 +173,7 @@ index 93dd20d..a4fc87d 100644
+  
+  		for(cluster child : c->children) {
+  			queue.append(child);
+-@@ -338,7 +339,7 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
++@@ -338,7 +349,7 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
+  void SvgPrinter::drawEdges(pugi::xml_node xmlNode)
+  {
+  	if (m_attr.has(GraphAttributes::edgeGraphics)) {
+@@ -85,12 +182,58 @@ index 93dd20d..a4fc87d 100644
+  
+  		for(edge e : m_attr.constGraph().edges) {
+  			drawEdge(xmlNode, e);
+-@@ -423,7 +424,7 @@ void SvgPrinter::drawEdge(pugi::xml_node xmlNode, edge e) {
++@@ -351,13 +362,13 @@ void SvgPrinter::appendLineStyle(pugi::xml_node line, edge e) {
++ 	StrokeType lineStyle = m_attr.has(GraphAttributes::edgeStyle) ? m_attr.strokeType(e) : StrokeType::Solid;
++ 
++ 	if(lineStyle != StrokeType::None) {
++-		if (m_attr.has(GraphAttributes::edgeStyle)) {
++-			line.append_attribute("stroke") = m_attr.strokeColor(e).toString().c_str();
++-			line.append_attribute("stroke-width") = (to_string(m_attr.strokeWidth(e)) + "px").c_str();
++-			writeDashArray(line, lineStyle, m_attr.strokeWidth(e));
++-		} else {
++-			line.append_attribute("stroke") = "#000000";
++-		}
+++		// if (m_attr.has(GraphAttributes::edgeStyle)) {
+++		// 	line.append_attribute("stroke") = m_attr.strokeColor(e).toString().c_str();
+++		// 	line.append_attribute("stroke-width") = (to_string(m_attr.strokeWidth(e)) + "px").c_str();
+++		// 	writeDashArray(line, lineStyle, m_attr.strokeWidth(e));
+++		// } else {
+++		// 	line.append_attribute("stroke") = "#000000";
+++		// }
++ 	}
++ }
++ 
++@@ -423,17 +434,17 @@ void SvgPrinter::drawEdge(pugi::xml_node xmlNode, edge e) {
+  		}
+  	}
+  
+ -	xmlNode = xmlNode.append_child("g");
++-	bool drawLabel = m_attr.has(GraphAttributes::edgeLabel) && !m_attr.label(e).empty();
+ +	//xmlNode = xmlNode.append_child("g");
+- 	bool drawLabel = m_attr.has(GraphAttributes::edgeLabel) && !m_attr.label(e).empty();
+++	bool drawLabel = m_settings.textRendering() && m_attr.has(GraphAttributes::edgeLabel) && !m_attr.label(e).empty();
+  	pugi::xml_node label;
+  
++ 	if(drawLabel) {
++ 		label = xmlNode.append_child("text");
++-		label.append_attribute("text-anchor") = "middle";
++-		label.append_attribute("dominant-baseline") = "middle";
++-		label.append_attribute("font-family") = m_settings.fontFamily().c_str();
++-		label.append_attribute("font-size") = m_settings.fontSize();
++-		label.append_attribute("fill") = m_settings.fontColor().c_str();
+++		// label.append_attribute("text-anchor") = "middle";
+++		// label.append_attribute("dominant-baseline") = "middle";
+++		// label.append_attribute("font-family") = m_settings.fontFamily().c_str();
+++		// label.append_attribute("font-size") = m_settings.fontSize();
+++		// label.append_attribute("fill") = m_settings.fontColor().c_str();
++ 		label.text() = m_attr.label(e).c_str();
++ 	}
++ 
++@@ -595,7 +606,7 @@ pugi::xml_node SvgPrinter::drawCurve(pugi::xml_node xmlNode, edge e, List<DPoint
++ 		}
++ 	}
++ 
++-	line.append_attribute("fill") = "none";
+++	// line.append_attribute("fill") = "none";
++ 	line.append_attribute("d") = ss.str().c_str();
++ 	appendLineStyle(line, e);
++ 
