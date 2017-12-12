@@ -155,11 +155,22 @@ bool Stepper::parseStep(const Step & step) {
             m_graph.setNodeShape(step.node, 100, 100);
             break;
         case StepType::LEARNEDCLAUSE:
-        std::cout << "add edges for new clause" <<std::endl;
+            std::cout << "add edges for new clause" <<std::endl;
             for(size_t i = 0; i < step.clauseSize; ++i) {
+                if(!m_graph.hasNode(step.clause->at(i))) continue;
                 for(size_t j = i + 1; j < step.clauseSize; ++j) {
-
+                    if(!m_graph.hasNode(step.clause->at(j))) continue;
                     m_graph.addEdge(step.clause->at(i), step.clause->at(j));
+                }
+            }
+            break;
+        case StepType ::UNLEARNEDCLAUSE:
+            std::cout << "remove edges of unlearned clause" << std::endl;
+            for(size_t i = 0; i < step.clauseSize; ++i) {
+                if(!m_graph.hasNode(step.clause->at(i))) continue;
+                for(size_t j = i + 1; j < step.clauseSize; ++j) {
+                    if(!m_graph.hasNode(step.clause->at(j))) continue;
+                    m_graph.removeEdge(step.clause->at(i), step.clause->at(j));
                 }
             }
             break;
@@ -206,6 +217,8 @@ Step& Stepper::readTraceStep() {
         m_eventStack.back().clause = std::make_unique<std::vector<int>>();
         for(size_t i = 0; i < data; ++i) {
             int node;
+            char unused;
+            m_tracefile.read(reinterpret_cast<char*>(&unused), sizeof(unused));
             m_tracefile.read(reinterpret_cast<char*>(&node), sizeof(node));
             m_eventStack.back().clause->push_back(abs(node));
         }
