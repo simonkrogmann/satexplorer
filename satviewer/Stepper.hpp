@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <ogdfWrapper/ogdfWrapper.hpp>
 
-enum class StepType { SET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART };
+enum class StepType { SET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART, LEARNEDCLAUSE, UNLEARNEDCLAUSE };
 
 struct Step {
     StepType type;
@@ -10,9 +10,11 @@ struct Step {
         int data; // for where we don't care what kind of step it is
         int level;
         int node;
+        int clauseSize;
         int numberOfRestarts;
     };
     bool nodeValue;
+    std::unique_ptr<std::vector<int>> clause;
 };
 
 class Stepper {

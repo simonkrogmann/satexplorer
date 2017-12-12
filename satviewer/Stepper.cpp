@@ -19,7 +19,9 @@ std::unordered_map <char, StepType> stepFromCharacter
     {'C', StepType::CONFLICT},
     {'>', StepType::LEVEL},
     {'B', StepType::BRANCH},
-    {'R', StepType::RESTART}
+    {'R', StepType::RESTART},
+    {'L', StepType::LEARNEDCLAUSE},
+    {'U', StepType::UNLEARNEDCLAUSE}
 };
 
 bool shouldColor(StepType type)
@@ -107,7 +109,7 @@ void Stepper::backtrack(int level)
 {
     while (true)
     {
-        const auto step = m_eventStack.back();
+        const auto step = std::move(m_eventStack.back());
         m_eventStack.pop_back();
         switch(step.type) {
             case StepType::BRANCH:
@@ -152,6 +154,15 @@ bool Stepper::parseStep(const Step & step) {
             m_graph.colorNode(step.node, graphdrawer::NodeColor::CONFLICT);
             m_graph.setNodeShape(step.node, 100, 100);
             break;
+        case StepType::LEARNEDCLAUSE:
+        std::cout << "add edges for new clause" <<std::endl;
+            for(size_t i = 0; i < step.clauseSize; ++i) {
+                for(size_t j = i + 1; j < step.clauseSize; ++j) {
+
+                    m_graph.addEdge(step.clause->at(i), step.clause->at(j));
+                }
+            }
+            break;
         default:
             return false;
     }
@@ -188,7 +199,17 @@ Step& Stepper::readTraceStep() {
     std::cout << type << " " << data << std::endl;
     const bool value = data >= 0;
     const auto stepType = stepFromCharacter[type];
-    m_eventStack.push_back({stepType, abs(data), value});
+    m_eventStack.push_back({stepType, abs(data), value, nullptr});
+
+    if(stepType == StepType::LEARNEDCLAUSE || stepType == StepType::UNLEARNEDCLAUSE) {
+        std::cout << "read trace for new clause" <<std::endl;
+        m_eventStack.back().clause = std::make_unique<std::vector<int>>();
+        for(size_t i = 0; i < data; ++i) {
+            int node;
+            m_tracefile.read(reinterpret_cast<char*>(&node), sizeof(node));
+            m_eventStack.back().clause->push_back(abs(node));
+        }
+    }
 
     return m_eventStack.back();
 }
