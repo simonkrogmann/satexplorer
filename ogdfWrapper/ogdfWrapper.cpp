@@ -129,7 +129,6 @@ void ogdfWrapper::colorEdges() {
 }
 
 int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
-    onlyEdges = false;
     int removedEntities = 0;
     std::set<ogdf::EdgeElement*> edgesToRemove;
     std::vector<ogdf::NodeElement*> nodesToRemove;
@@ -203,6 +202,23 @@ void ogdfWrapper::writeGraph(std::string filename, filetype format) {
 
 bool ogdfWrapper::hasNode(int nodeID) {
     return _label_map.find(nodeID) != _label_map.end();
+}
+
+void ogdfWrapper::addEdge(int nodeStart, int nodeEnd) {
+    auto& nodeS_p = _label_map.at(nodeStart);
+    auto& nodeE_p = _label_map.at(nodeEnd);
+    _p_graph->newEdge(nodeS_p, nodeE_p);
+}
+
+void ogdfWrapper::removeEdge(int nodeStart, int nodeEnd) {
+    auto& nodeS_p = _label_map.at(nodeStart);
+    auto& nodeE_p = _label_map.at(nodeEnd);
+    for(const auto edge_p : _m_edges) {
+        if((edge_p->source() == nodeS_p && edge_p->target() == nodeE_p) || (edge_p->source() == nodeE_p && edge_p->target() == nodeS_p)) {
+            _p_graph->delEdge(edge_p);
+            break;
+        }
+    }
 }
 
 }

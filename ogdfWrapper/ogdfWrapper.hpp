@@ -65,6 +65,10 @@ public:
 
     bool hasNode(int nodeID);
 
+    void addEdge(int nodeStart, int nodeEnd);
+
+    void removeEdge(int nodeStart, int NodeEnd);
+
 
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
