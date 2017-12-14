@@ -40,6 +40,8 @@ protected:
     std::vector<Step> m_eventStack;
     graphdrawer::ogdfWrapper m_graph;
     std::ifstream m_tracefile;
+    int64_t m_tracefileSize;
+    int64_t m_readSteps;
 
     const std::string conversionScript = "cnfToGML.py";
     const std::string minisat = "./minisat-solver";

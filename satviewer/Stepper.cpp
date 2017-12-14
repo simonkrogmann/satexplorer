@@ -4,7 +4,9 @@
 #include <fstream>
 #include <unordered_map>
 #include <string>
+#include <iomanip>
 #include <utility>
+#include <sys/stat.h>
 
 #include <QProcess>
 #include <QFileInfo>
@@ -29,6 +31,18 @@ bool shouldColor(StepType type)
     if (type == StepType::SET || type == StepType::BRANCH
         || type == StepType::CONFLICT) return true;
     return false;
+}
+
+long getFileSize(std::string filename)
+{
+    struct stat64 stat_buf;
+    int rc = stat64(filename.c_str(), &stat_buf);
+    return rc == 0 ? stat_buf.st_size : -1;
+}
+
+bool isEOF(std::ifstream & file)
+{
+    return file.peek() == std::ifstream::traits_type::eof();
 }
 
 }
@@ -78,7 +92,7 @@ std::string Stepper::relayout() {
 
 std::string Stepper::step() {
     bool stepFinished = false;
-    while(!m_tracefile.eof() && !stepFinished) {
+    while(!isEOF(m_tracefile) && !stepFinished) {
         const auto& step = readTraceStep();
         stepFinished = parseStep(step);
     }
@@ -92,7 +106,7 @@ void Stepper::stepUntil(StepType stepType) {
     int invisibleCount = 0;
     int newClauseCount = 0;
     int deletedClauseCount = 0;
-    while(!m_tracefile.eof())
+    while(!isEOF(m_tracefile))
     {
         const auto& step = readTraceStep();
         if(step.type == stepType)
@@ -113,6 +127,8 @@ void Stepper::stepUntil(StepType stepType) {
     std::cout << invisibleCount << " invisible vars" <<  std::endl;
     std::cout << newClauseCount << " new clauses" <<  std::endl;
     std::cout << deletedClauseCount << " clauses deleted" <<  std::endl;
+    std::cout << "Trace progress: " << std::fixed << std::setprecision(2)
+    << m_readSteps / (m_tracefileSize / 5.) * 100 << "%" << std::endl;
 }
 
 std::string Stepper::branch()
@@ -210,7 +226,10 @@ void Stepper::loadFromGML(std::string gmlPath) {
 
 // opens the tracefile
 void Stepper::readTrace(std::string tracePath) {
+    m_tracefileSize = getFileSize(tracePath);
+    m_readSteps = 0;
     m_tracefile.open(tracePath, std::ios::binary | std::ios::in);
+    assert(m_tracefileSize % 5 == 0);
     assert(m_tracefile.is_open());
 }
 
