@@ -10,11 +10,14 @@ struct Step {
         int data; // for where we don't care what kind of step it is
         int level;
         int node;
-        int clauseSize;
         int numberOfRestarts;
     };
     bool nodeValue;
-    std::unique_ptr<std::vector<int>> clause;
+};
+
+struct Clause {
+    StepType type;
+    std::vector<int> clause;
 };
 
 class Stepper {
@@ -32,12 +35,15 @@ protected:
 
     void loadFromGML(std::string glmPath);
     void readTrace(std::string tracePath);
-    Step& readTraceStep();
+    StepType readTraceStep();
     // returns true if a node has been colored
-    bool parseStep(const Step & step);
+    void applyClause(int i = -1);
+    bool applyStep(int i = -1);
     void stepUntil(StepType stepType);
+    void printProgress();
 
     std::vector<Step> m_eventStack;
+    std::vector<Clause> m_learnedClauses;
     graphdrawer::ogdfWrapper m_graph;
     std::ifstream m_tracefile;
     int64_t m_tracefileSize;

@@ -93,14 +93,20 @@ std::string Stepper::relayout() {
 std::string Stepper::step() {
     bool stepFinished = false;
     while(!isEOF(m_tracefile) && !stepFinished) {
-        const auto& step = readTraceStep();
-        stepFinished = parseStep(step);
+        const auto& type = readTraceStep();
+        if (type == StepType::LEARNEDCLAUSE || type == StepType::UNLEARNEDCLAUSE)
+        {
+            applyClause();
+            break;
+        }
+        stepFinished = applyStep();
     }
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+    printProgress();
     return m_svgPath;
 }
 
-void Stepper::stepUntil(StepType stepType) {
+void Stepper::stepUntil(StepType finalType) {
     int propagateCount = 0;
     int branchCount = 0;
     int invisibleCount = 0;
@@ -108,27 +114,44 @@ void Stepper::stepUntil(StepType stepType) {
     int deletedClauseCount = 0;
     while(!isEOF(m_tracefile))
     {
-        const auto& step = readTraceStep();
-        if(step.type == stepType)
+        auto type = readTraceStep();
+        if((type == finalType || isEOF(m_tracefile)) && type == StepType::BACKTRACK)
         {
             m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
-            parseStep(step);
+            applyStep();
             break;
         }
-        auto nodeColored = parseStep(step);
-        if (step.type == StepType::SET) ++propagateCount;
-        if (step.type == StepType::BRANCH) ++branchCount;
-        if (shouldColor(step.type) && !nodeColored) ++invisibleCount;
-        if (step.type == StepType::LEARNEDCLAUSE) ++newClauseCount;
-        if (step.type == StepType::UNLEARNEDCLAUSE) ++deletedClauseCount;
+        if (type == StepType::LEARNEDCLAUSE || type == StepType::UNLEARNEDCLAUSE)
+        {
+            applyClause();
+            if (type == StepType::LEARNEDCLAUSE) ++newClauseCount;
+            if (type == StepType::UNLEARNEDCLAUSE) ++deletedClauseCount;
+        }
+        else
+        {
+            auto nodeColored = applyStep();
+            if (type == StepType::SET) ++propagateCount;
+            if (type == StepType::BRANCH) ++branchCount;
+            if (shouldColor(type) && !nodeColored) ++invisibleCount;
+        }
+        if(type == finalType)
+        {
+            m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+            break;
+        }
     }
     std::cout << "guessed " << branchCount << " vars" <<  std::endl;
     std::cout << "propagated " << propagateCount << " vars" <<  std::endl;
     std::cout << invisibleCount << " invisible vars" <<  std::endl;
     std::cout << newClauseCount << " new clauses" <<  std::endl;
     std::cout << deletedClauseCount << " clauses deleted" <<  std::endl;
+    printProgress();
+}
+
+void Stepper::printProgress()
+{
     std::cout << "Trace progress: " << std::fixed << std::setprecision(2)
-    << m_readSteps / (m_tracefileSize / 5.) * 100 << "%" << std::endl;
+        << m_readSteps / (m_tracefileSize / 5.) * 100 << "%" << std::endl;
 }
 
 std::string Stepper::branch()
@@ -169,7 +192,39 @@ void Stepper::backtrack(int level)
     }
 }
 
-bool Stepper::parseStep(const Step & step) {
+void Stepper::applyClause(int i)
+{
+    if (i == -1) i = m_learnedClauses.size() - 1;
+    const auto & clause = m_learnedClauses.back();
+    if (clause.type == StepType::LEARNEDCLAUSE)
+    {
+        for(size_t i = 0; i < clause.clause.size(); ++i) {
+            if(!m_graph.hasNode(clause.clause[i])) continue;
+            for(size_t j = i + 1; j < clause.clause.size(); ++j) {
+                if(!m_graph.hasNode(clause.clause[j])) continue;
+                m_graph.addEdge(clause.clause[i], clause.clause[j]);
+            }
+        }
+    }
+    else if (clause.type == StepType::UNLEARNEDCLAUSE)
+    {
+        for(size_t i = 0; i < clause.clause.size(); ++i) {
+            if(!m_graph.hasNode(clause.clause[i])) continue;
+            for(size_t j = i + 1; j < clause.clause.size(); ++j) {
+                if(!m_graph.hasNode(clause.clause[j])) continue;
+                m_graph.removeEdge(clause.clause[i], clause.clause[j]);
+            }
+        }
+    }
+    else
+    {
+        assert(false);
+    }
+}
+
+bool Stepper::applyStep(int i) {
+    if (i == -1) i = m_eventStack.size() - 1;
+    const auto & step = m_eventStack[i];
     if (shouldColor(step.type) && !m_graph.hasNode(step.node)) return false;
     int nodeSize;
     switch(step.type) {
@@ -190,24 +245,6 @@ bool Stepper::parseStep(const Step & step) {
         case StepType::CONFLICT:
             m_graph.colorNode(step.node, graphdrawer::NodeColor::CONFLICT);
             m_graph.setNodeShape(step.node, 100, 100);
-            break;
-        case StepType::LEARNEDCLAUSE:
-            for(size_t i = 0; i < step.clauseSize; ++i) {
-                if(!m_graph.hasNode(step.clause->at(i))) continue;
-                for(size_t j = i + 1; j < step.clauseSize; ++j) {
-                    if(!m_graph.hasNode(step.clause->at(j))) continue;
-                    m_graph.addEdge(step.clause->at(i), step.clause->at(j));
-                }
-            }
-            break;
-        case StepType ::UNLEARNEDCLAUSE:
-            for(size_t i = 0; i < step.clauseSize; ++i) {
-                if(!m_graph.hasNode(step.clause->at(i))) continue;
-                for(size_t j = i + 1; j < step.clauseSize; ++j) {
-                    if(!m_graph.hasNode(step.clause->at(j))) continue;
-                    m_graph.removeEdge(step.clause->at(i), step.clause->at(j));
-                }
-            }
             break;
         default:
             return false;
@@ -237,31 +274,39 @@ void Stepper::readTrace(std::string tracePath) {
 // tracefile is encoded in binary
 // structure is char followed by int
 // char denotes StepType, int denotes Node
-Step& Stepper::readTraceStep() {
+StepType Stepper::readTraceStep()
+{
     assert(m_tracefile.is_open() && !m_tracefile.eof());
 
     char type;
     int data;
     m_tracefile.read(&type, sizeof(type));
+    assert(m_tracefile.is_open() && !m_tracefile.eof());
     m_tracefile.read(reinterpret_cast<char*>(&data), sizeof(data));
+    ++m_readSteps;
 
     // std::cout << type << " " << data << std::endl;
     const bool value = data >= 0;
     const auto stepType = stepFromCharacter[type];
-    m_eventStack.push_back({stepType, abs(data), value, nullptr});
-
-    if(stepType == StepType::LEARNEDCLAUSE || stepType == StepType::UNLEARNEDCLAUSE) {
-        m_eventStack.back().clause = std::make_unique<std::vector<int>>();
-        for(size_t i = 0; i < data; ++i) {
+    if(stepType == StepType::LEARNEDCLAUSE || stepType == StepType::UNLEARNEDCLAUSE)
+    {
+        m_learnedClauses.push_back({stepType, {}});
+        for(size_t i = 0; i < data; ++i)
+        {
             int node;
             char unused;
             m_tracefile.read(reinterpret_cast<char*>(&unused), sizeof(unused));
             m_tracefile.read(reinterpret_cast<char*>(&node), sizeof(node));
-            m_eventStack.back().clause->push_back(abs(node));
+            m_learnedClauses.back().clause.push_back(abs(node));
+            ++m_readSteps;
         }
     }
+    else
+    {
+        m_eventStack.push_back({stepType, abs(data), value});
+    }
 
-    return m_eventStack.back();
+    return stepType;
 }
 
 bool Stepper::isFinished() {
@@ -276,9 +321,13 @@ std::string Stepper::cull(int degree) {
     m_lastCull = degree;
     m_graph.removeNodes(degree, true);
     m_graph.layout();
-    for(auto& step : m_eventStack)
+    for (int i = 0; i < m_eventStack.size(); ++i)
     {
-        parseStep(step);
+        applyStep(i);
+    }
+    for (int i = 0; i < m_learnedClauses.size(); ++i)
+    {
+        applyClause(i);
     }
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
     return m_svgPath;
