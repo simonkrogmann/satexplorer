@@ -22,9 +22,11 @@ public:
     std::string initialize(std::string cnfPath, bool foceSolve);
     std::string step();
     std::string branch();
+    std::string nextConflict();
     void backtrack(int level);
     bool isFinished();
     std::string cull(int degree);
+    std::string relayout();
 
 protected:
 
@@ -33,6 +35,7 @@ protected:
     Step& readTraceStep();
     // returns true if a node has been colored
     bool parseStep(const Step & step);
+    void stepUntil(StepType stepType);
 
     std::vector<Step> m_eventStack;
     graphdrawer::ogdfWrapper m_graph;

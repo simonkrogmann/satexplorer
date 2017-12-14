@@ -7,6 +7,8 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m
     setCentralWidget(&m_svgWidget);
     m_stepAction = m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
     m_branchAction = m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
+    m_conflictAction = m_toolbar.addAction("Next conflict", this, &SatWindow::handleConflictButton);
+    m_relayoutAction = m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
     m_validator.setBottom(0);
@@ -15,7 +17,6 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m
     connect(&m_cullBox, SIGNAL(returnPressed()), this, SLOT(handleCullInput()));
 
     m_toolbar.addWidget(&m_cullBox);
-
 
     addToolBar(Qt::BottomToolBarArea, &m_toolbar);
     setWindowTitle(tr("SatExplorer"));
@@ -45,10 +46,16 @@ void SatWindow::handleStepButton() {
     auto path = m_stepper.step();
     m_svgWidget.load(QString::fromStdString(path));
     endOfTrace(m_stepper.isFinished());
-
 }
+
 void SatWindow::handleBranchButton() {
     auto path = m_stepper.branch();
+    m_svgWidget.load(QString::fromStdString(path));
+    endOfTrace(m_stepper.isFinished());
+}
+
+void SatWindow::handleConflictButton() {
+    auto path = m_stepper.nextConflict();
     m_svgWidget.load(QString::fromStdString(path));
     endOfTrace(m_stepper.isFinished());
 }
@@ -63,7 +70,13 @@ void SatWindow::endOfTrace(bool eof) {
     if(eof) {
         m_stepAction->setDisabled(true);
         m_branchAction->setDisabled(true);
+        m_conflictAction->setDisabled(true);
     }
+}
+
+void SatWindow::handleRelayoutButton(){
+    auto path = m_stepper.relayout();
+    m_svgWidget.load(QString::fromStdString(path));
 }
 
 void SatWindow::handleCullInput() {

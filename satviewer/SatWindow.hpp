@@ -30,7 +30,9 @@ protected:
     void endOfTrace(bool eof);
     // These pointers belong to the QToolbar and are its responsibility
     QAction* m_stepAction;
+    QAction* m_conflictAction;
     QAction* m_branchAction;
+    QAction* m_relayoutAction;
     std::string m_filename;
     bool m_forceSolve;
 
@@ -40,7 +42,9 @@ protected:
 private slots:
     void handleStepButton();
     void handleBranchButton();
+    void handleConflictButton();
     void handleCullInput();
+    void handleRelayoutButton();
     void handleShowAllButton();
     void startTimer();
 };

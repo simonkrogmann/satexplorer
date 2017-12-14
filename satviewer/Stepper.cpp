@@ -70,6 +70,12 @@ std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
     return m_svgPath;
 }
 
+std::string Stepper::relayout() {
+    m_graph.layout();
+    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+    return m_svgPath;
+}
+
 std::string Stepper::step() {
     bool stepFinished = false;
     while(!m_tracefile.eof() && !stepFinished) {
@@ -80,15 +86,16 @@ std::string Stepper::step() {
     return m_svgPath;
 }
 
-std::string Stepper::branch()
-{
+void Stepper::stepUntil(StepType stepType) {
     int propagateCount = 0;
     int branchCount = 0;
     int invisibleCount = 0;
+    int newClauseCount = 0;
+    int deletedClauseCount = 0;
     while(!m_tracefile.eof())
     {
         const auto& step = readTraceStep();
-        if(step.type == StepType::BACKTRACK)
+        if(step.type == stepType)
         {
             m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
             parseStep(step);
@@ -98,10 +105,24 @@ std::string Stepper::branch()
         if (step.type == StepType::SET) ++propagateCount;
         if (step.type == StepType::BRANCH) ++branchCount;
         if (shouldColor(step.type) && !nodeColored) ++invisibleCount;
+        if (step.type == StepType::LEARNEDCLAUSE) ++newClauseCount;
+        if (step.type == StepType::UNLEARNEDCLAUSE) ++deletedClauseCount;
     }
     std::cout << "guessed " << branchCount << " vars" <<  std::endl;
     std::cout << "propagated " << propagateCount << " vars" <<  std::endl;
     std::cout << invisibleCount << " invisible vars" <<  std::endl;
+    std::cout << newClauseCount << " new clauses" <<  std::endl;
+    std::cout << deletedClauseCount << " clauses deleted" <<  std::endl;
+}
+
+std::string Stepper::branch()
+{
+    stepUntil(StepType::BRANCH);
+    return m_svgPath;
+}
+
+std::string Stepper::nextConflict(){
+    stepUntil(StepType::BACKTRACK);
     return m_svgPath;
 }
 
@@ -155,7 +176,6 @@ bool Stepper::parseStep(const Step & step) {
             m_graph.setNodeShape(step.node, 100, 100);
             break;
         case StepType::LEARNEDCLAUSE:
-            std::cout << "add edges for new clause" <<std::endl;
             for(size_t i = 0; i < step.clauseSize; ++i) {
                 if(!m_graph.hasNode(step.clause->at(i))) continue;
                 for(size_t j = i + 1; j < step.clauseSize; ++j) {
@@ -165,7 +185,6 @@ bool Stepper::parseStep(const Step & step) {
             }
             break;
         case StepType ::UNLEARNEDCLAUSE:
-            std::cout << "remove edges of unlearned clause" << std::endl;
             for(size_t i = 0; i < step.clauseSize; ++i) {
                 if(!m_graph.hasNode(step.clause->at(i))) continue;
                 for(size_t j = i + 1; j < step.clauseSize; ++j) {
@@ -207,13 +226,12 @@ Step& Stepper::readTraceStep() {
     m_tracefile.read(&type, sizeof(type));
     m_tracefile.read(reinterpret_cast<char*>(&data), sizeof(data));
 
-    std::cout << type << " " << data << std::endl;
+    // std::cout << type << " " << data << std::endl;
     const bool value = data >= 0;
     const auto stepType = stepFromCharacter[type];
     m_eventStack.push_back({stepType, abs(data), value, nullptr});
 
     if(stepType == StepType::LEARNEDCLAUSE || stepType == StepType::UNLEARNEDCLAUSE) {
-        std::cout << "read trace for new clause" <<std::endl;
         m_eventStack.back().clause = std::make_unique<std::vector<int>>();
         for(size_t i = 0; i < data; ++i) {
             int node;
