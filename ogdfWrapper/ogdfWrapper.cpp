@@ -72,8 +72,13 @@ void ogdfWrapper::_updateGraph() {
 
     _label_map.clear();
     for(auto node_p : _m_nodes) {
-        const auto label = std::stoi(_p_graphAttributes->label(node_p));
-        _label_map.emplace(std::make_pair(label, node_p));
+        try {
+            const auto label = std::stoi(_p_graphAttributes->label(node_p));
+            _label_map.emplace(std::make_pair(label, node_p));
+        }
+        catch(std::invalid_argument e) {
+
+        }
     }
 }
 
@@ -148,7 +153,6 @@ int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
             }
             else {
                 nodesToRemove.push_back(node_p);
-                ++removedEntities;
             }
 
         }
@@ -157,12 +161,14 @@ int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
         for(auto edge_p : edgesToRemove) {
             _p_graph->delEdge(edge_p);
         }
+        removedEntities = edgesToRemove.size();
     }
     else
     {
         for(auto node_p : nodesToRemove) {
             _p_graph->delNode(node_p);
         }
+        removedEntities = nodesToRemove.size();
     }
     _updateGraph();
     std::cout << "removed " << removedEntities
@@ -251,6 +257,25 @@ void ogdfWrapper::setZ(int nodeID, double z) {
 
 void ogdfWrapper::setLayoutType(LayoutType type) {
     _layoutType = type;
+}
+
+int ogdfWrapper::addNode(std::string nodeID) {
+    auto node_p = _p_graph->newNode();
+    _p_graphAttributes->label(node_p) = nodeID;
+    try {
+        const auto label = std::stoi(_p_graphAttributes->label(node_p));
+        if(_label_map.count(label)) {
+            _label_map.emplace(std::make_pair(label, node_p));
+            return 1;
+        }
+        else {
+            _p_graph->delNode(node_p);
+            return 0;
+        }
+    }
+    catch(std::invalid_argument e) {
+        return 2;
+    }
 }
 
 }

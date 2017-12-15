@@ -80,6 +80,11 @@ public:
 
     void setLayoutType(LayoutType type);
 
+    // returns 1 if the node was added to the label map (label is an integer)
+    // returns 0 if the nodeID is already present in the label map
+    // returns 2 if the nodeID is not an int
+    int addNode(std::string nodeID);
+
 
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
