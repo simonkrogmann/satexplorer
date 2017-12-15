@@ -22,6 +22,7 @@ def strip_minus(n):
         return n[1:]
     return n
 
+clause_count = 0
 with open(sys.argv[1], 'r') as cnffile:
     lines = cnffile.readlines()
     without_comments = [line for line in lines if line[0] != "c" and line[0] != "p"]
@@ -36,10 +37,15 @@ with open(sys.argv[1], 'r') as cnffile:
             clauses.append(clause)
             clause = []
     for clause in clauses:
+        clause_node = "c_" + str(clause_count)
+        clause_count += 1
+        g.add_node(clause_node)
         for literal in clause:
             g.add_node(literal)
-        for literal1, literal2 in product(clause, clause):
-            if literal1 != literal2:
-                g.add_edge(literal1, literal2)
+            g.add_edge(clause_node, literal)
+        #for literal1, literal2 in product(clause, clause):
+        #    if literal1 != literal2:
+        #        g.add_edge(literal1, literal2)
+        
 
 nx.write_gml(g, sys.argv[2])
