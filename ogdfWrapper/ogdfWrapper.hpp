@@ -69,6 +69,10 @@ public:
 
     void removeEdge(int nodeStart, int NodeEnd);
 
+    // sets the 'height' of the node
+    // nodes with higher z get written to svg first
+    void setZ(int nodeID, double z);
+
 
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;

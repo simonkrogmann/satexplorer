@@ -182,6 +182,7 @@ void Stepper::backtrack(int level)
                     m_graph.colorNode(step.node, graphdrawer::NodeColor::UNPROCESSED);
                     m_graph.setNodeShape(step.node, 20.0, 20.0);
                 }
+                m_graph.setZ(step.node, 0);
                 break;
             case StepType::LEVEL:
                 if (step.level == level)
@@ -231,6 +232,7 @@ bool Stepper::applyStep(int i) {
         case StepType::SET:
             m_graph.colorNode(step.node,
                 step.nodeValue? graphdrawer::NodeColor::SET_TRUE : graphdrawer::NodeColor::SET_FALSE);
+                m_graph.setZ(step.node, 1);
             break;
         case StepType::BACKTRACK:
             backtrack(step.level);
@@ -238,13 +240,15 @@ bool Stepper::applyStep(int i) {
         case StepType::BRANCH:
             m_graph.colorNode(step.node,
                 step.nodeValue ? graphdrawer::NodeColor::BRANCH_TRUE : graphdrawer::NodeColor::BRANCH_FALSE);
-            nodeSize = std::max(1, 10- m_branchCount) * 10 + 40;
+            nodeSize = std::max(1, 10- m_branchCount) * 5 + 25;
             m_graph.setNodeShape(step.node, nodeSize, nodeSize);
             m_branchCount++;
+            m_graph.setZ(step.node, m_branchCount + 1);
             break;
         case StepType::CONFLICT:
             m_graph.colorNode(step.node, graphdrawer::NodeColor::CONFLICT);
             m_graph.setNodeShape(step.node, 100, 100);
+            m_graph.setZ(step.node, m_branchCount + 2);
             break;
         default:
             return false;

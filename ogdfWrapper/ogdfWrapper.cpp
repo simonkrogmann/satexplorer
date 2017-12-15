@@ -48,6 +48,7 @@ void ogdfWrapper::readGraph(std::string filename) {
     _p_graph = std::make_unique<ogdf::Graph>();
     _p_graphAttributes = std::make_unique<ogdf::GraphAttributes>(*_p_graph,
         ogdf::GraphAttributes::nodeLabel |
+        ogdf::GraphAttributes::threeD |
         ogdf::GraphAttributes::nodeGraphics |
         ogdf::GraphAttributes::edgeGraphics |
         ogdf::GraphAttributes::nodeStyle |
@@ -219,6 +220,12 @@ void ogdfWrapper::removeEdge(int nodeStart, int nodeEnd) {
             break;
         }
     }
+}
+
+void ogdfWrapper::setZ(int nodeID, double z) {
+    auto& node_p = _label_map.at(nodeID);
+    auto& node_z = _p_graphAttributes->z(node_p);
+    node_z = z;
 }
 
 }
