@@ -45,7 +45,7 @@ bool isEOF(std::ifstream & file)
     return file.peek() == std::ifstream::traits_type::eof();
 }
 
-}
+} // namespace anonymous
 
 std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
     m_lastCull = std::numeric_limits<int>::max();
@@ -78,6 +78,7 @@ std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
 
     readTrace(tracePath);
     loadFromGML(m_gmlPath);
+    m_graph.setLayoutType(graphdrawer::LayoutType::FMMM);
     m_graph.layout();
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
 

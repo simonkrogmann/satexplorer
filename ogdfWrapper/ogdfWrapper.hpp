@@ -31,6 +31,11 @@ enum class NodeColor {
         STEP_SELECTED
     };
 
+enum class LayoutType {
+    FMMM,
+    SUGIYAMA
+};
+
 class ogdfWrapper {
 public:
 
@@ -41,7 +46,7 @@ public:
     void readGraph(std::string filename);
 
     // set layout options and layout the graph
-    // using FMMM Layout
+    // uses _layoutType to switch between layouting methods
     void layout();
 
     // write the graph to <filename>.<format>
@@ -73,6 +78,8 @@ public:
     // nodes with higher z get written to svg first
     void setZ(int nodeID, double z);
 
+    void setLayoutType(LayoutType type);
+
 
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
@@ -80,6 +87,7 @@ private:
     ogdfVector<ogdf::NodeElement*> _m_nodes;
     ogdfVector<ogdf::EdgeElement*> _m_edges;
     std::unordered_map<int, ogdf::NodeElement*> _label_map;
+    LayoutType _layoutType;
 
     void _setOptions(ogdf::FMMMLayout& layout);
     void _updateGraph();

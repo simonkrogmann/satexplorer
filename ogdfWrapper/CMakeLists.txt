@@ -13,6 +13,8 @@ set(includes
 
 set(libraries
     OGDF
+    COIN
+    pthread
 )
 
 create_library(${project} ${target} "${sources}" "${includes}" "${libraries}")

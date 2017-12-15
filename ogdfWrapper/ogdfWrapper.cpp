@@ -11,6 +11,10 @@
 #include <ogdf/energybased/FMMMLayout.h>
 #include <ogdf/basic/Graph_d.h>
 #include <ogdf/basic/Array.h>
+#include <ogdf/layered/MedianHeuristic.h>
+#include <ogdf/layered/OptimalHierarchyLayout.h>
+#include <ogdf/layered/OptimalRanking.h>
+#include <ogdf/layered/SugiyamaLayout.h>
 
 
 namespace graphdrawer {
@@ -167,13 +171,30 @@ int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
 }
 
 void ogdfWrapper::layout() {
-    ogdf::FMMMLayout layout;
-    _setOptions(layout);
-
     std::cout << "generating layout" << std::endl;
-    layout.call(*_p_graphAttributes);
+    switch(_layoutType) {
+        case LayoutType::FMMM: 
+        {
+            ogdf::FMMMLayout fmmmLayout;
+            _setOptions(fmmmLayout);
+            fmmmLayout.call(*_p_graphAttributes);
+        }
+            break;
+        case LayoutType::SUGIYAMA:
+        {
+            ogdf::SugiyamaLayout sugiyamaLayout;
+            sugiyamaLayout.setRanking(new ogdf::OptimalRanking);
+            sugiyamaLayout.setCrossMin(new ogdf::MedianHeuristic);
+            ogdf::OptimalHierarchyLayout *ohl = new ogdf::OptimalHierarchyLayout;
+            ohl->layerDistance(30.0);
+            ohl->nodeDistance(25.0);
+            ohl->weightBalancing(0.8);
+            sugiyamaLayout.setLayout(ohl);
+            sugiyamaLayout.call(*_p_graphAttributes);
+        }
+            break;
+    }
     std::cout << "layout complete" << std::endl;
-    std::cout << "layouting took " << layout.getCpuTime() << " seconds" << std::endl;
 }
 
 void ogdfWrapper::_setOptions(ogdf::FMMMLayout& layout) {
@@ -226,6 +247,10 @@ void ogdfWrapper::setZ(int nodeID, double z) {
     auto& node_p = _label_map.at(nodeID);
     auto& node_z = _p_graphAttributes->z(node_p);
     node_z = z;
+}
+
+void ogdfWrapper::setLayoutType(LayoutType type) {
+    _layoutType = type;
 }
 
 }
