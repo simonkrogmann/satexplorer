@@ -37,12 +37,13 @@ with open(sys.argv[1], 'r') as cnffile:
             clauses.append(clause)
             clause = []
     for clause in clauses:
-        clause_node = "c_" + str(clause_count)
+        clause_node = "c" + str(clause_count)
         clause_count += 1
         g.add_node(clause_node)
         for literal in clause:
-            g.add_node(literal)
-            g.add_edge(clause_node, literal)
+            literal_label = "l" + literal
+            g.add_node(literal_label)
+            g.add_edge(clause_node, literal_label)
         #for literal1, literal2 in product(clause, clause):
         #    if literal1 != literal2:
         #        g.add_edge(literal1, literal2)

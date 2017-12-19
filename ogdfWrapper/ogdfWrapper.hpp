@@ -36,6 +36,25 @@ enum class LayoutType {
     SUGIYAMA
 };
 
+enum class NodeType {
+    CLAUSE,
+    LITERAL
+};
+
+// used to distinguish between clause and literal nodes
+struct NodeID {
+    int id;
+    NodeType type;
+
+    static NodeID clause(int id) {
+        return NodeID{id, NodeType::CLAUSE};
+    }
+
+    static NodeID literal(int id) {
+        return NodeID{id, NodeType::LITERAL};
+    }
+};
+
 class ogdfWrapper {
 public:
 
@@ -60,30 +79,30 @@ public:
 
     void setNodeShapeAll(double width = 20.0, double height = 20.0);
 
-    void setNodeShape(int nodeID, double width = 20.0, double height = 20.0);
+    void setNodeShape(NodeID nodeID, double width = 20.0, double height = 20.0);
 
     void setStrokeWidth(float width);
 
-    void colorNode(int nodeID, NodeColor color);
+    void colorNode(NodeID nodeID, NodeColor color);
 
     void colorEdges();
 
-    bool hasNode(int nodeID);
+    bool hasNode(NodeID nodeID);
 
-    void addEdge(int nodeStart, int nodeEnd);
+    void addEdge(NodeID nodeStart, NodeID nodeEnd);
 
-    void removeEdge(int nodeStart, int NodeEnd);
+    void removeEdge(NodeID nodeStart, NodeID NodeEnd);
 
     // sets the 'height' of the node
     // nodes with higher z get written to svg first
-    void setZ(int nodeID, double z);
+    void setZ(NodeID nodeID, double z);
 
     void setLayoutType(LayoutType type);
 
     // returns 1 if the node was added to the label map (label is an integer)
     // returns 0 if the nodeID is already present in the label map
     // returns 2 if the nodeID is not an int
-    int addNode(std::string nodeID);
+    bool addNode(NodeID nodeID);
 
 
 private:
@@ -91,7 +110,7 @@ private:
     std::unique_ptr<ogdf::GraphAttributes> _p_graphAttributes;
     ogdfVector<ogdf::NodeElement*> _m_nodes;
     ogdfVector<ogdf::EdgeElement*> _m_edges;
-    std::unordered_map<int, ogdf::NodeElement*> _label_map;
+    std::unordered_map<NodeID, ogdf::NodeElement*> _label_map;
     LayoutType _layoutType;
 
     void _setOptions(ogdf::FMMMLayout& layout);

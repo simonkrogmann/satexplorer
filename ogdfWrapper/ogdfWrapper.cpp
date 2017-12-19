@@ -72,13 +72,24 @@ void ogdfWrapper::_updateGraph() {
 
     _label_map.clear();
     for(auto node_p : _m_nodes) {
-        try {
-            const auto label = std::stoi(_p_graphAttributes->label(node_p));
-            _label_map.emplace(std::make_pair(label, node_p));
+        std::string label = _p_graphAttributes->label(node_p);
+        NodeID nodeID;
+        // first character denotes node type
+        // c = clause
+        // l = literal
+        // see cnfToGML.py
+        int id = std::stoi(label.substr(1));
+        switch(label[0]) {
+            case 'c': 
+                nodeID = NodeID::clause(id);
+                break;
+            case 'l': 
+                nodeID = NodeID::literal(id);
+                break;
+            default:
+                throw std::logic_error("Unknown Node Type");
         }
-        catch(std::invalid_argument e) {
-
-        }
+        _label_map.emplace(std::make_pair(nodeID, node_p));
     }
 }
 
@@ -88,7 +99,7 @@ void ogdfWrapper::colorNodes(NodeColor color) {
     }
 }
 
-void ogdfWrapper::setNodeShape(int nodeID, double width, double height) {
+void ogdfWrapper::setNodeShape(NodeID nodeID, double width, double height) {
     auto& node_p = _label_map.at(nodeID);
     _p_graphAttributes->width(node_p) = width;
     _p_graphAttributes->height(node_p) = height;
@@ -124,7 +135,7 @@ void ogdfWrapper::colorNode(ogdf::NodeElement* node_p, NodeColor color) {
     fill_color = ogdf::Color(colorName);
 }
 
-void ogdfWrapper::colorNode(int nodeID, NodeColor color) {
+void ogdfWrapper::colorNode(NodeID nodeID, NodeColor color) {
     auto& node_p = _label_map.at(nodeID);
     colorNode(node_p, color);
 }
@@ -228,17 +239,17 @@ void ogdfWrapper::writeGraph(std::string filename, filetype format) {
     std::cout << " ...done." << std::endl;
 }
 
-bool ogdfWrapper::hasNode(int nodeID) {
+bool ogdfWrapper::hasNode(NodeID nodeID) {
     return _label_map.find(nodeID) != _label_map.end();
 }
 
-void ogdfWrapper::addEdge(int nodeStart, int nodeEnd) {
+void ogdfWrapper::addEdge(NodeID nodeStart, NodeID nodeEnd) {
     auto& nodeS_p = _label_map.at(nodeStart);
     auto& nodeE_p = _label_map.at(nodeEnd);
     _p_graph->newEdge(nodeS_p, nodeE_p);
 }
 
-void ogdfWrapper::removeEdge(int nodeStart, int nodeEnd) {
+void ogdfWrapper::removeEdge(NodeID nodeStart, NodeID nodeEnd) {
     auto& nodeS_p = _label_map.at(nodeStart);
     auto& nodeE_p = _label_map.at(nodeEnd);
     for(const auto edge_p : _m_edges) {
@@ -249,7 +260,7 @@ void ogdfWrapper::removeEdge(int nodeStart, int nodeEnd) {
     }
 }
 
-void ogdfWrapper::setZ(int nodeID, double z) {
+void ogdfWrapper::setZ(NodeID nodeID, double z) {
     auto& node_p = _label_map.at(nodeID);
     auto& node_z = _p_graphAttributes->z(node_p);
     node_z = z;
@@ -259,23 +270,14 @@ void ogdfWrapper::setLayoutType(LayoutType type) {
     _layoutType = type;
 }
 
-int ogdfWrapper::addNode(std::string nodeID) {
+bool ogdfWrapper::addNode(NodeID nodeID) {
+    if(_label_map.count(nodeID)) {
+        return false;
+    }
     auto node_p = _p_graph->newNode();
     _p_graphAttributes->label(node_p) = nodeID;
-    try {
-        const auto label = std::stoi(_p_graphAttributes->label(node_p));
-        if(_label_map.count(label)) {
-            _label_map.emplace(std::make_pair(label, node_p));
-            return 1;
-        }
-        else {
-            _p_graph->delNode(node_p);
-            return 0;
-        }
-    }
-    catch(std::invalid_argument e) {
-        return 2;
-    }
+    _label_map.emplace(std::make_pair(nodeID, node_p));
+    return true;
 }
 
 }
