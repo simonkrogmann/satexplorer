@@ -166,6 +166,15 @@ std::string Stepper::nextConflict(){
     return m_svgPath;
 }
 
+std::string Stepper::nextRestart(){
+    for (int i = 0; i < 1; ++i)
+    {
+        stepUntil(StepType::RESTART);
+        std::cout << "Restart " << m_eventStack.back().numberOfRestarts << std::endl;
+    }
+    return m_svgPath;
+}
+
 void Stepper::backtrack(int level)
 {
     while (true)
@@ -302,7 +311,6 @@ StepType Stepper::readTraceStep()
         for(size_t i = 0; i < length; ++i)
         {
             int node;
-            char unused;
             readBlock(unused, node);
             m_learnedClauses.back().variables.push_back(static_cast<uint>(abs(node)));
         }
@@ -316,7 +324,7 @@ StepType Stepper::readTraceStep()
 }
 
 bool Stepper::isFinished() {
-    return m_tracefile.eof();
+    return isEOF(m_tracefile);
 }
 
 std::string Stepper::cull(int degree) {

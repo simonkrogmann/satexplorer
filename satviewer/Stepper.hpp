@@ -29,6 +29,7 @@ public:
     std::string step();
     std::string branch();
     std::string nextConflict();
+    std::string nextRestart();
     void backtrack(int level);
     bool isFinished();
     std::string cull(int degree);

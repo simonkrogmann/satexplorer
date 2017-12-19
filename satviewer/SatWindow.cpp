@@ -8,6 +8,7 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m
     m_stepAction = m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
     m_branchAction = m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
     m_conflictAction = m_toolbar.addAction("Next conflict", this, &SatWindow::handleConflictButton);
+    m_restartAction = m_toolbar.addAction("Restart", this, &SatWindow::handleRestartButton);
     m_relayoutAction = m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
@@ -56,6 +57,12 @@ void SatWindow::handleBranchButton() {
 
 void SatWindow::handleConflictButton() {
     auto path = m_stepper.nextConflict();
+    m_svgWidget.load(QString::fromStdString(path));
+    endOfTrace(m_stepper.isFinished());
+}
+
+void SatWindow::handleRestartButton() {
+    auto path = m_stepper.nextRestart();
     m_svgWidget.load(QString::fromStdString(path));
     endOfTrace(m_stepper.isFinished());
 }
