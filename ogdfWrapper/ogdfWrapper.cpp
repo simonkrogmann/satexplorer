@@ -273,6 +273,16 @@ bool ogdfWrapper::addNode(NodeID nodeID) {
     auto node_p = _p_graph->newNode();
     _p_graphAttributes->label(node_p) = nodeID.id;
     _label_map.emplace(std::make_pair(nodeID, node_p));
+    setNodeShape(nodeID);
+    return true;
+}
+
+bool ogdfWrapper::removeNode(NodeID nodeID) {
+    if(!_label_map.count(nodeID)) {
+        return false;
+    }
+    _p_graph->delNode(_label_map.at(nodeID));
+    _label_map.erase(nodeID);
     return true;
 }
 

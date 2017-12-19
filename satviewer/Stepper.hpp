@@ -17,7 +17,8 @@ struct Step {
 
 struct Clause {
     StepType type;
-    std::vector<graphdrawer::NodeID> clause;
+    graphdrawer::NodeID node;
+    std::vector<graphdrawer::NodeID> literals;
 };
 
 class Stepper {

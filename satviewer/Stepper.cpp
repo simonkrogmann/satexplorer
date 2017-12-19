@@ -200,23 +200,16 @@ void Stepper::applyClause(int i)
     const auto & clause = m_learnedClauses.back();
     if (clause.type == StepType::LEARNEDCLAUSE)
     {
-        for(size_t i = 0; i < clause.clause.size(); ++i) {
-            if(!m_graph.hasNode(clause.clause[i])) continue;
-            for(size_t j = i + 1; j < clause.clause.size(); ++j) {
-                if(!m_graph.hasNode(clause.clause[j])) continue;
-                m_graph.addEdge(clause.clause[i], clause.clause[j]);
+        m_graph.addNode(clause.node);
+        for(size_t i = 0; i < clause.literals.size(); ++i) {
+            if(m_graph.hasNode(clause.literals[i])) {
+                m_graph.addEdge(clause.node, clause.literals[i]);
             }
         }
     }
     else if (clause.type == StepType::UNLEARNEDCLAUSE)
     {
-        for(size_t i = 0; i < clause.clause.size(); ++i) {
-            if(!m_graph.hasNode(clause.clause[i])) continue;
-            for(size_t j = i + 1; j < clause.clause.size(); ++j) {
-                if(!m_graph.hasNode(clause.clause[j])) continue;
-                m_graph.removeEdge(clause.clause[i], clause.clause[j]);
-            }
-        }
+        m_graph.removeNode(clause.node);
     }
     else
     {
@@ -295,14 +288,15 @@ StepType Stepper::readTraceStep()
     const auto stepType = stepFromCharacter[type];
     if(stepType == StepType::LEARNEDCLAUSE || stepType == StepType::UNLEARNEDCLAUSE)
     {
-        m_learnedClauses.push_back({stepType, {}});
+        // TODO: make it so every learned clause has a unique identifier within the tracefile
+        m_learnedClauses.push_back({stepType, {static_cast<uint>(abs(data)) + 100000u, graphdrawer::NodeType::CLAUSE}, {}});
         for(size_t i = 0; i < data; ++i)
         {
             int node;
             char unused;
             m_tracefile.read(reinterpret_cast<char*>(&unused), sizeof(unused));
             m_tracefile.read(reinterpret_cast<char*>(&node), sizeof(node));
-            m_learnedClauses.back().clause.push_back({static_cast<uint>(abs(node)), graphdrawer::NodeType::LITERAL});
+            m_learnedClauses.back().literals.push_back({static_cast<uint>(abs(node)), graphdrawer::NodeType::LITERAL});
             ++m_readSteps;
         }
     }

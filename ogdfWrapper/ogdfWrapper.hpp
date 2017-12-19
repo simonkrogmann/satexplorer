@@ -125,6 +125,8 @@ public:
     // returns 2 if the nodeID is not an int
     bool addNode(NodeID nodeID);
 
+    bool removeNode(NodeID nodeID);
+
 
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
