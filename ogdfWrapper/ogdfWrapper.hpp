@@ -127,7 +127,7 @@ public:
 
     bool removeNode(NodeID nodeID);
 
-    void moveToCenter(NodeID node, const std::vector<NodeID>& anchors);
+    void moveToCenter(NodeID node, const std::vector<uint>& anchors);
 
 
 private:

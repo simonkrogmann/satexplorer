@@ -6,6 +6,7 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j4
 sudo cp libOGDF.a /usr/lib/
+sudo cp libCOIN.a /usr/lib/
 sudo mkdir -p /usr/include/ogdf/
 sudo cp -a include/ogdf/. /usr/include/ogdf/
 sudo cp -a ../include/ogdf/. /usr/include/ogdf/

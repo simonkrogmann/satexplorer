@@ -7,18 +7,20 @@ struct Step {
     StepType type;
     // either node or backtrack level or restart number
     union {
-        int data; // for where we don't care what kind of step it is
-        int level;
-        int numberOfRestarts;
+        uint data; // for where we don't care what kind of step it is
+        uint level;
+        uint numberOfRestarts;
+        uint variable;
     };
-    graphdrawer::NodeID node;
     bool nodeValue;
+    graphdrawer::NodeID inline nodeID() const { return { variable, graphdrawer::NodeType::LITERAL }; };
 };
 
 struct Clause {
     StepType type;
-    graphdrawer::NodeID node;
-    std::vector<graphdrawer::NodeID> literals;
+    uint id;
+    std::vector<uint> variables;
+    graphdrawer::NodeID inline nodeID() const { return { id, graphdrawer::NodeType::LITERAL }; };
 };
 
 class Stepper {
@@ -37,6 +39,7 @@ protected:
     void loadFromGML(std::string glmPath);
     void readTrace(std::string tracePath);
     StepType readTraceStep();
+    void readBlock(char & type, int & data);
     // returns true if a node has been colored
     void applyClause(int i = -1);
     bool applyStep(int i = -1);
@@ -48,7 +51,7 @@ protected:
     graphdrawer::ogdfWrapper m_graph;
     std::ifstream m_tracefile;
     int64_t m_tracefileSize;
-    int64_t m_readSteps;
+    int64_t m_readBlocks;
 
     const std::string conversionScript = "cnfToGML.py";
     const std::string minisat = "./minisat-solver";

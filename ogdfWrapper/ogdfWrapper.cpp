@@ -186,7 +186,7 @@ int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
 void ogdfWrapper::layout() {
     std::cout << "generating layout" << std::endl;
     switch(_layoutType) {
-        case LayoutType::FMMM: 
+        case LayoutType::FMMM:
         {
             ogdf::FMMMLayout fmmmLayout;
             _setOptions(fmmmLayout);
@@ -267,7 +267,7 @@ void ogdfWrapper::setLayoutType(LayoutType type) {
 }
 
 bool ogdfWrapper::addNode(NodeID nodeID) {
-    if(_label_map.count(nodeID)) {
+    if(hasNode(nodeID)) {
         return false;
     }
     auto node_p = _p_graph->newNode();
@@ -278,7 +278,7 @@ bool ogdfWrapper::addNode(NodeID nodeID) {
 }
 
 bool ogdfWrapper::removeNode(NodeID nodeID) {
-    if(!_label_map.count(nodeID)) {
+    if(!hasNode(nodeID)) {
         return false;
     }
     _p_graph->delNode(_label_map.at(nodeID));
@@ -286,7 +286,7 @@ bool ogdfWrapper::removeNode(NodeID nodeID) {
     return true;
 }
 
-void ogdfWrapper::moveToCenter(NodeID node, const std::vector<NodeID>& anchors) {
+void ogdfWrapper::moveToCenter(NodeID node, const std::vector<uint>& anchors) {
     if(!_label_map.count(node)) {
         return;
     }
@@ -294,8 +294,9 @@ void ogdfWrapper::moveToCenter(NodeID node, const std::vector<NodeID>& anchors) 
     double y = 0;
     int visibleCount = 0;
     for(const auto& anchor : anchors) {
-        if(_label_map.count(anchor)) {
-            const auto anchor_p = _label_map.at(anchor);
+        graphdrawer::NodeID anchorNode = {anchor, graphdrawer::NodeType::LITERAL};
+        if(hasNode(anchorNode)) {
+            const auto anchor_p = _label_map.at(anchorNode);
             x += _p_graphAttributes->x(anchor_p);
             y += _p_graphAttributes->y(anchor_p);
             ++visibleCount;

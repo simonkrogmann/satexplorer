@@ -152,7 +152,7 @@ void Stepper::stepUntil(StepType finalType) {
 void Stepper::printProgress()
 {
     std::cout << "Trace progress: " << std::fixed << std::setprecision(2)
-        << m_readSteps / (m_tracefileSize / 5.) * 100 << "%" << std::endl;
+        << m_readBlocks / (m_tracefileSize / 5.) * 100 << "%" << std::endl;
 }
 
 std::string Stepper::branch()
@@ -179,11 +179,11 @@ void Stepper::backtrack(int level)
             case StepType::CONFLICT:
                 [[fallthrough]];
             case StepType::SET:
-                if(m_graph.hasNode(step.node)) {
-                    m_graph.colorNode(step.node, graphdrawer::NodeColor::UNPROCESSED);
-                    m_graph.setNodeShape(step.node, 20.0, 20.0);
+                if(m_graph.hasNode(step.nodeID())) {
+                    m_graph.colorNode(step.nodeID(), graphdrawer::NodeColor::UNPROCESSED);
+                    m_graph.setNodeShape(step.nodeID(), 20.0, 20.0);
                 }
-                m_graph.setZ(step.node, 0);
+                m_graph.setZ(step.nodeID(), 0);
                 break;
             case StepType::LEVEL:
                 if (step.level == level)
@@ -200,17 +200,17 @@ void Stepper::applyClause(int i)
     const auto & clause = m_learnedClauses.back();
     if (clause.type == StepType::LEARNEDCLAUSE)
     {
-        m_graph.addNode(clause.node);
-        m_graph.moveToCenter(clause.node, clause.literals);
-        for(size_t i = 0; i < clause.literals.size(); ++i) {
-            if(m_graph.hasNode(clause.literals[i])) {
-                m_graph.addEdge(clause.node, clause.literals[i]);
+        m_graph.addNode(clause.nodeID());
+        m_graph.moveToCenter(clause.nodeID(), clause.variables);
+        for(size_t i = 0; i < clause.variables.size(); ++i) {
+            if(m_graph.hasNode({clause.variables[i], graphdrawer::NodeType::LITERAL})) {
+                m_graph.addEdge(clause.nodeID(), {clause.variables[i], graphdrawer::NodeType::LITERAL});
             }
         }
     }
     else if (clause.type == StepType::UNLEARNEDCLAUSE)
     {
-        m_graph.removeNode(clause.node);
+        m_graph.removeNode(clause.nodeID());
     }
     else
     {
@@ -221,29 +221,29 @@ void Stepper::applyClause(int i)
 bool Stepper::applyStep(int i) {
     if (i == -1) i = m_eventStack.size() - 1;
     const auto & step = m_eventStack[i];
-    if (shouldColor(step.type) && !m_graph.hasNode(step.node)) return false;
+    if (shouldColor(step.type) && !m_graph.hasNode(step.nodeID())) return false;
     int nodeSize;
     switch(step.type) {
         case StepType::SET:
-            m_graph.colorNode(step.node,
+            m_graph.colorNode(step.nodeID(),
                 step.nodeValue? graphdrawer::NodeColor::SET_TRUE : graphdrawer::NodeColor::SET_FALSE);
-                m_graph.setZ(step.node, 1);
+                m_graph.setZ(step.nodeID(), 1);
             break;
         case StepType::BACKTRACK:
             backtrack(step.level);
             break;
         case StepType::BRANCH:
-            m_graph.colorNode(step.node,
+            m_graph.colorNode(step.nodeID(),
                 step.nodeValue ? graphdrawer::NodeColor::BRANCH_TRUE : graphdrawer::NodeColor::BRANCH_FALSE);
             nodeSize = std::max(1, 10- m_branchCount) * 5 + 25;
-            m_graph.setNodeShape(step.node, nodeSize, nodeSize);
+            m_graph.setNodeShape(step.nodeID(), nodeSize, nodeSize);
             m_branchCount++;
-            m_graph.setZ(step.node, m_branchCount + 1);
+            m_graph.setZ(step.nodeID(), m_branchCount + 1);
             break;
         case StepType::CONFLICT:
-            m_graph.colorNode(step.node, graphdrawer::NodeColor::CONFLICT);
-            m_graph.setNodeShape(step.node, 100, 100);
-            m_graph.setZ(step.node, m_branchCount + 2);
+            m_graph.colorNode(step.nodeID(), graphdrawer::NodeColor::CONFLICT);
+            m_graph.setNodeShape(step.nodeID(), 100, 100);
+            m_graph.setZ(step.nodeID(), m_branchCount + 2);
             break;
         default:
             return false;
@@ -263,7 +263,7 @@ void Stepper::loadFromGML(std::string gmlPath) {
 // opens the tracefile
 void Stepper::readTrace(std::string tracePath) {
     m_tracefileSize = getFileSize(tracePath);
-    m_readSteps = 0;
+    m_readBlocks = 0;
     m_tracefile.open(tracePath, std::ios::binary | std::ios::in);
     assert(m_tracefileSize % 5 == 0);
     assert(m_tracefile.is_open());
@@ -273,16 +273,20 @@ void Stepper::readTrace(std::string tracePath) {
 // tracefile is encoded in binary
 // structure is char followed by int
 // char denotes StepType, int denotes Node
+void Stepper::readBlock(char & type, int & data)
+{
+    m_tracefile.read(&type, sizeof(type));
+    m_tracefile.read(reinterpret_cast<char*>(&data), sizeof(data));
+    ++m_readBlocks;
+}
+
 StepType Stepper::readTraceStep()
 {
     assert(m_tracefile.is_open() && !m_tracefile.eof());
 
     char type;
     int data;
-    m_tracefile.read(&type, sizeof(type));
-    assert(m_tracefile.is_open() && !m_tracefile.eof());
-    m_tracefile.read(reinterpret_cast<char*>(&data), sizeof(data));
-    ++m_readSteps;
+    readBlock(type, data);
 
     // std::cout << type << " " << data << std::endl;
     const bool value = data >= 0;
@@ -290,20 +294,22 @@ StepType Stepper::readTraceStep()
     if(stepType == StepType::LEARNEDCLAUSE || stepType == StepType::UNLEARNEDCLAUSE)
     {
         // TODO: make it so every learned clause has a unique identifier within the tracefile
-        m_learnedClauses.push_back({stepType, {static_cast<uint>(abs(data)) + 100000u, graphdrawer::NodeType::CLAUSE}, {}});
-        for(size_t i = 0; i < data; ++i)
+        assert(data >= 0);
+        m_learnedClauses.push_back({stepType, static_cast<uint>(data), {}});
+        int length;
+        char unused;
+        readBlock(unused, length);
+        for(size_t i = 0; i < length; ++i)
         {
             int node;
             char unused;
-            m_tracefile.read(reinterpret_cast<char*>(&unused), sizeof(unused));
-            m_tracefile.read(reinterpret_cast<char*>(&node), sizeof(node));
-            m_learnedClauses.back().literals.push_back({static_cast<uint>(abs(node)), graphdrawer::NodeType::LITERAL});
-            ++m_readSteps;
+            readBlock(unused, node);
+            m_learnedClauses.back().variables.push_back(static_cast<uint>(abs(node)));
         }
     }
     else
     {
-        m_eventStack.push_back({stepType, abs(data), {static_cast<uint>(abs(data)), graphdrawer::NodeType::LITERAL}, value});
+        m_eventStack.push_back({stepType, static_cast<uint>(abs(data)), value});
     }
 
     return stepType;
