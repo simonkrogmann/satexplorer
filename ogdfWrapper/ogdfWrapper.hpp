@@ -127,6 +127,8 @@ public:
 
     bool removeNode(NodeID nodeID);
 
+    void moveToCenter(NodeID node, const std::vector<NodeID>& anchors);
+
 
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;

@@ -286,4 +286,27 @@ bool ogdfWrapper::removeNode(NodeID nodeID) {
     return true;
 }
 
+void ogdfWrapper::moveToCenter(NodeID node, const std::vector<NodeID>& anchors) {
+    if(!_label_map.count(node)) {
+        return;
+    }
+    double x = 0;
+    double y = 0;
+    int visibleCount = 0;
+    for(const auto& anchor : anchors) {
+        if(_label_map.count(anchor)) {
+            const auto anchor_p = _label_map.at(anchor);
+            x += _p_graphAttributes->x(anchor_p);
+            y += _p_graphAttributes->y(anchor_p);
+            ++visibleCount;
+        }
+    }
+    x /= visibleCount;
+    y /= visibleCount;
+    const auto node_p = _label_map.at(node);
+    _p_graphAttributes->x(node_p) = x;
+    _p_graphAttributes->y(node_p) = y;
+}
+
+
 }

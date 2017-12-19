@@ -201,6 +201,7 @@ void Stepper::applyClause(int i)
     if (clause.type == StepType::LEARNEDCLAUSE)
     {
         m_graph.addNode(clause.node);
+        m_graph.moveToCenter(clause.node, clause.literals);
         for(size_t i = 0; i < clause.literals.size(); ++i) {
             if(m_graph.hasNode(clause.literals[i])) {
                 m_graph.addEdge(clause.node, clause.literals[i]);
