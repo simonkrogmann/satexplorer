@@ -9,15 +9,15 @@ struct Step {
     union {
         int data; // for where we don't care what kind of step it is
         int level;
-        int node;
         int numberOfRestarts;
     };
+    graphdrawer::NodeID node;
     bool nodeValue;
 };
 
 struct Clause {
     StepType type;
-    std::vector<int> clause;
+    std::vector<graphdrawer::NodeID> clause;
 };
 
 class Stepper {

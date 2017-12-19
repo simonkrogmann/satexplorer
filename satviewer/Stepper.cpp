@@ -302,13 +302,13 @@ StepType Stepper::readTraceStep()
             char unused;
             m_tracefile.read(reinterpret_cast<char*>(&unused), sizeof(unused));
             m_tracefile.read(reinterpret_cast<char*>(&node), sizeof(node));
-            m_learnedClauses.back().clause.push_back(abs(node));
+            m_learnedClauses.back().clause.push_back({static_cast<uint>(abs(node)), graphdrawer::NodeType::LITERAL});
             ++m_readSteps;
         }
     }
     else
     {
-        m_eventStack.push_back({stepType, abs(data), value});
+        m_eventStack.push_back({stepType, abs(data), {static_cast<uint>(abs(data)), graphdrawer::NodeType::LITERAL}, value});
     }
 
     return stepType;

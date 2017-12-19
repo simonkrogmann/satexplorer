@@ -18,7 +18,6 @@ namespace ogdf
     class FMMMLayout;
 }
 
-
 namespace graphdrawer {
 
 enum class NodeColor {
@@ -43,17 +42,39 @@ enum class NodeType {
 
 // used to distinguish between clause and literal nodes
 struct NodeID {
-    int id;
+    uint id;
     NodeType type;
 
-    static NodeID clause(int id) {
+    static NodeID clause(uint id) {
         return NodeID{id, NodeType::CLAUSE};
     }
 
-    static NodeID literal(int id) {
+    static NodeID literal(uint id) {
         return NodeID{id, NodeType::LITERAL};
     }
+
+    inline bool operator==(const NodeID& other) const {
+        return this->id == other.id && this->type == other.type;
+    }
 };
+
+} // namespace graphdrawer
+
+namespace std {
+    template<>
+    struct hash<graphdrawer::NodeID> {
+        inline size_t operator()(const graphdrawer::NodeID& nodeID) const {
+            switch(nodeID.type) {
+                case graphdrawer::NodeType::CLAUSE:
+                    return hash<int>()(-1*nodeID.id);
+                case graphdrawer::NodeType::LITERAL:
+                    return hash<int>()(nodeID.id);
+            }
+        }
+    };
+}
+
+namespace graphdrawer {
 
 class ogdfWrapper {
 public:

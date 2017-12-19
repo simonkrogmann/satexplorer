@@ -26,10 +26,10 @@ int main(int ac, char* av[])
         }
         wrapper.layout();
         wrapper.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
-        wrapper.colorNode(34, graphdrawer::NodeColor::SET_TRUE);
-        wrapper.setNodeShape(34, cfg.node_width(), cfg.node_height());
-        wrapper.colorNode(18, graphdrawer::NodeColor::STEP_SELECTED);
-        wrapper.setNodeShape(18, cfg.node_width(), cfg.node_height());
+        wrapper.colorNode({34,graphdrawer::NodeType::LITERAL}, graphdrawer::NodeColor::SET_TRUE);
+        wrapper.setNodeShape({34,graphdrawer::NodeType::LITERAL}, cfg.node_width(), cfg.node_height());
+        wrapper.colorNode({18,graphdrawer::NodeType::LITERAL}, graphdrawer::NodeColor::STEP_SELECTED);
+        wrapper.setNodeShape({18,graphdrawer::NodeType::LITERAL}, cfg.node_width(), cfg.node_height());
         wrapper.writeGraph(cfg.output_filename(), cfg.output_filetype());
     }
     catch(std::exception& e) {

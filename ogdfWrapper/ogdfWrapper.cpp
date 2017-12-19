@@ -34,6 +34,12 @@ ogdf::Color::Name getColor(NodeColor color) {
     return ogdfColors[color];
 }
 
+std::unordered_map <char, NodeType> nodeTypeFromCharacter
+{
+    {'c', NodeType::CLAUSE},
+    {'l', NodeType::LITERAL}
+};
+
 }
 
 ogdfWrapper::ogdfWrapper()
@@ -73,23 +79,13 @@ void ogdfWrapper::_updateGraph() {
     _label_map.clear();
     for(auto node_p : _m_nodes) {
         std::string label = _p_graphAttributes->label(node_p);
-        NodeID nodeID;
+
         // first character denotes node type
         // c = clause
         // l = literal
         // see cnfToGML.py
-        int id = std::stoi(label.substr(1));
-        switch(label[0]) {
-            case 'c': 
-                nodeID = NodeID::clause(id);
-                break;
-            case 'l': 
-                nodeID = NodeID::literal(id);
-                break;
-            default:
-                throw std::logic_error("Unknown Node Type");
-        }
-        _label_map.emplace(std::make_pair(nodeID, node_p));
+        uint id = std::stoi(label.substr(1));
+        _label_map.emplace(std::make_pair(NodeID{id, nodeTypeFromCharacter.at(label[0])}, node_p));
     }
 }
 
@@ -275,7 +271,7 @@ bool ogdfWrapper::addNode(NodeID nodeID) {
         return false;
     }
     auto node_p = _p_graph->newNode();
-    _p_graphAttributes->label(node_p) = nodeID;
+    _p_graphAttributes->label(node_p) = nodeID.id;
     _label_map.emplace(std::make_pair(nodeID, node_p));
     return true;
 }
