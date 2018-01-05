@@ -179,8 +179,10 @@ void Stepper::backtrack(int level)
 {
     while (true)
     {
-        const auto step = std::move(m_eventStack.back());
+        assert(!m_eventStack.empty());
+        const auto step = m_eventStack.back();
         m_eventStack.pop_back();
+        assert(step.type != StepType::RESTART);
         switch(step.type) {
             case StepType::BRANCH:
                 m_branchCount--;
@@ -191,11 +193,12 @@ void Stepper::backtrack(int level)
                 if(m_graph.hasNode(step.nodeID())) {
                     m_graph.colorNode(step.nodeID(), graphdrawer::NodeColor::UNPROCESSED);
                     m_graph.setNodeShape(step.nodeID(), 20.0, 20.0);
+                    m_graph.setZ(step.nodeID(), 0);
                 }
-                m_graph.setZ(step.nodeID(), 0);
                 break;
             case StepType::LEVEL:
-                if (step.level == level)
+                assert(step.level > level);
+                if (step.level == level + 1)
                     return;
             default:
                 break;
@@ -239,6 +242,8 @@ bool Stepper::applyStep(int i) {
                 m_graph.setZ(step.nodeID(), 1);
             break;
         case StepType::BACKTRACK:
+            assert(step.level < m_currentLevel);
+            m_currentLevel = step.level;
             backtrack(step.level);
             break;
         case StepType::BRANCH:
@@ -254,6 +259,10 @@ bool Stepper::applyStep(int i) {
             m_graph.setNodeShape(step.nodeID(), 100, 100);
             m_graph.setZ(step.nodeID(), m_branchCount + 2);
             break;
+        case StepType::LEVEL:
+            assert(step.level == m_currentLevel + 1);
+            m_currentLevel = step.level;
+            [[fallthrough]];
         default:
             return false;
     }
@@ -278,6 +287,7 @@ void Stepper::readTrace(std::string tracePath) {
     m_tracefile.read(reinterpret_cast<char*>(&headerSize), sizeof(headerSize));
     m_tracefile.read(reinterpret_cast<char*>(&m_numberOfRestarts), sizeof(m_numberOfRestarts));
     m_tracefileSize -= headerSize;
+    m_tracefile.seekg(headerSize);
     std::cout << "header: " << headerSize << std::endl;
     std::cout << "restarts: " << m_numberOfRestarts << std::endl;
     assert(m_tracefileSize % 5 == 0);
@@ -306,20 +316,27 @@ StepType Stepper::readTraceStep()
     // std::cout << type << " " << data << std::endl;
     const bool value = data >= 0;
     const auto stepType = stepFromCharacter[type];
-    if(stepType == StepType::LEARNEDCLAUSE || stepType == StepType::UNLEARNEDCLAUSE)
+    if(stepType == StepType::LEARNEDCLAUSE)
     {
-        // TODO: make it so every learned clause has a unique identifier within the tracefile
         assert(data >= 0);
         m_learnedClauses.push_back({stepType, static_cast<uint>(data), {}});
         int length;
         char unused;
         readBlock(unused, length);
+        assert(unused == 'S');
         for(size_t i = 0; i < length; ++i)
         {
             int node;
             readBlock(unused, node);
+            assert(unused == 'x');
             m_learnedClauses.back().variables.push_back(static_cast<uint>(abs(node)));
         }
+    }
+    else if(stepType == StepType::UNLEARNEDCLAUSE)
+    {
+        assert(data >= 0);
+        m_learnedClauses.push_back({stepType, static_cast<uint>(data), {}});
+        // TODO: clean clauses from m_learnedClauses
     }
     else
     {
@@ -341,6 +358,7 @@ std::string Stepper::cull(int degree) {
     m_lastCull = degree;
     m_graph.removeNodes(degree, true);
     m_graph.layout();
+    m_currentLevel = 0;
     for (int i = 0; i < m_eventStack.size(); ++i)
     {
         applyStep(i);

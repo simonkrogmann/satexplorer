@@ -54,6 +54,7 @@ protected:
     int64_t m_tracefileSize;
     int64_t m_readBlocks;
     int m_numberOfRestarts;
+    int m_currentLevel = 0;
 
     const std::string conversionScript = "cnfToGML.py";
     const std::string minisat = "./minisat-solver";
