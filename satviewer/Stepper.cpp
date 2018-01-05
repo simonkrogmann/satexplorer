@@ -274,6 +274,12 @@ void Stepper::readTrace(std::string tracePath) {
     m_tracefileSize = getFileSize(tracePath);
     m_readBlocks = 0;
     m_tracefile.open(tracePath, std::ios::binary | std::ios::in);
+    int headerSize;
+    m_tracefile.read(reinterpret_cast<char*>(&headerSize), sizeof(headerSize));
+    m_tracefile.read(reinterpret_cast<char*>(&m_numberOfRestarts), sizeof(m_numberOfRestarts));
+    m_tracefileSize -= headerSize;
+    std::cout << "header: " << headerSize << std::endl;
+    std::cout << "restarts: " << m_numberOfRestarts << std::endl;
     assert(m_tracefileSize % 5 == 0);
     assert(m_tracefile.is_open());
 }
