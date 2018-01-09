@@ -42,7 +42,9 @@ long getFileSize(std::string filename)
 
 bool isEOF(std::ifstream & file)
 {
-    return file.peek() == std::ifstream::traits_type::eof();
+    bool eof = file.peek() == std::ifstream::traits_type::eof();
+    if(eof) std::cout << "end of file" << std::endl;
+    return eof;
 }
 
 } // namespace anonymous
@@ -107,7 +109,7 @@ std::string Stepper::step() {
     return m_svgPath;
 }
 
-void Stepper::stepUntil(StepType finalType) {
+void Stepper::stepUntil(StepType finalType, bool layout) {
     int propagateCount = 0;
     int branchCount = 0;
     int invisibleCount = 0;
@@ -137,7 +139,7 @@ void Stepper::stepUntil(StepType finalType) {
         }
         if(type == finalType)
         {
-            m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+            if (layout) m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
             break;
         }
     }
@@ -157,21 +159,32 @@ void Stepper::printProgress()
 
 std::string Stepper::branch()
 {
-    stepUntil(StepType::BRANCH);
+    stepUntil(StepType::BRANCH, true);
     return m_svgPath;
 }
 
 std::string Stepper::nextConflict(){
-    stepUntil(StepType::BACKTRACK);
+    stepUntil(StepType::BACKTRACK, true);
     return m_svgPath;
 }
 
 std::string Stepper::nextRestart(){
-    for (int i = 0; i < 1; ++i)
-    {
-        stepUntil(StepType::RESTART);
+    stepUntil(StepType::RESTART, true);
+    if (m_eventStack.back().type == StepType::RESTART) {
         std::cout << "Restart " << m_eventStack.back().numberOfRestarts << std::endl;
     }
+    else {
+        std::cout << "Restart " << m_numberOfRestarts << std::endl;
+    }
+    return m_svgPath;
+}
+
+std::string Stepper::lastRestart() {
+    for(int i = 0; i < m_numberOfRestarts; ++i) {
+        stepUntil(StepType::RESTART, false);
+        assert(!isEOF(m_tracefile));
+    }
+    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
     return m_svgPath;
 }
 
@@ -242,7 +255,7 @@ bool Stepper::applyStep(int i) {
                 m_graph.setZ(step.nodeID(), 1);
             break;
         case StepType::BACKTRACK:
-            assert(step.level < m_currentLevel);
+            assert(step.level < m_currentLevel || step.level == 0);
             m_currentLevel = step.level;
             backtrack(step.level);
             break;

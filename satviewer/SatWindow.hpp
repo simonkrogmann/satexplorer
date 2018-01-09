@@ -33,6 +33,7 @@ protected:
     QAction* m_conflictAction;
     QAction* m_branchAction;
     QAction* m_restartAction;
+    QAction* m_lastRestartAction;
     QAction* m_relayoutAction;
     std::string m_filename;
     bool m_forceSolve;
@@ -45,6 +46,7 @@ private slots:
     void handleBranchButton();
     void handleConflictButton();
     void handleRestartButton();
+    void handleLastRestartButton();
     void handleCullInput();
     void handleRelayoutButton();
     void handleShowAllButton();

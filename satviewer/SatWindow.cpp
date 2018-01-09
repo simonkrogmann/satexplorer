@@ -8,7 +8,8 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m
     m_stepAction = m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
     m_branchAction = m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
     m_conflictAction = m_toolbar.addAction("Next conflict", this, &SatWindow::handleConflictButton);
-    m_restartAction = m_toolbar.addAction("Restart", this, &SatWindow::handleRestartButton);
+    m_restartAction = m_toolbar.addAction("Next Restart", this, &SatWindow::handleRestartButton);
+    m_lastRestartAction = m_toolbar.addAction("Last Restart", this, &SatWindow::handleLastRestartButton);
     m_relayoutAction = m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
@@ -67,6 +68,12 @@ void SatWindow::handleRestartButton() {
     endOfTrace(m_stepper.isFinished());
 }
 
+void SatWindow::handleLastRestartButton() {
+    auto path = m_stepper.lastRestart();
+    m_svgWidget.load(QString::fromStdString(path));
+    m_lastRestartAction->setDisabled(true);
+}
+
 void SatWindow::startTimer() {
     QTimer timer;
     connect(&timer, SIGNAL(timeout()), this, SLOT(handleStepButton()));
@@ -78,6 +85,8 @@ void SatWindow::endOfTrace(bool eof) {
         m_stepAction->setDisabled(true);
         m_branchAction->setDisabled(true);
         m_conflictAction->setDisabled(true);
+        m_lastRestartAction->setDisabled(true);
+        m_restartAction->setDisabled(true);
     }
 }
 

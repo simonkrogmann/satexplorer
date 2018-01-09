@@ -30,6 +30,7 @@ public:
     std::string branch();
     std::string nextConflict();
     std::string nextRestart();
+    std::string lastRestart();
     void backtrack(int level);
     bool isFinished();
     std::string cull(int degree);
@@ -44,7 +45,7 @@ protected:
     // returns true if a node has been colored
     void applyClause(int i = -1);
     bool applyStep(int i = -1);
-    void stepUntil(StepType stepType);
+    void stepUntil(StepType stepType, bool layout);
     void printProgress();
 
     std::vector<Step> m_eventStack;
