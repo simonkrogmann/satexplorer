@@ -190,6 +190,11 @@ std::string Stepper::lastRestart() {
 
 void Stepper::backtrack(int level)
 {
+    if (level == 0 && m_currentLevel == 0) {
+        assert(m_eventStack.back().type == StepType::BACKTRACK);
+        m_eventStack.pop_back();
+        return;
+    }
     while (true)
     {
         assert(!m_eventStack.empty());
