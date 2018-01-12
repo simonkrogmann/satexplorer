@@ -25,7 +25,7 @@ struct Clause {
 
 class Stepper {
 public:
-    std::string initialize(std::string cnfPath, bool foceSolve);
+    std::string initialize(std::string cnfPath, bool forceSolve);
     std::string step();
     std::string branch();
     std::string nextConflict();

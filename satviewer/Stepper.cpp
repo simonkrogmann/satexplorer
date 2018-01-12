@@ -54,26 +54,27 @@ std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
     auto cnfFilename = QFileInfo(QString::fromStdString(cnfPath)).baseName().toStdString();
     auto solutionPath = outputPath + cnfFilename + ".solution";
     auto tracePath = outputPath + cnfFilename + ".trace";
+    auto simplifiedPath = outputPath + cnfFilename + ".simplified";
     m_gmlPath = outputPath + cnfFilename + ".gml";
     m_svgPath = outputPath + cnfFilename + ".svg";
 
     QProcess process;
-    if(!std::ifstream(m_gmlPath) || forceSolve) { // check if conversion for this file has already taken place
-        auto conversionCmd = scriptPath + conversionScript + " " + cnfPath + " " + m_gmlPath;
-        std::cout << "Convert to gml for layouting" << std::endl;
-        std::cout << conversionCmd << std::endl;
-        process.start(QString::fromStdString(conversionCmd));
-        std::cout << "converting..." << std::endl;
-        process.waitForFinished(-1);
-        std::cout << "Done." << std::endl;
-    }
-
-    if(!std::ifstream(tracePath) || forceSolve) { // check if this file has already been solved
-        auto satCmd = minisat + " " + cnfPath + " " + solutionPath + " " + tracePath;
+    if(!std::ifstream(tracePath) || !std::ifstream(simplifiedPath) || forceSolve) { // check if this file has already been solved
+        auto satCmd = minisat + " " + cnfPath + " " + outputPath;
         std::cout << "solve SAT instance" << std::endl;
         std::cout << satCmd << std::endl;
         process.start(QString::fromStdString(satCmd));
         std::cout << "solving..." << std::endl;
+        process.waitForFinished(-1);
+        std::cout << "Done." << std::endl;
+    }
+
+    if(!std::ifstream(m_gmlPath) || forceSolve) { // check if conversion for this file has already taken place
+        auto conversionCmd = scriptPath + conversionScript + " " + simplifiedPath + " " + m_gmlPath;
+        std::cout << "Convert to gml for layouting" << std::endl;
+        std::cout << conversionCmd << std::endl;
+        process.start(QString::fromStdString(conversionCmd));
+        std::cout << "converting..." << std::endl;
         process.waitForFinished(-1);
         std::cout << "Done." << std::endl;
     }
@@ -200,7 +201,7 @@ void Stepper::backtrack(int level)
         assert(!m_eventStack.empty());
         const auto step = m_eventStack.back();
         m_eventStack.pop_back();
-        assert(step.type != StepType::RESTART);
+        assert(step.type != StepType::RESTART || level == 0);
         switch(step.type) {
             case StepType::BRANCH:
                 m_branchCount--;
@@ -251,6 +252,10 @@ void Stepper::applyClause(int i)
 bool Stepper::applyStep(int i) {
     if (i == -1) i = m_eventStack.size() - 1;
     const auto & step = m_eventStack[i];
+    if (step.type == StepType::BRANCH)
+    {
+        m_branchCount++;
+    }
     if (shouldColor(step.type) && !m_graph.hasNode(step.nodeID())) return false;
     int nodeSize;
     switch(step.type) {
@@ -261,15 +266,15 @@ bool Stepper::applyStep(int i) {
             break;
         case StepType::BACKTRACK:
             assert(step.level < m_currentLevel || step.level == 0);
-            m_currentLevel = step.level;
             backtrack(step.level);
+            m_currentLevel = step.level;
             break;
         case StepType::BRANCH:
             m_graph.colorNode(step.nodeID(),
                 step.nodeValue ? graphdrawer::NodeColor::BRANCH_TRUE : graphdrawer::NodeColor::BRANCH_FALSE);
             nodeSize = std::max(1, 10- m_branchCount) * 5 + 25;
+            assert(m_branchCount >= 0);
             m_graph.setNodeShape(step.nodeID(), nodeSize, nodeSize);
-            m_branchCount++;
             m_graph.setZ(step.nodeID(), m_branchCount + 1);
             break;
         case StepType::CONFLICT:
