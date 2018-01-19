@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <set>
 
 #include <ogdf/layered/DfsAcyclicSubgraph.h>
 #include <ogdf/fileformats/GraphIO.h>

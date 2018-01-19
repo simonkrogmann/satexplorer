@@ -58,6 +58,8 @@ std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
     m_gmlPath = outputPath + cnfFilename + ".gml";
     m_svgPath = outputPath + cnfFilename + ".svg";
 
+    system(("mkdir -p " + outputPath).c_str());
+
     QProcess process;
     if(!std::ifstream(tracePath) || !std::ifstream(simplifiedPath) || forceSolve) { // check if this file has already been solved
         auto satCmd = minisat + " " + cnfPath + " " + outputPath;
@@ -82,10 +84,8 @@ std::string Stepper::initialize(std::string cnfPath, bool forceSolve){
     readTrace(tracePath);
     loadFromGML(m_gmlPath);
     m_graph.setLayoutType(graphdrawer::LayoutType::FMMM);
-    m_graph.layout();
-    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
 
-    return m_svgPath;
+    return relayout();
 }
 
 std::string Stepper::relayout() {
