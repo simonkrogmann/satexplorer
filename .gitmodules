@@ -4,3 +4,6 @@
 [submodule "bcsat"]
 	path = bcsat
 	url = git@github.com:simonkrogmann/bcsat.git
+[submodule "bmc"]
+	path = bmc
+	url = git@github.com:simonkrogmann/bmc.git
