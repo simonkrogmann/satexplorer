@@ -31,10 +31,10 @@ index 32c42cf..51155b3 100644
  
  	/**
 diff --git a/src/ogdf/fileformats/SvgPrinter.cpp b/src/ogdf/fileformats/SvgPrinter.cpp
-index 93dd20d..59fda7f 100644
+index 93dd20d..2436de4 100644
 --- a/src/ogdf/fileformats/SvgPrinter.cpp
 +++ b/src/ogdf/fileformats/SvgPrinter.cpp
-@@ -49,12 +49,22 @@ GraphIO::SVGSettings::SVGSettings()
+@@ -49,12 +49,23 @@ GraphIO::SVGSettings::SVGSettings()
  	m_fontFamily = "Arial";
  	m_width = "";
  	m_height = "";
@@ -47,6 +47,7 @@ index 93dd20d..59fda7f 100644
  	pugi::xml_node rootNode = writeHeader(doc);
 +	rootNode = rootNode.append_child("g");
 +	rootNode.append_attribute("stroke") = "#000000";
++	rootNode.append_attribute("stroke-width") = "1px";
 +	if (m_settings.textRendering())
 +	{
 +		rootNode.append_attribute("text-anchor") = "middle";
@@ -57,16 +58,26 @@ index 93dd20d..59fda7f 100644
  
  	if(m_clsAttr) {
  		drawClusters(rootNode);
-@@ -63,7 +73,7 @@ bool SvgPrinter::draw(std::ostream &os)
+@@ -63,7 +74,7 @@ bool SvgPrinter::draw(std::ostream &os)
  	drawEdges(rootNode);
  	drawNodes(rootNode);
  
 -	doc.save(os);
-+	doc.save(os, "");
++	doc.save(os, "", pugi::format_default & ~pugi::format_indent);
  
  	return true;
  }
-@@ -143,7 +153,7 @@ void SvgPrinter::drawNode(pugi::xml_node xmlNode, node v)
+@@ -71,9 +82,6 @@ bool SvgPrinter::draw(std::ostream &os)
+ pugi::xml_node SvgPrinter::writeHeader(pugi::xml_document &doc)
+ {
+ 	pugi::xml_node rootNode = doc.append_child("svg");
+-	rootNode.append_attribute("xmlns") = "http://www.w3.org/2000/svg";
+-	rootNode.append_attribute("xmlns:xlink") = "http://www.w3.org/1999/xlink";
+-	rootNode.append_attribute("xmlns:ev") = "http://www.w3.org/2001/xml-events";
+ 	rootNode.append_attribute("version") = "1.1";
+ 	rootNode.append_attribute("baseProfile") = "full";
+ 
+@@ -143,7 +151,7 @@ void SvgPrinter::drawNode(pugi::xml_node xmlNode, node v)
  	std::stringstream is;
  	double x = m_attr.x(v);
  	double y = m_attr.y(v);
@@ -75,7 +86,7 @@ index 93dd20d..59fda7f 100644
  
  	// values are precomputed to save expensive sin/cos calls
  	switch (m_attr.shape(v)) {
-@@ -254,27 +264,27 @@ void SvgPrinter::drawNode(pugi::xml_node xmlNode, node v)
+@@ -254,27 +262,27 @@ void SvgPrinter::drawNode(pugi::xml_node xmlNode, node v)
  
  	if (m_attr.has(GraphAttributes::nodeStyle)) {
  		shape.append_attribute("fill") = m_attr.fillColor(v).toString().c_str();
@@ -117,7 +128,7 @@ index 93dd20d..59fda7f 100644
  		label.text() = m_attr.label(v).c_str();
  
  		if(m_attr.has(GraphAttributes::nodeLabelPosition)) {
-@@ -327,7 +337,8 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
+@@ -327,7 +335,8 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
  
  	while(!queue.empty()) {
  		cluster c = queue.pop();
@@ -127,7 +138,7 @@ index 93dd20d..59fda7f 100644
  
  		for(cluster child : c->children) {
  			queue.append(child);
-@@ -338,7 +349,7 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
+@@ -338,7 +347,7 @@ void SvgPrinter::drawClusters(pugi::xml_node xmlNode)
  void SvgPrinter::drawEdges(pugi::xml_node xmlNode)
  {
  	if (m_attr.has(GraphAttributes::edgeGraphics)) {
@@ -136,7 +147,7 @@ index 93dd20d..59fda7f 100644
  
  		for(edge e : m_attr.constGraph().edges) {
  			drawEdge(xmlNode, e);
-@@ -351,13 +362,13 @@ void SvgPrinter::appendLineStyle(pugi::xml_node line, edge e) {
+@@ -351,13 +360,13 @@ void SvgPrinter::appendLineStyle(pugi::xml_node line, edge e) {
  	StrokeType lineStyle = m_attr.has(GraphAttributes::edgeStyle) ? m_attr.strokeType(e) : StrokeType::Solid;
  
  	if(lineStyle != StrokeType::None) {
@@ -157,7 +168,7 @@ index 93dd20d..59fda7f 100644
  	}
  }
  
-@@ -423,17 +434,17 @@ void SvgPrinter::drawEdge(pugi::xml_node xmlNode, edge e) {
+@@ -423,17 +432,17 @@ void SvgPrinter::drawEdge(pugi::xml_node xmlNode, edge e) {
  		}
  	}
  
@@ -182,7 +193,7 @@ index 93dd20d..59fda7f 100644
  		label.text() = m_attr.label(e).c_str();
  	}
  
-@@ -595,7 +606,7 @@ pugi::xml_node SvgPrinter::drawCurve(pugi::xml_node xmlNode, edge e, List<DPoint
+@@ -595,7 +604,7 @@ pugi::xml_node SvgPrinter::drawCurve(pugi::xml_node xmlNode, edge e, List<DPoint
  		}
  	}
  
