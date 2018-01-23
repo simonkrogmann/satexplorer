@@ -2,8 +2,8 @@
 
 #include <sys/stat.h>
 #include <cassert>
-#include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -28,12 +28,12 @@ bool shouldColor(StepType type) {
 
 long getFileSize(std::string filename) {
     struct stat64 stat_buf;
-    int rc = stat64(filename.c_str(), &stat_buf);
-    return rc == 0 ? stat_buf.st_size : -1;
+    const int return_value = stat64(filename.c_str(), &stat_buf);
+    return return_value == 0 ? stat_buf.st_size : -1;
 }
 
 bool isEOF(std::ifstream& file) {
-    bool eof = file.peek() == std::ifstream::traits_type::eof();
+    const bool eof = file.peek() == std::ifstream::traits_type::eof();
     if (eof) std::cout << "end of file" << std::endl;
     return eof;
 }

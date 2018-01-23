@@ -1,5 +1,8 @@
-#include <QApplication>
+#pragma once
+
 #include <ogdfWrapper/ogdfWrapper.hpp>
+
+#include <fstream>
 
 enum class StepType {
     SET,

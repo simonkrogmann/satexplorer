@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ogdf/basic/basic.h>
-
 #include <cassert>
 #include <memory>
 #include <string>

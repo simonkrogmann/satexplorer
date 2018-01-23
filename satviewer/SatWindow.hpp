@@ -1,16 +1,19 @@
+#pragma once
+
 #include <QApplication>
-#include <QFileDialog>
 #include <QIntValidator>
 #include <QLineEdit>
 #include <QMainWindow>
-#include <QScrollArea>
-#include <QSvgWidget>
 #include <QToolBar>
+
 #include "Stepper.hpp"
 
 class ogdfWrapper;
 class QLineEdit;
 class QIntValidator;
+class QScrollArea;
+class QScrollBar;
+class QSvgWidget;
 
 class SatWindow : public QMainWindow {
     Q_OBJECT

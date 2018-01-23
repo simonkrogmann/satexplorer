@@ -2,8 +2,11 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QFileDialog>
+#include <QScrollArea>
 #include <QScrollBar>
 #include <QSvgRenderer>
+#include <QSvgWidget>
 #include <QTimer>
 
 SatWindow::SatWindow(QWidget *parent)

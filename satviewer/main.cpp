@@ -1,7 +1,5 @@
 #include <QApplication>
 #include <QCommandLineParser>
-#include <QFileDialog>
-#include <QSvgWidget>
 
 #include "SatWindow.hpp"
 
