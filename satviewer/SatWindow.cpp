@@ -3,6 +3,8 @@
 #include <QSvgRenderer>
 #include <QTimer>
 #include <QScrollBar>
+#include <QApplication>
+#include <QDesktopWidget>
 
 SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(new QSvgWidget), m_scrollArea(new QScrollArea), m_stepper(), m_toolbar(tr("Graph"), this), m_scaleFactor(1)  {
     m_svgWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -46,6 +48,8 @@ void SatWindow::run(){
     m_svgWidget->renderer()->setViewBox(QRect(QPoint(0, 0), QSize(500, 500)));
 
     m_svgWidget->load(QString::fromStdString(svgPath));
+    setInitialWindowSize(m_svgWidget->sizeHint());
+    m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());
 
     show();
 
@@ -53,31 +57,31 @@ void SatWindow::run(){
 
 void SatWindow::handleStepButton() {
     auto path = m_stepper.step();
-    m_svgWidget->load(QString::fromStdString(path));
+    reloadSvg(path);
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleBranchButton() {
     auto path = m_stepper.branch();
-    m_svgWidget->load(QString::fromStdString(path));
+    reloadSvg(path);
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleConflictButton() {
     auto path = m_stepper.nextConflict();
-    m_svgWidget->load(QString::fromStdString(path));
+    reloadSvg(path);
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleRestartButton() {
     auto path = m_stepper.nextRestart();
-    m_svgWidget->load(QString::fromStdString(path));
+    reloadSvg(path);
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleLastRestartButton() {
     auto path = m_stepper.lastRestart();
-    m_svgWidget->load(QString::fromStdString(path));
+    reloadSvg(path);
     m_lastRestartAction->setDisabled(true);
 }
 
@@ -99,19 +103,22 @@ void SatWindow::endOfTrace(bool eof) {
 
 void SatWindow::handleRelayoutButton(){
     auto path = m_stepper.relayout();
-    m_svgWidget->load(QString::fromStdString(path));
+    reloadSvg(path);
+    setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
 void SatWindow::handleCullInput() {
     int degree = m_cullBox.text().toInt();
     auto path = m_stepper.cull(degree);
-    m_svgWidget->load(QString::fromStdString(path));
+    reloadSvg(path);
+    setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
 void SatWindow::handleShowAllButton() {
     auto path = m_stepper.cull(std::numeric_limits<int>::max());
     m_cullBox.clear();
-    m_svgWidget->load(QString::fromStdString(path));
+    reloadSvg(path);
+    setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
 void SatWindow::setFilename(std::string filename)
@@ -131,8 +138,8 @@ void SatWindow::scaleImage(double factor)
     adjustScrollBar(m_scrollArea->horizontalScrollBar(), factor);
     adjustScrollBar(m_scrollArea->verticalScrollBar(), factor);
 
-    m_zoomInAction->setEnabled(m_scaleFactor < 3.0);
-    m_zoomOutAction->setEnabled(m_scaleFactor > 0.333);
+    // m_zoomInAction->setEnabled(m_scaleFactor < 3.0);
+    // m_zoomOutAction->setEnabled(m_scaleFactor > 0.333);
 }
 
 void SatWindow::adjustScrollBar(QScrollBar *scrollBar, double factor)
@@ -149,5 +156,21 @@ void SatWindow::zoomIn()
 void SatWindow::zoomOut()
 {
     scaleImage(0.8);
+}
+
+void SatWindow::reloadSvg(std::string path) {
+    m_svgWidget->load(QString::fromStdString(path));
+    m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());
+}
+
+void SatWindow::setInitialWindowSize(QSize imageSize) {
+    QRect rec = QApplication::desktop()->screenGeometry();
+    auto height = rec.height();
+    auto width = rec.width();
+    if(imageSize.width() > width) {
+        m_scaleFactor = static_cast<double>(width-20) / (imageSize.width());
+        m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());
+    }
+    this->resize(std::min(width, imageSize.width()), std::min(height, imageSize.height()));
 }
 
