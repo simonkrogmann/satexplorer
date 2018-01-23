@@ -2,15 +2,22 @@
 
 #include <QSvgRenderer>
 #include <QTimer>
+#include <QScrollBar>
 
-SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(this), m_stepper(), m_toolbar(tr("Graph"), this) {
-    setCentralWidget(&m_svgWidget);
+SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(new QSvgWidget), m_scrollArea(new QScrollArea), m_stepper(), m_toolbar(tr("Graph"), this), m_scaleFactor(1)  {
+    m_svgWidget.setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+
+    m_scrollArea.setWidget(&m_svgWidget);
+    setCentralWidget(&m_scrollArea);
+
     m_stepAction = m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
     m_branchAction = m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
     m_conflictAction = m_toolbar.addAction("Next conflict", this, &SatWindow::handleConflictButton);
     m_restartAction = m_toolbar.addAction("Next Restart", this, &SatWindow::handleRestartButton);
     m_lastRestartAction = m_toolbar.addAction("Last Restart", this, &SatWindow::handleLastRestartButton);
     m_relayoutAction = m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
+    m_zoomInAction = m_toolbar.addAction("Zoom In", this, &SatWindow::zoomIn);
+    m_zoomOutAction = m_toolbar.addAction("Zoom Out", this, &SatWindow::zoomOut);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
     m_validator.setBottom(0);
@@ -114,5 +121,33 @@ void SatWindow::setFilename(std::string filename)
 
 void SatWindow::setForceSolve(bool forceSolve){
     m_forceSolve = forceSolve;
+}
+
+void SatWindow::scaleImage(double factor)
+{
+    m_scaleFactor *= factor;
+    m_svgWidget.resize(m_scaleFactor * m_svgWidget.sizeHint());
+
+    adjustScrollBar(m_scrollArea.horizontalScrollBar(), factor);
+    adjustScrollBar(m_scrollArea.verticalScrollBar(), factor);
+
+    m_zoomInAction->setEnabled(m_scaleFactor < 3.0);
+    m_zoomOutAction->setEnabled(m_scaleFactor > 0.333);
+}
+
+void SatWindow::adjustScrollBar(QScrollBar *scrollBar, double factor)
+{
+    scrollBar->setValue(int(factor * scrollBar->value()
+                            + ((factor - 1) * scrollBar->pageStep()/2)));
+}
+
+void SatWindow::zoomIn()
+{
+    scaleImage(1.25);
+}
+
+void SatWindow::zoomOut()
+{
+    scaleImage(0.8);
 }
 

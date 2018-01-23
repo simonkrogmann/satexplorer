@@ -5,6 +5,7 @@
 #include <QToolBar>
 #include <QLineEdit>
 #include <QIntValidator>
+#include <QScrollArea>
 #include "Stepper.hpp"
 
 class ogdfWrapper;
@@ -24,10 +25,14 @@ public:
 
 protected:
     QSvgWidget m_svgWidget;
+    QScrollArea m_scrollArea;
     Stepper m_stepper;
     QToolBar m_toolbar;
+    double m_scaleFactor;
 
     void endOfTrace(bool eof);
+    void scaleImage(double factor);
+    void adjustScrollBar(QScrollBar *scrollBar, double factor);
     // These pointers belong to the QToolbar and are its responsibility
     QAction* m_stepAction;
     QAction* m_conflictAction;
@@ -35,6 +40,8 @@ protected:
     QAction* m_restartAction;
     QAction* m_lastRestartAction;
     QAction* m_relayoutAction;
+    QAction* m_zoomInAction;
+    QAction* m_zoomOutAction;
     std::string m_filename;
     bool m_forceSolve;
 
@@ -51,5 +58,7 @@ private slots:
     void handleRelayoutButton();
     void handleShowAllButton();
     void startTimer();
+    void zoomIn();
+    void zoomOut();
 };
 

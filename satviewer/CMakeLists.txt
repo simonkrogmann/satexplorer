@@ -1,7 +1,4 @@
-find_package(Qt5Widgets)
-find_package(Qt5Svg)
-find_package(Qt5Core)
-find_package(Qt5Gui)
+find_package(Qt5 COMPONENTS Core Widgets Svg Gui)
 
 set(target satviewer-bin)
 
