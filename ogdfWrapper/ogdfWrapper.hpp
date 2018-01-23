@@ -2,6 +2,7 @@
 
 #include <ogdf/basic/basic.h>
 
+#include <cassert>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -57,6 +58,8 @@ struct hash<graphdrawer::NodeID> {
                 return hash<int>()(-1 * nodeID.id);
             case graphdrawer::NodeType::LITERAL:
                 return hash<int>()(nodeID.id);
+            default:
+                assert(false);
         }
     }
 };

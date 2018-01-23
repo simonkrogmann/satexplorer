@@ -80,6 +80,8 @@ std::string cfg::output_filename() const {
             return filename + ".gml";
         case filetype::SVG:
             return filename + ".svg";
+        default:
+            assert(false);
     }
 }
 
