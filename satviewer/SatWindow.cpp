@@ -1,25 +1,38 @@
 #include "SatWindow.hpp"
 
-#include <QSvgRenderer>
-#include <QTimer>
-#include <QScrollBar>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QScrollBar>
+#include <QSvgRenderer>
+#include <QTimer>
 
-SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(new QSvgWidget), m_scrollArea(new QScrollArea), m_stepper(), m_toolbar(tr("Graph"), this), m_scaleFactor(1)  {
+SatWindow::SatWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , m_svgWidget(new QSvgWidget)
+    , m_scrollArea(new QScrollArea)
+    , m_stepper()
+    , m_toolbar(tr("Graph"), this)
+    , m_scaleFactor(1) {
     m_svgWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
     m_scrollArea->setWidget(m_svgWidget);
     setCentralWidget(m_scrollArea);
 
-    m_stepAction = m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
-    m_branchAction = m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
-    m_conflictAction = m_toolbar.addAction("Next conflict", this, &SatWindow::handleConflictButton);
-    m_restartAction = m_toolbar.addAction("Next Restart", this, &SatWindow::handleRestartButton);
-    m_lastRestartAction = m_toolbar.addAction("Last Restart", this, &SatWindow::handleLastRestartButton);
-    m_relayoutAction = m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
+    m_stepAction =
+        m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
+    m_branchAction =
+        m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
+    m_conflictAction = m_toolbar.addAction("Next conflict", this,
+                                           &SatWindow::handleConflictButton);
+    m_restartAction = m_toolbar.addAction("Next Restart", this,
+                                          &SatWindow::handleRestartButton);
+    m_lastRestartAction = m_toolbar.addAction(
+        "Last Restart", this, &SatWindow::handleLastRestartButton);
+    m_relayoutAction =
+        m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
     m_zoomInAction = m_toolbar.addAction("Zoom In", this, &SatWindow::zoomIn);
-    m_zoomOutAction = m_toolbar.addAction("Zoom Out", this, &SatWindow::zoomOut);
+    m_zoomOutAction =
+        m_toolbar.addAction("Zoom Out", this, &SatWindow::zoomOut);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
     m_validator.setBottom(0);
@@ -33,15 +46,16 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(new QSvg
     setWindowTitle(tr("SatExplorer"));
 }
 
-void SatWindow::run(){
+void SatWindow::run() {
     QPalette pal;
     pal.setColor(QPalette::Window, Qt::white);
     m_svgWidget->setPalette(pal);
 
     // Button to open File dialogue?
-    if (m_filename == "")
-    {
-        m_filename = QFileDialog::getOpenFileName(this, "Open Image", "/home/", "Image Files (*.cnf)").toStdString();
+    if (m_filename == "") {
+        m_filename = QFileDialog::getOpenFileName(this, "Open Image", "/home/",
+                                                  "Image Files (*.cnf)")
+                         .toStdString();
     }
     auto svgPath = m_stepper.initialize(m_filename, m_forceSolve);
     m_svgWidget->setAutoFillBackground(true);
@@ -52,7 +66,6 @@ void SatWindow::run(){
     m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());
 
     show();
-
 }
 
 void SatWindow::handleStepButton() {
@@ -92,7 +105,7 @@ void SatWindow::startTimer() {
 }
 
 void SatWindow::endOfTrace(bool eof) {
-    if(eof) {
+    if (eof) {
         m_stepAction->setDisabled(true);
         m_branchAction->setDisabled(true);
         m_conflictAction->setDisabled(true);
@@ -101,7 +114,7 @@ void SatWindow::endOfTrace(bool eof) {
     }
 }
 
-void SatWindow::handleRelayoutButton(){
+void SatWindow::handleRelayoutButton() {
     auto path = m_stepper.relayout();
     reloadSvg(path);
     setInitialWindowSize(m_svgWidget->sizeHint());
@@ -121,17 +134,15 @@ void SatWindow::handleShowAllButton() {
     setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
-void SatWindow::setFilename(std::string filename)
-{
+void SatWindow::setFilename(std::string filename) {
     m_filename = filename;
 }
 
-void SatWindow::setForceSolve(bool forceSolve){
+void SatWindow::setForceSolve(bool forceSolve) {
     m_forceSolve = forceSolve;
 }
 
-void SatWindow::scaleImage(double factor)
-{
+void SatWindow::scaleImage(double factor) {
     m_scaleFactor *= factor;
     m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());
 
@@ -142,19 +153,16 @@ void SatWindow::scaleImage(double factor)
     // m_zoomOutAction->setEnabled(m_scaleFactor > 0.333);
 }
 
-void SatWindow::adjustScrollBar(QScrollBar *scrollBar, double factor)
-{
-    scrollBar->setValue(int(factor * scrollBar->value()
-                            + ((factor - 1) * scrollBar->pageStep()/2)));
+void SatWindow::adjustScrollBar(QScrollBar *scrollBar, double factor) {
+    scrollBar->setValue(int(factor * scrollBar->value() +
+                            ((factor - 1) * scrollBar->pageStep() / 2)));
 }
 
-void SatWindow::zoomIn()
-{
+void SatWindow::zoomIn() {
     scaleImage(1.25);
 }
 
-void SatWindow::zoomOut()
-{
+void SatWindow::zoomOut() {
     scaleImage(0.8);
 }
 
@@ -167,10 +175,10 @@ void SatWindow::setInitialWindowSize(QSize imageSize) {
     QRect rec = QApplication::desktop()->screenGeometry();
     auto height = rec.height();
     auto width = rec.width();
-    if(imageSize.width() > width) {
-        m_scaleFactor = static_cast<double>(width-20) / (imageSize.width());
+    if (imageSize.width() > width) {
+        m_scaleFactor = static_cast<double>(width - 20) / (imageSize.width());
         m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());
     }
-    this->resize(std::min(width, imageSize.width()), std::min(height, imageSize.height()));
+    this->resize(std::min(width, imageSize.width()),
+                 std::min(height, imageSize.height()));
 }
-

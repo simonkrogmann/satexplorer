@@ -1,26 +1,39 @@
 #include <QApplication>
 #include <ogdfWrapper/ogdfWrapper.hpp>
 
-enum class StepType { SET, BACKTRACK, CONFLICT, LEVEL, BRANCH, RESTART, LEARNEDCLAUSE, UNLEARNEDCLAUSE };
+enum class StepType {
+    SET,
+    BACKTRACK,
+    CONFLICT,
+    LEVEL,
+    BRANCH,
+    RESTART,
+    LEARNEDCLAUSE,
+    UNLEARNEDCLAUSE
+};
 
 struct Step {
     StepType type;
     // either node or backtrack level or restart number
     union {
-        uint data; // for where we don't care what kind of step it is
+        uint data;  // for where we don't care what kind of step it is
         uint level;
         uint numberOfRestarts;
         uint variable;
     };
     bool nodeValue;
-    graphdrawer::NodeID inline nodeID() const { return { variable, graphdrawer::NodeType::LITERAL }; };
+    graphdrawer::NodeID inline nodeID() const {
+        return {variable, graphdrawer::NodeType::LITERAL};
+    };
 };
 
 struct Clause {
     StepType type;
     uint id;
     std::vector<uint> variables;
-    graphdrawer::NodeID inline nodeID() const { return { id, graphdrawer::NodeType::LITERAL }; };
+    graphdrawer::NodeID inline nodeID() const {
+        return {id, graphdrawer::NodeType::LITERAL};
+    };
 };
 
 class Stepper {
@@ -37,11 +50,10 @@ public:
     std::string relayout();
 
 protected:
-
     void loadFromGML(std::string glmPath);
     void readTrace(std::string tracePath);
     StepType readTraceStep();
-    void readBlock(char & type, int & data);
+    void readBlock(char& type, int& data);
     // returns true if a node has been colored
     void applyClause(int i = -1);
     bool applyStep(int i = -1);
@@ -67,5 +79,4 @@ protected:
 
     int m_lastCull;
     int m_branchCount;
-
 };

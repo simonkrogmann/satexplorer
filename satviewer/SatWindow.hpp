@@ -1,11 +1,11 @@
 #include <QApplication>
-#include <QSvgWidget>
 #include <QFileDialog>
-#include <QMainWindow>
-#include <QToolBar>
-#include <QLineEdit>
 #include <QIntValidator>
+#include <QLineEdit>
+#include <QMainWindow>
 #include <QScrollArea>
+#include <QSvgWidget>
+#include <QToolBar>
 #include "Stepper.hpp"
 
 class ogdfWrapper;
@@ -17,7 +17,7 @@ class SatWindow : public QMainWindow {
 public:
     void run();
 
-    explicit SatWindow(QWidget * parent = 0);
+    explicit SatWindow(QWidget* parent = 0);
     virtual ~SatWindow() = default;
 
     void setFilename(std::string filename);
@@ -32,7 +32,7 @@ protected:
 
     void endOfTrace(bool eof);
     void scaleImage(double factor);
-    void adjustScrollBar(QScrollBar *scrollBar, double factor);
+    void adjustScrollBar(QScrollBar* scrollBar, double factor);
     void reloadSvg(std::string path);
     void setInitialWindowSize(QSize imageSize);
     // These pointers belong to the QToolbar and are its responsibility
@@ -63,4 +63,3 @@ private slots:
     void zoomIn();
     void zoomOut();
 };
-

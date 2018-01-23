@@ -1,9 +1,8 @@
-#include <string>
 #include <boost/program_options.hpp>
 #include <ogdfWrapper/types.hpp>
+#include <string>
 
 namespace graphdrawer {
-
 class cfg {
 public:
     cfg(int ac, char* av[]);
@@ -26,5 +25,4 @@ private:
 
     void init_options();
 };
-
-}
+}  // namespace graphdrawer

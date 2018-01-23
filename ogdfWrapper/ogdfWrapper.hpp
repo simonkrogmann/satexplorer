@@ -3,82 +3,68 @@
 #include <ogdf/basic/basic.h>
 
 #include <memory>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 #include "ogdfVector.hpp"
 #include "types.hpp"
 
-namespace ogdf
-{
-    class Graph;
-    class GraphAttributes;
-    class EdgeElement;
-    class NodeElement;
-    class FMMMLayout;
-}
+namespace ogdf {
+class Graph;
+class GraphAttributes;
+class EdgeElement;
+class NodeElement;
+class FMMMLayout;
+}  // namespace ogdf
 
 namespace graphdrawer {
-
 enum class NodeColor {
-        UNPROCESSED,
-        SET_TRUE,
-        SET_FALSE,
-        BRANCH_TRUE,
-        BRANCH_FALSE,
-        CONFLICT,
-        STEP_SELECTED
-    };
-
-enum class LayoutType {
-    FMMM,
-    SUGIYAMA
+    UNPROCESSED,
+    SET_TRUE,
+    SET_FALSE,
+    BRANCH_TRUE,
+    BRANCH_FALSE,
+    CONFLICT,
+    STEP_SELECTED
 };
 
-enum class NodeType {
-    CLAUSE,
-    LITERAL
-};
+enum class LayoutType { FMMM, SUGIYAMA };
+
+enum class NodeType { CLAUSE, LITERAL };
 
 // used to distinguish between clause and literal nodes
 struct NodeID {
     uint id;
     NodeType type;
 
-    static NodeID clause(uint id) {
-        return NodeID{id, NodeType::CLAUSE};
-    }
+    static NodeID clause(uint id) { return NodeID{id, NodeType::CLAUSE}; }
 
-    static NodeID literal(uint id) {
-        return NodeID{id, NodeType::LITERAL};
-    }
+    static NodeID literal(uint id) { return NodeID{id, NodeType::LITERAL}; }
 
     inline bool operator==(const NodeID& other) const {
         return this->id == other.id && this->type == other.type;
     }
 };
 
-} // namespace graphdrawer
+}  // namespace graphdrawer
 
 namespace std {
-    template<>
-    struct hash<graphdrawer::NodeID> {
-        inline size_t operator()(const graphdrawer::NodeID& nodeID) const {
-            switch(nodeID.type) {
-                case graphdrawer::NodeType::CLAUSE:
-                    return hash<int>()(-1*nodeID.id);
-                case graphdrawer::NodeType::LITERAL:
-                    return hash<int>()(nodeID.id);
-            }
+template <>
+struct hash<graphdrawer::NodeID> {
+    inline size_t operator()(const graphdrawer::NodeID& nodeID) const {
+        switch (nodeID.type) {
+            case graphdrawer::NodeType::CLAUSE:
+                return hash<int>()(-1 * nodeID.id);
+            case graphdrawer::NodeType::LITERAL:
+                return hash<int>()(nodeID.id);
         }
-    };
-}
+    }
+};
+}  // namespace std
 
 namespace graphdrawer {
-
 class ogdfWrapper {
 public:
-
     ogdfWrapper();
     ~ogdfWrapper();
 
@@ -129,7 +115,6 @@ public:
 
     void moveToCenter(NodeID node, const std::vector<uint>& anchors);
 
-
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
     std::unique_ptr<ogdf::GraphAttributes> _p_graphAttributes;
@@ -141,7 +126,5 @@ private:
     void _setOptions(ogdf::FMMMLayout& layout);
     void _updateGraph();
     void colorNode(ogdf::NodeElement* node_p, NodeColor color);
-
-
 };
-}
+}  // namespace graphdrawer
