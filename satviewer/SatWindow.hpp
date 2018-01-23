@@ -24,8 +24,8 @@ public:
     void setForceSolve(bool forceSolve);
 
 protected:
-    QSvgWidget m_svgWidget;
-    QScrollArea m_scrollArea;
+    QSvgWidget* m_svgWidget;
+    QScrollArea* m_scrollArea;
     Stepper m_stepper;
     QToolBar m_toolbar;
     double m_scaleFactor;

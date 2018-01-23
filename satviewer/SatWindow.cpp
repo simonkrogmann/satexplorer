@@ -5,10 +5,10 @@
 #include <QScrollBar>
 
 SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(new QSvgWidget), m_scrollArea(new QScrollArea), m_stepper(), m_toolbar(tr("Graph"), this), m_scaleFactor(1)  {
-    m_svgWidget.setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    m_svgWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
-    m_scrollArea.setWidget(&m_svgWidget);
-    setCentralWidget(&m_scrollArea);
+    m_scrollArea->setWidget(m_svgWidget);
+    setCentralWidget(m_scrollArea);
 
     m_stepAction = m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
     m_branchAction = m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
@@ -34,7 +34,7 @@ SatWindow::SatWindow(QWidget*parent) : QMainWindow(parent), m_svgWidget(new QSvg
 void SatWindow::run(){
     QPalette pal;
     pal.setColor(QPalette::Window, Qt::white);
-    m_svgWidget.setPalette(pal);
+    m_svgWidget->setPalette(pal);
 
     // Button to open File dialogue?
     if (m_filename == "")
@@ -42,10 +42,10 @@ void SatWindow::run(){
         m_filename = QFileDialog::getOpenFileName(this, "Open Image", "/home/", "Image Files (*.cnf)").toStdString();
     }
     auto svgPath = m_stepper.initialize(m_filename, m_forceSolve);
-    m_svgWidget.setAutoFillBackground(true);
-    m_svgWidget.renderer()->setViewBox(QRect(QPoint(0, 0), QSize(500, 500)));
+    m_svgWidget->setAutoFillBackground(true);
+    m_svgWidget->renderer()->setViewBox(QRect(QPoint(0, 0), QSize(500, 500)));
 
-    m_svgWidget.load(QString::fromStdString(svgPath));
+    m_svgWidget->load(QString::fromStdString(svgPath));
 
     show();
 
@@ -53,31 +53,31 @@ void SatWindow::run(){
 
 void SatWindow::handleStepButton() {
     auto path = m_stepper.step();
-    m_svgWidget.load(QString::fromStdString(path));
+    m_svgWidget->load(QString::fromStdString(path));
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleBranchButton() {
     auto path = m_stepper.branch();
-    m_svgWidget.load(QString::fromStdString(path));
+    m_svgWidget->load(QString::fromStdString(path));
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleConflictButton() {
     auto path = m_stepper.nextConflict();
-    m_svgWidget.load(QString::fromStdString(path));
+    m_svgWidget->load(QString::fromStdString(path));
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleRestartButton() {
     auto path = m_stepper.nextRestart();
-    m_svgWidget.load(QString::fromStdString(path));
+    m_svgWidget->load(QString::fromStdString(path));
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleLastRestartButton() {
     auto path = m_stepper.lastRestart();
-    m_svgWidget.load(QString::fromStdString(path));
+    m_svgWidget->load(QString::fromStdString(path));
     m_lastRestartAction->setDisabled(true);
 }
 
@@ -99,19 +99,19 @@ void SatWindow::endOfTrace(bool eof) {
 
 void SatWindow::handleRelayoutButton(){
     auto path = m_stepper.relayout();
-    m_svgWidget.load(QString::fromStdString(path));
+    m_svgWidget->load(QString::fromStdString(path));
 }
 
 void SatWindow::handleCullInput() {
     int degree = m_cullBox.text().toInt();
     auto path = m_stepper.cull(degree);
-    m_svgWidget.load(QString::fromStdString(path));
+    m_svgWidget->load(QString::fromStdString(path));
 }
 
 void SatWindow::handleShowAllButton() {
     auto path = m_stepper.cull(std::numeric_limits<int>::max());
     m_cullBox.clear();
-    m_svgWidget.load(QString::fromStdString(path));
+    m_svgWidget->load(QString::fromStdString(path));
 }
 
 void SatWindow::setFilename(std::string filename)
@@ -126,10 +126,10 @@ void SatWindow::setForceSolve(bool forceSolve){
 void SatWindow::scaleImage(double factor)
 {
     m_scaleFactor *= factor;
-    m_svgWidget.resize(m_scaleFactor * m_svgWidget.sizeHint());
+    m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());
 
-    adjustScrollBar(m_scrollArea.horizontalScrollBar(), factor);
-    adjustScrollBar(m_scrollArea.verticalScrollBar(), factor);
+    adjustScrollBar(m_scrollArea->horizontalScrollBar(), factor);
+    adjustScrollBar(m_scrollArea->verticalScrollBar(), factor);
 
     m_zoomInAction->setEnabled(m_scaleFactor < 3.0);
     m_zoomOutAction->setEnabled(m_scaleFactor > 0.333);
