@@ -15,6 +15,10 @@ class QScrollArea;
 class QScrollBar;
 class QSvgWidget;
 
+/* 
+    Manages main window, SVG renderer, scrolling and toolbar buttons
+    Initializes Stepper and calls toolbar functionality on it.
+*/
 class SatWindow : public QMainWindow {
     Q_OBJECT
 public:

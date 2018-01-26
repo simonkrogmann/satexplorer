@@ -42,6 +42,8 @@ bool isEOF(std::ifstream& file) {
 
 void Stepper::initialize(std::string cnfPath, bool forceSolve) {
     m_lastCull = std::numeric_limits<int>::max();
+
+    // calculate file paths based on cnf file path
     auto cnfFilename =
         QFileInfo(QString::fromStdString(cnfPath)).baseName().toStdString();
     auto solutionPath = outputPath + cnfFilename + ".solution";
@@ -50,8 +52,10 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve) {
     m_gmlPath = outputPath + cnfFilename + ".gml";
     m_svgPath = outputPath + cnfFilename + ".svg";
 
+    // create output directory
     system(("mkdir -p " + outputPath).c_str());
 
+    // run minisat
     QProcess process;
     if (!std::ifstream(tracePath) || !std::ifstream(simplifiedPath) ||
         forceSolve) {  // check if this file has already been solved
@@ -64,6 +68,7 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve) {
         std::cout << "Done." << std::endl;
     }
 
+    // convert cnf to gml via python script
     if (!std::ifstream(m_gmlPath) || forceSolve) {  // check if conversion for
                                                     // this file has already
                                                     // taken place
@@ -80,8 +85,7 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve) {
     readTrace(tracePath);
     loadFromGML(m_gmlPath);
     m_graph.setLayoutType(graphdrawer::LayoutType::FMMM);
-
-    return relayout();
+    relayout();
 }
 
 void Stepper::relayout() {

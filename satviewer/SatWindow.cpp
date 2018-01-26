@@ -54,7 +54,7 @@ void SatWindow::run() {
     pal.setColor(QPalette::Window, Qt::white);
     m_svgWidget->setPalette(pal);
 
-    // Button to open File dialogue?
+    // TODO: Button to open File dialogue?
     if (m_filename == "") {
         m_filename = QFileDialog::getOpenFileName(this, "Open Image", "/home/",
                                                   "Image Files (*.cnf)")
