@@ -16,37 +16,6 @@ class NodeElement;
 class FMMMLayout;
 }  // namespace ogdf
 
-namespace graphdrawer {
-enum class NodeColor {
-    UNPROCESSED,
-    SET_TRUE,
-    SET_FALSE,
-    BRANCH_TRUE,
-    BRANCH_FALSE,
-    CONFLICT,
-    STEP_SELECTED
-};
-
-enum class LayoutType { FMMM, SUGIYAMA };
-
-enum class NodeType { CLAUSE, LITERAL };
-
-// used to distinguish between clause and literal nodes
-struct NodeID {
-    uint id;
-    NodeType type;
-
-    static NodeID clause(uint id) { return NodeID{id, NodeType::CLAUSE}; }
-
-    static NodeID literal(uint id) { return NodeID{id, NodeType::LITERAL}; }
-
-    inline bool operator==(const NodeID& other) const {
-        return this->id == other.id && this->type == other.type;
-    }
-};
-
-}  // namespace graphdrawer
-
 namespace std {
 template <>
 struct hash<graphdrawer::NodeID> {
@@ -96,7 +65,8 @@ public:
     // and gives each node the given dimensions
     void setNodeShapeAll(double width = 20.0, double height = 20.0);
 
-    // sets the node shape of a specific node to elliptical and gives it the given dimensions
+    // sets the node shape of a specific node to elliptical and gives it the
+    // given dimensions
     void setNodeShape(NodeID nodeID, double width = 20.0, double height = 20.0);
 
     // sets the width of edges
@@ -128,8 +98,8 @@ public:
 
     bool removeNode(NodeID nodeID);
 
-    // sets the x and y coordinate of node to the arithmetic middle of the nodes in literals
-    // the ids within literals are treated as nodes of type LITERAL
+    // sets the x and y coordinate of node to the arithmetic middle of the nodes
+    // in literals the ids within literals are treated as nodes of type LITERAL
     void moveToCenter(NodeID node, const std::vector<uint>& literals);
 
 private:
