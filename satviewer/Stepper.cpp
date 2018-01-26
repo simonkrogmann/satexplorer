@@ -40,7 +40,7 @@ bool isEOF(std::ifstream& file) {
 
 }  // namespace
 
-std::string Stepper::initialize(std::string cnfPath, bool forceSolve) {
+void Stepper::initialize(std::string cnfPath, bool forceSolve) {
     m_lastCull = std::numeric_limits<int>::max();
     auto cnfFilename =
         QFileInfo(QString::fromStdString(cnfPath)).baseName().toStdString();
@@ -84,13 +84,12 @@ std::string Stepper::initialize(std::string cnfPath, bool forceSolve) {
     return relayout();
 }
 
-std::string Stepper::relayout() {
+void Stepper::relayout() {
     m_graph.layout();
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
-    return m_svgPath;
 }
 
-std::string Stepper::step() {
+void Stepper::step() {
     bool stepFinished = false;
     while (!isEOF(m_tracefile) && !stepFinished) {
         const auto& type = readTraceStep();
@@ -103,7 +102,6 @@ std::string Stepper::step() {
     }
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
     printProgress();
-    return m_svgPath;
 }
 
 void Stepper::stepUntil(StepType finalType, bool layout) {
@@ -151,17 +149,15 @@ void Stepper::printProgress() {
               << std::endl;
 }
 
-std::string Stepper::branch() {
+void Stepper::branch() {
     stepUntil(StepType::BRANCH, true);
-    return m_svgPath;
 }
 
-std::string Stepper::nextConflict() {
+void Stepper::nextConflict() {
     stepUntil(StepType::BACKTRACK, true);
-    return m_svgPath;
 }
 
-std::string Stepper::nextRestart() {
+void Stepper::nextRestart() {
     stepUntil(StepType::RESTART, true);
     if (m_eventStack.back().type == StepType::RESTART) {
         std::cout << "Restart " << m_eventStack.back().numberOfRestarts
@@ -169,16 +165,14 @@ std::string Stepper::nextRestart() {
     } else {
         std::cout << "Restart " << m_numberOfRestarts << std::endl;
     }
-    return m_svgPath;
 }
 
-std::string Stepper::lastRestart() {
+void Stepper::lastRestart() {
     for (int i = 0; i < m_numberOfRestarts; ++i) {
         stepUntil(StepType::RESTART, false);
         assert(!isEOF(m_tracefile));
     }
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
-    return m_svgPath;
 }
 
 void Stepper::backtrack(int level) {
@@ -355,9 +349,9 @@ bool Stepper::isFinished() {
     return isEOF(m_tracefile);
 }
 
-std::string Stepper::cull(int degree) {
+void Stepper::cull(int degree) {
     if (m_lastCull == degree) {
-        return m_svgPath;
+        return;
     }
     loadFromGML(m_gmlPath);
     m_lastCull = degree;
@@ -371,5 +365,8 @@ std::string Stepper::cull(int degree) {
         applyClause(i);
     }
     m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+}
+
+const std::string Stepper::getSVGPath() const {
     return m_svgPath;
 }

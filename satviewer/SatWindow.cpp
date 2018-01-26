@@ -60,11 +60,11 @@ void SatWindow::run() {
                                                   "Image Files (*.cnf)")
                          .toStdString();
     }
-    auto svgPath = m_stepper.initialize(m_filename, m_forceSolve);
+    m_stepper.initialize(m_filename, m_forceSolve);
     m_svgWidget->setAutoFillBackground(true);
     m_svgWidget->renderer()->setViewBox(QRect(QPoint(0, 0), QSize(500, 500)));
 
-    m_svgWidget->load(QString::fromStdString(svgPath));
+    m_svgWidget->load(QString::fromStdString(m_stepper.getSVGPath()));
     setInitialWindowSize(m_svgWidget->sizeHint());
     m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());
 
@@ -72,32 +72,32 @@ void SatWindow::run() {
 }
 
 void SatWindow::handleStepButton() {
-    auto path = m_stepper.step();
-    reloadSvg(path);
+    m_stepper.step();
+    reloadSvg();
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleBranchButton() {
-    auto path = m_stepper.branch();
-    reloadSvg(path);
+    m_stepper.branch();
+    reloadSvg();
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleConflictButton() {
-    auto path = m_stepper.nextConflict();
-    reloadSvg(path);
+    m_stepper.nextConflict();
+    reloadSvg();
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleRestartButton() {
-    auto path = m_stepper.nextRestart();
-    reloadSvg(path);
+    m_stepper.nextRestart();
+    reloadSvg();
     endOfTrace(m_stepper.isFinished());
 }
 
 void SatWindow::handleLastRestartButton() {
-    auto path = m_stepper.lastRestart();
-    reloadSvg(path);
+    m_stepper.lastRestart();
+    reloadSvg();
     m_lastRestartAction->setDisabled(true);
 }
 
@@ -118,22 +118,22 @@ void SatWindow::endOfTrace(bool eof) {
 }
 
 void SatWindow::handleRelayoutButton() {
-    auto path = m_stepper.relayout();
-    reloadSvg(path);
+    m_stepper.relayout();
+    reloadSvg();
     setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
 void SatWindow::handleCullInput() {
     int degree = m_cullBox.text().toInt();
-    auto path = m_stepper.cull(degree);
-    reloadSvg(path);
+    m_stepper.cull(degree);
+    reloadSvg();
     setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
 void SatWindow::handleShowAllButton() {
-    auto path = m_stepper.cull(std::numeric_limits<int>::max());
+    m_stepper.cull(std::numeric_limits<int>::max());
     m_cullBox.clear();
-    reloadSvg(path);
+    reloadSvg();
     setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
@@ -169,8 +169,8 @@ void SatWindow::zoomOut() {
     scaleImage(0.8);
 }
 
-void SatWindow::reloadSvg(std::string path) {
-    m_svgWidget->load(QString::fromStdString(path));
+void SatWindow::reloadSvg() {
+    m_svgWidget->load(QString::fromStdString(m_stepper.getSVGPath()));
     m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());
 }
 

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <ogdfWrapper/ogdfWrapper.hpp>
+#include <ogdfWrapper/types.hpp>
 
 #include <fstream>
+#include <string>
 
 enum class StepType {
     SET,
@@ -41,16 +43,17 @@ struct Clause {
 
 class Stepper {
 public:
-    std::string initialize(std::string cnfPath, bool forceSolve);
-    std::string step();
-    std::string branch();
-    std::string nextConflict();
-    std::string nextRestart();
-    std::string lastRestart();
+    void initialize(std::string cnfPath, bool forceSolve);
+    void step();
+    void branch();
+    void nextConflict();
+    void nextRestart();
+    void lastRestart();
     void backtrack(int level);
     bool isFinished();
-    std::string cull(int degree);
-    std::string relayout();
+    void cull(int degree);
+    void relayout();
+    const std::string getSVGPath() const;
 
 protected:
     void loadFromGML(std::string glmPath);

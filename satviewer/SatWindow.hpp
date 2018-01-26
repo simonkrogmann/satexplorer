@@ -36,7 +36,7 @@ protected:
     void endOfTrace(bool eof);
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar* scrollBar, double factor);
-    void reloadSvg(std::string path);
+    void reloadSvg();
     void setInitialWindowSize(QSize imageSize);
     // These pointers belong to the QToolbar and are its responsibility
     QAction* m_stepAction;
