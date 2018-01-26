@@ -11,3 +11,38 @@ Dependencies:
 - zlib
 - bison
 - flex
+
+remember to init and update git submodules
+
+## Build
+
+Create a build folder and `cd` into it, execute `cmake ..` and `make -j4`.
+
+## Usage
+
+Run `./satviewer-bin` in build folder.
+You can specify a `.cnf` file as the first parameter to skip the file select dialouge
+
+### VSCODE launch configuration
+
+``
+{
+            "name": "debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/satviewer-bin",
+            "args": ["path/to/file.cnf"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/",
+            "environment": [], 
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+``
