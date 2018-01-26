@@ -40,7 +40,7 @@ ogdfWrapper::ogdfWrapper() {}
 
 ogdfWrapper::~ogdfWrapper() {}
 
-void ogdfWrapper::readGraph(std::string filename) {
+void ogdfWrapper::readGraph(const std::string& filename) {
     std::cout << "reading graph" << std::endl;
 
     _p_graph = std::make_unique<ogdf::Graph>();
@@ -168,7 +168,7 @@ int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
     return removedEntities;
 }
 
-void ogdfWrapper::layout() {
+void ogdfWrapper::layout() const {
     std::cout << "generating layout" << std::endl;
     switch (_layoutType) {
         case LayoutType::FMMM: {
@@ -192,7 +192,7 @@ void ogdfWrapper::layout() {
     std::cout << "layout complete" << std::endl;
 }
 
-void ogdfWrapper::_setOptions(ogdf::FMMMLayout& layout) {
+void ogdfWrapper::_setOptions(ogdf::FMMMLayout& layout) const {
     layout.useHighLevelOptions(true);
     layout.unitEdgeLength(30.0);
     layout.newInitialPlacement(true);
@@ -202,22 +202,22 @@ void ogdfWrapper::_setOptions(ogdf::FMMMLayout& layout) {
     // layout.springStrength(layout.springStrength() * 2);
 }
 
-void ogdfWrapper::writeGraph(std::string filename, filetype format) {
+void ogdfWrapper::writeGraph(const std::string& filename, FileType format) {
     std::cout << "writing " << filename;
     std::fstream file(filename, file.out);
     ogdf::GraphIO::SVGSettings settings;
     switch (format) {
-        case filetype::GML:
+        case FileType::GML:
             ogdf::GraphIO::writeGML(*_p_graphAttributes, file);
             break;
-        case filetype::SVG:
+        case FileType::SVG:
             // rebuild ogdf with updated CompressSVG.patch if textRendering is
             // not found
             settings.textRendering(false);
             ogdf::GraphIO::drawSVG(*_p_graphAttributes, file, settings);
             break;
         default:
-            throw std::invalid_argument("Unknown filetype");
+            throw std::invalid_argument("Unknown FileType");
     }
     std::cout << " ...done." << std::endl;
 }
@@ -233,8 +233,8 @@ void ogdfWrapper::addEdge(NodeID nodeStart, NodeID nodeEnd) {
 }
 
 void ogdfWrapper::removeEdge(NodeID nodeStart, NodeID nodeEnd) {
-    auto& nodeS_p = _label_map.at(nodeStart);
-    auto& nodeE_p = _label_map.at(nodeEnd);
+    const auto& nodeS_p = _label_map.at(nodeStart);
+    const auto& nodeE_p = _label_map.at(nodeEnd);
     for (const auto edge_p : _m_edges) {
         if ((edge_p->source() == nodeS_p && edge_p->target() == nodeE_p) ||
             (edge_p->source() == nodeE_p && edge_p->target() == nodeS_p)) {
@@ -245,7 +245,7 @@ void ogdfWrapper::removeEdge(NodeID nodeStart, NodeID nodeEnd) {
 }
 
 void ogdfWrapper::setZ(NodeID nodeID, double z) {
-    auto& node_p = _label_map.at(nodeID);
+    const auto& node_p = _label_map.at(nodeID);
     auto& node_z = _p_graphAttributes->z(node_p);
     node_z = z;
 }
@@ -258,7 +258,7 @@ bool ogdfWrapper::addNode(NodeID nodeID) {
     if (hasNode(nodeID)) {
         return false;
     }
-    auto node_p = _p_graph->newNode();
+    const auto node_p = _p_graph->newNode();
     _p_graphAttributes->label(node_p) = nodeID.id;
     _label_map.emplace(std::make_pair(nodeID, node_p));
     setNodeShape(nodeID);

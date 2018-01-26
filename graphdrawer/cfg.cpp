@@ -76,20 +76,20 @@ std::string cfg::output_filename() const {
     auto type = output_filetype();
     std::string filename = _vm["out"].as<std::string>();
     switch (type) {
-        case filetype::GML:
+        case FileType::GML:
             return filename + ".gml";
-        case filetype::SVG:
+        case FileType::SVG:
             return filename + ".svg";
         default:
             assert(false);
     }
 }
 
-filetype cfg::output_filetype() const {
+FileType cfg::output_filetype() const {
     if (_vm.count("gml")) {
-        return filetype::GML;
+        return FileType::GML;
     }
-    return filetype::SVG;
+    return FileType::SVG;
 }
 
 bool cfg::validate_config() const {

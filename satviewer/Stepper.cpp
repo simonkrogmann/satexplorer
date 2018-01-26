@@ -51,15 +51,16 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve) {
     auto simplifiedPath = outputPath + cnfFilename + ".simplified";
     m_gmlPath = outputPath + cnfFilename + ".gml";
     m_svgPath = outputPath + cnfFilename + ".svg";
+    const auto baseOutputname = outputPath + cnfFilename;
 
     // create output directory
     system(("mkdir -p " + outputPath).c_str());
-
-    // run minisat
     QProcess process;
+
+    // run minisat, if instance not solved yet
     if (!std::ifstream(tracePath) || !std::ifstream(simplifiedPath) ||
-        forceSolve) {  // check if this file has already been solved
-        auto satCmd = minisat + " " + cnfPath + " " + outputPath;
+        forceSolve) {
+        auto satCmd = minisat + " " + cnfPath + " " + baseOutputname;
         std::cout << "solve SAT instance" << std::endl;
         std::cout << satCmd << std::endl;
         process.start(QString::fromStdString(satCmd));
@@ -68,10 +69,8 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve) {
         std::cout << "Done." << std::endl;
     }
 
-    // convert cnf to gml via python script
-    if (!std::ifstream(m_gmlPath) || forceSolve) {  // check if conversion for
-                                                    // this file has already
-                                                    // taken place
+    // convert cnf to gml via python script, if not converted yet
+    if (!std::ifstream(m_gmlPath) || forceSolve) {
         auto conversionCmd = scriptPath + conversionScript + " " +
                              simplifiedPath + " " + m_gmlPath;
         std::cout << "Convert to gml for layouting" << std::endl;
@@ -90,7 +89,7 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve) {
 
 void Stepper::relayout() {
     m_graph.layout();
-    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+    m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
 
 void Stepper::step() {
@@ -104,7 +103,7 @@ void Stepper::step() {
         }
         stepFinished = applyStep();
     }
-    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+    m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
     printProgress();
 }
 
@@ -118,7 +117,7 @@ void Stepper::stepUntil(StepType finalType, bool layout) {
         auto type = readTraceStep();
         if ((type == finalType || isEOF(m_tracefile)) &&
             type == StepType::BACKTRACK) {
-            m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+            m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
             applyStep();
             break;
         }
@@ -135,7 +134,7 @@ void Stepper::stepUntil(StepType finalType, bool layout) {
         }
         if (type == finalType) {
             if (layout)
-                m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+                m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
             break;
         }
     }
@@ -176,7 +175,7 @@ void Stepper::lastRestart() {
         stepUntil(StepType::RESTART, false);
         assert(!isEOF(m_tracefile));
     }
-    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+    m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
 
 void Stepper::backtrack(int level) {
@@ -368,7 +367,7 @@ void Stepper::cull(int degree) {
     for (int i = 0; i < m_learnedClauses.size(); ++i) {
         applyClause(i);
     }
-    m_graph.writeGraph(m_svgPath, graphdrawer::filetype::SVG);
+    m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
 
 const std::string Stepper::getSVGPath() const {

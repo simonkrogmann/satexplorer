@@ -45,14 +45,14 @@ public:
     ~ogdfWrapper();
 
     // read graph from file in graphml format
-    void readGraph(std::string filename);
+    void readGraph(const std::string& filename);
 
     // set layout options and layout the graph
     // uses _layoutType to switch between layouting methods
-    void layout();
+    void layout() const;
 
     // write the graph to <filename>.<format>
-    void writeGraph(std::string filename, filetype format);
+    void writeGraph(const std::string& filename, FileType format);
 
     // removes all Nodes with degree > maxDegree from the Graph
     // onlyEdges will keep the high degree Nodes and just remove their edges
@@ -110,7 +110,7 @@ private:
     std::unordered_map<NodeID, ogdf::NodeElement*> _label_map;
     LayoutType _layoutType;
 
-    void _setOptions(ogdf::FMMMLayout& layout);
+    void _setOptions(ogdf::FMMMLayout& layout) const;
 
     // rebuilds the label_map
     void _updateGraph();

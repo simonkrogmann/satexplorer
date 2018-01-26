@@ -12,7 +12,7 @@ public:
 
     std::string input_filename() const;
     std::string output_filename() const;
-    filetype output_filetype() const;
+    FileType output_filetype() const;
     bool validate_config() const;
     int cull_graph() const;
     int node_width() const;
