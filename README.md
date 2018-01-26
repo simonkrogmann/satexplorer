@@ -21,7 +21,9 @@ Create a build folder and `cd` into it, execute `cmake ..` and `make -j4`.
 ## Usage
 
 Run `./satviewer-bin` in build folder.
-You can specify a `.cnf` file as the first parameter to skip the file select dialouge
+You can specify a `.cnf` file as the first parameter to skip the file select dialouge.
+`-f` forces resolving the sat instance
+
 
 ### VSCODE launch configuration
 
