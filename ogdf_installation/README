@@ -4,7 +4,7 @@ Method 1: Use PKGBUILD in Arch Linux
 
     1. execute the generate_PKGBUILD_patch.sh script. This will generate the ogdf-git.patch file.
     2. make a new folder for building the package, e.g. build
-    3. copy the PKGBUILD file and the ogdf-git.patch file to the new folder
+    3. copy PKGBUILD and ogdf-git.patch to the new folder
     4. cd into the folder and run makepkg -si
 
 Method 2: Use the install script
@@ -13,4 +13,3 @@ Method 2: Use the install script
         (we used commit 8836cfd4bb4d3702b753178690711b0de1c1baf2)
     2. copy the install script into the ogdf git repo
     3. execute the instal script
-    
