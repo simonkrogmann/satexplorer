@@ -31,11 +31,9 @@ SatWindow::SatWindow(QWidget *parent)
                                           &SatWindow::handleRestartButton);
     m_lastRestartAction = m_toolbar.addAction(
         "Last Restart", this, &SatWindow::handleLastRestartButton);
-    m_relayoutAction =
-        m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
-    m_zoomInAction = m_toolbar.addAction("Zoom In", this, &SatWindow::zoomIn);
-    m_zoomOutAction =
-        m_toolbar.addAction("Zoom Out", this, &SatWindow::zoomOut);
+    m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
+    m_toolbar.addAction("Zoom In", this, &SatWindow::zoomIn);
+    m_toolbar.addAction("Zoom Out", this, &SatWindow::zoomOut);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
     m_validator.setBottom(0);
@@ -151,9 +149,6 @@ void SatWindow::scaleImage(double factor) {
 
     adjustScrollBar(m_scrollArea->horizontalScrollBar(), factor);
     adjustScrollBar(m_scrollArea->verticalScrollBar(), factor);
-
-    // m_zoomInAction->setEnabled(m_scaleFactor < 3.0);
-    // m_zoomOutAction->setEnabled(m_scaleFactor > 0.333);
 }
 
 void SatWindow::adjustScrollBar(QScrollBar *scrollBar, double factor) {
@@ -176,8 +171,8 @@ void SatWindow::reloadSvg() {
 
 void SatWindow::setInitialWindowSize(QSize imageSize) {
     QRect rec = QApplication::desktop()->screenGeometry();
-    auto height = rec.height();
-    auto width = rec.width();
+    const auto height = rec.height();
+    const auto width = rec.width();
     if (imageSize.width() > width) {
         m_scaleFactor = static_cast<double>(width - 20) / (imageSize.width());
         m_svgWidget->resize(m_scaleFactor * m_svgWidget->sizeHint());

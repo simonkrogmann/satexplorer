@@ -48,9 +48,6 @@ protected:
     QAction* m_branchAction;
     QAction* m_restartAction;
     QAction* m_lastRestartAction;
-    QAction* m_relayoutAction;
-    QAction* m_zoomInAction;
-    QAction* m_zoomOutAction;
     std::string m_filename;
     bool m_forceSolve;
 

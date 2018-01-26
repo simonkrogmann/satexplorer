@@ -20,10 +20,12 @@ std::unordered_map<char, StepType> stepFromCharacter{
     {'L', StepType::LEARNEDCLAUSE}, {'U', StepType::UNLEARNEDCLAUSE}};
 
 bool shouldColor(StepType type) {
-    if (type == StepType::SET || type == StepType::BRANCH ||
-        type == StepType::CONFLICT)
-        return true;
-    return false;
+    return type == StepType::SET || type == StepType::BRANCH ||
+           type == StepType::CONFLICT;
+}
+
+bool isClause(StepType type) {
+    return type == StepType::LEARNEDCLAUSE || type == StepType::UNLEARNEDCLAUSE;
 }
 
 long getFileSize(std::string filename) {
@@ -61,10 +63,9 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve) {
     if (!std::ifstream(tracePath) || !std::ifstream(simplifiedPath) ||
         forceSolve) {
         auto satCmd = minisat + " " + cnfPath + " " + baseOutputname;
-        std::cout << "solve SAT instance" << std::endl;
-        std::cout << satCmd << std::endl;
+        std::cout << "Solving SAT instance..." << std::endl
+                  << satCmd << std::endl;
         process.start(QString::fromStdString(satCmd));
-        std::cout << "solving..." << std::endl;
         process.waitForFinished(-1);
         std::cout << "Done." << std::endl;
     }
@@ -73,10 +74,9 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve) {
     if (!std::ifstream(m_gmlPath) || forceSolve) {
         auto conversionCmd = scriptPath + conversionScript + " " +
                              simplifiedPath + " " + m_gmlPath;
-        std::cout << "Convert to gml for layouting" << std::endl;
-        std::cout << conversionCmd << std::endl;
+        std::cout << "Converting to gml for layouting..." << std::endl
+                  << conversionCmd << std::endl;
         process.start(QString::fromStdString(conversionCmd));
-        std::cout << "converting..." << std::endl;
         process.waitForFinished(-1);
         std::cout << "Done." << std::endl;
     }
@@ -96,8 +96,7 @@ void Stepper::step() {
     bool stepFinished = false;
     while (!isEOF(m_tracefile) && !stepFinished) {
         const auto& type = readTraceStep();
-        if (type == StepType::LEARNEDCLAUSE ||
-            type == StepType::UNLEARNEDCLAUSE) {
+        if (isClause(type)) {
             applyClause();
             break;
         }
@@ -114,20 +113,19 @@ void Stepper::stepUntil(StepType finalType, bool layout) {
     int newClauseCount = 0;
     int deletedClauseCount = 0;
     while (!isEOF(m_tracefile)) {
-        auto type = readTraceStep();
+        const auto type = readTraceStep();
         if ((type == finalType || isEOF(m_tracefile)) &&
             type == StepType::BACKTRACK) {
             m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
             applyStep();
             break;
         }
-        if (type == StepType::LEARNEDCLAUSE ||
-            type == StepType::UNLEARNEDCLAUSE) {
+        if (isClause(type)) {
             applyClause();
             if (type == StepType::LEARNEDCLAUSE) ++newClauseCount;
             if (type == StepType::UNLEARNEDCLAUSE) ++deletedClauseCount;
         } else {
-            auto nodeColored = applyStep();
+            const auto nodeColored = applyStep();
             if (type == StepType::SET) ++propagateCount;
             if (type == StepType::BRANCH) ++branchCount;
             if (shouldColor(type) && !nodeColored) ++invisibleCount;
