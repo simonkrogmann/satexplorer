@@ -125,10 +125,10 @@ void ogdfWrapper::colorNode(NodeID nodeID, NodeColor color) {
 }
 
 void ogdfWrapper::colorEdges() {
-    for (auto node_p : _m_edges) {
-        auto& stroke_color = _p_graphAttributes->strokeColor(node_p);
+    for(auto edge_p : _m_edges) {
+        auto & stroke_color = _p_graphAttributes->strokeColor(edge_p);
         stroke_color = ogdf::Color(ogdf::Color::Name::Black);
-        auto& stroke_width = _p_graphAttributes->strokeWidth(node_p);
+        auto & stroke_width = _p_graphAttributes->strokeWidth(edge_p);
         stroke_width = 1.f;
     }
 }

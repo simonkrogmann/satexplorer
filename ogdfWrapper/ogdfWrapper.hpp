@@ -64,6 +64,12 @@ struct hash<graphdrawer::NodeID> {
 }  // namespace std
 
 namespace graphdrawer {
+
+/*
+    This class is a highlevel interface for the ogdf graph library
+    It holds and manages a graph through the ogdf library.
+    It provides methods to configure and draw the graph as an SVG.
+*/
 class ogdfWrapper {
 public:
     ogdfWrapper();
@@ -83,16 +89,23 @@ public:
     // onlyEdges will keep the high degree Nodes and just remove their edges
     int removeNodes(int maxDegree, bool onlyEdges = false);
 
+    // colors all nodes with the given color
     void colorNodes(NodeColor color);
 
+    // sets the node shape of every node to elliptical
+    // and gives each node the given dimensions
     void setNodeShapeAll(double width = 20.0, double height = 20.0);
 
+    // sets the node shape of a specific node to elliptical and gives it the given dimensions
     void setNodeShape(NodeID nodeID, double width = 20.0, double height = 20.0);
 
+    // sets the width of edges
     void setStrokeWidth(float width);
 
+    // colors the node in the given color
     void colorNode(NodeID nodeID, NodeColor color);
 
+    // colors all edges black, and resets the stroke width to 1
     void colorEdges();
 
     bool hasNode(NodeID nodeID);
@@ -102,9 +115,10 @@ public:
     void removeEdge(NodeID nodeStart, NodeID NodeEnd);
 
     // sets the 'height' of the node
-    // nodes with higher z get written to svg first
+    // nodes with higher z are rendered on top
     void setZ(NodeID nodeID, double z);
 
+    // set a layout algorithm to use for layouting the graph
     void setLayoutType(LayoutType type);
 
     // returns 1 if the node was added to the label map (label is an integer)
@@ -114,7 +128,9 @@ public:
 
     bool removeNode(NodeID nodeID);
 
-    void moveToCenter(NodeID node, const std::vector<uint>& anchors);
+    // sets the x and y coordinate of node to the arithmetic middle of the nodes in literals
+    // the ids within literals are treated as nodes of type LITERAL
+    void moveToCenter(NodeID node, const std::vector<uint>& literals);
 
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
@@ -125,6 +141,8 @@ private:
     LayoutType _layoutType;
 
     void _setOptions(ogdf::FMMMLayout& layout);
+
+    // rebuilds the label_map
     void _updateGraph();
     void colorNode(ogdf::NodeElement* node_p, NodeColor color);
 };
