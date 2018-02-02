@@ -49,7 +49,8 @@ public:
 
     // set layout options and layout the graph
     // uses _layoutType to switch between layouting methods
-    // view http://amber-v7.cs.tu-dortmund.de/doku.php/tech:layouter for an explanation of different layout types
+    // view http://amber-v7.cs.tu-dortmund.de/doku.php/tech:layouter for an
+    // explanation of different layout types
     void layout() const;
 
     // write the graph to <filename>.<format>

@@ -28,7 +28,8 @@ int main(int ac, char* av[]) {
         wrapper.layout();
         wrapper.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
         // Node Ids are picked arbitrarily here
-        // If you indend to run this, change these IDs to some that exist in your input graph
+        // If you indend to run this, change these IDs to some that exist in
+        // your input graph
         wrapper.colorNode({34, graphdrawer::NodeType::LITERAL},
                           graphdrawer::NodeColor::SET_TRUE);
         wrapper.setNodeShape({34, graphdrawer::NodeType::LITERAL},

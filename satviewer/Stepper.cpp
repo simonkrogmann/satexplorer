@@ -42,26 +42,24 @@ bool isEOF(std::ifstream& file) {
 
 }  // namespace
 
-void Stepper::initialize(std::string cnfPath, bool forceSolve) {
+void Stepper::initialize(std::string cnfPath, bool forceSolve,
+                         bool showSimplified) {
     m_lastCull = std::numeric_limits<int>::max();
 
     // calculate file paths based on cnf file path
-    auto cnfFilename =
+    const auto cnfFilename =
         QFileInfo(QString::fromStdString(cnfPath)).baseName().toStdString();
-    auto solutionPath = outputPath + cnfFilename + ".solution";
-    auto tracePath = outputPath + cnfFilename + ".trace";
-    auto simplifiedPath = outputPath + cnfFilename + ".simplified";
-    m_gmlPath = outputPath + cnfFilename + ".gml";
-    m_svgPath = outputPath + cnfFilename + ".svg";
+    const auto solutionPath = outputPath + cnfFilename + ".solution";
+    const auto tracePath = outputPath + cnfFilename + ".trace";
     const auto baseOutputname = outputPath + cnfFilename;
+    m_svgPath = outputPath + cnfFilename + ".svg";
 
     // create output directory
     system(("mkdir -p " + outputPath).c_str());
     QProcess process;
 
     // run minisat, if instance not solved yet
-    if (!std::ifstream(tracePath) || !std::ifstream(simplifiedPath) ||
-        forceSolve) {
+    if (!std::ifstream(tracePath) || forceSolve) {
         auto satCmd = minisat + " " + cnfPath + " " + baseOutputname;
         std::cout << "Solving SAT instance..." << std::endl
                   << satCmd << std::endl;
@@ -70,10 +68,16 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve) {
         std::cout << "Done." << std::endl;
     }
 
+    if (showSimplified) {
+        cnfPath = outputPath + cnfFilename + ".simplified";
+    }
+    m_gmlPath = outputPath + cnfFilename +
+                (showSimplified ? ".simplified" : "") + ".gml";
+
     // convert cnf to gml via python script, if not converted yet
     if (!std::ifstream(m_gmlPath) || forceSolve) {
-        auto conversionCmd = scriptPath + conversionScript + " " +
-                             simplifiedPath + " " + m_gmlPath;
+        auto conversionCmd =
+            scriptPath + conversionScript + " " + cnfPath + " " + m_gmlPath;
         std::cout << "Converting to gml for layouting..." << std::endl
                   << conversionCmd << std::endl;
         process.start(QString::fromStdString(conversionCmd));

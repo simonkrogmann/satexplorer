@@ -59,7 +59,7 @@ void SatWindow::run() {
                                                   "Image Files (*.cnf)")
                          .toStdString();
     }
-    m_stepper.initialize(m_filename, m_forceSolve);
+    m_stepper.initialize(m_filename, m_forceSolve, m_showSimplified);
     m_svgWidget->setAutoFillBackground(true);
     m_svgWidget->renderer()->setViewBox(QRect(QPoint(0, 0), QSize(500, 500)));
 
@@ -153,6 +153,10 @@ void SatWindow::setFilename(std::string filename) {
 
 void SatWindow::setForceSolve(bool forceSolve) {
     m_forceSolve = forceSolve;
+}
+
+void SatWindow::setShowSimplified(bool showSimplified) {
+    m_showSimplified = showSimplified;
 }
 
 void SatWindow::scaleImage(double factor) {

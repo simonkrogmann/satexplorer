@@ -48,8 +48,8 @@ struct Clause {
 */
 class Stepper {
 public:
-    void initialize(std::string cnfPath, bool forceSolve);
-    /* 
+    void initialize(std::string cnfPath, bool forceSolve, bool showSimplified);
+    /*
         read,parse and execute one step of the tracefile
     */
     void step();
@@ -75,8 +75,9 @@ public:
     void lastRestart();
     void backtrack(int level);
     bool isFinished();
-    /* 
-        remove edges that have at least one endpoint with degree higher than the parameter
+    /*
+        remove edges that have at least one endpoint with degree higher than the
+       parameter
     */
     void cull(int degree);
     void relayout();

@@ -13,7 +13,8 @@ enum class NodeColor {
     STEP_SELECTED
 };
 
-// view http://amber-v7.cs.tu-dortmund.de/doku.php/tech:layouter for an explanation of different layout types
+// view http://amber-v7.cs.tu-dortmund.de/doku.php/tech:layouter for an
+// explanation of different layout types
 enum class LayoutType { FMMM, SUGIYAMA };
 
 enum class NodeType { CLAUSE, LITERAL };

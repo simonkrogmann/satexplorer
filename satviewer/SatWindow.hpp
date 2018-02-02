@@ -29,6 +29,7 @@ public:
 
     void setFilename(std::string filename);
     void setForceSolve(bool forceSolve);
+    void setShowSimplified(bool showSimplified);
 
 protected:
     QSvgWidget* m_svgWidget;
@@ -51,6 +52,7 @@ protected:
     QAction* m_lastRestartAction;
     std::string m_filename;
     bool m_forceSolve;
+    bool m_showSimplified;
 
     QLineEdit m_cullBox;
     QIntValidator m_validator;

@@ -4,7 +4,7 @@
 #include "SatWindow.hpp"
 
 int main(int argc, char *argv[]) {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
 
     QCommandLineParser parser;
     parser.addPositionalArgument(
@@ -13,10 +13,14 @@ int main(int argc, char *argv[]) {
         "f", QCoreApplication::translate(
                  "main", "solve graph even if a solved file already exists"));
     parser.addOption(forceSolve);
-    parser.process(a);
+    QCommandLineOption showSimplified(
+        "s", QCoreApplication::translate("main", "visualize simplified graph"));
+    parser.addOption(showSimplified);
+    parser.process(app);
 
     SatWindow window;
     window.setForceSolve(parser.isSet(forceSolve));
+    window.setShowSimplified(parser.isSet(showSimplified));
     if (parser.positionalArguments().size() > 0) {
         window.setFilename(parser.positionalArguments().at(0).toStdString());
     }
@@ -24,5 +28,5 @@ int main(int argc, char *argv[]) {
     window.run();
     window.show();
 
-    return a.exec();
+    return app.exec();
 }
