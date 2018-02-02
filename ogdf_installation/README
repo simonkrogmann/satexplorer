@@ -12,4 +12,4 @@ Method 2: Use the install script
     1. Clone the latest ogdf snapshot from the git repository git@github.com:ogdf/ogdf.git
         (we used commit 8836cfd4bb4d3702b753178690711b0de1c1baf2)
     2. copy the install script into the ogdf git repo
-    3. execute the instal script
+    3. execute the install script
