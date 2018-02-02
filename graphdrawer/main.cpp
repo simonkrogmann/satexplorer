@@ -9,7 +9,10 @@ namespace po = boost::program_options;
 
 #include <ogdfWrapper/ogdfWrapper.hpp>
 #include "cfg.hpp"
-
+/*
+    This program demonstrates how to use the ogdfWrapper library
+    It reads a graph, colors some nodes and generates a svg
+*/
 int main(int ac, char* av[]) {
     try {
         graphdrawer::cfg cfg(ac, av);
@@ -24,6 +27,8 @@ int main(int ac, char* av[]) {
         }
         wrapper.layout();
         wrapper.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
+        // Node Ids are picked arbitrarily here
+        // If you indend to run this, change these IDs to some that exist in your input graph
         wrapper.colorNode({34, graphdrawer::NodeType::LITERAL},
                           graphdrawer::NodeColor::SET_TRUE);
         wrapper.setNodeShape({34, graphdrawer::NodeType::LITERAL},

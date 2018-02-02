@@ -49,13 +49,35 @@ struct Clause {
 class Stepper {
 public:
     void initialize(std::string cnfPath, bool forceSolve);
+    /* 
+        read,parse and execute one step of the tracefile
+    */
     void step();
+
+    /*
+        execute steps until the next branch step
+    */
     void branch();
+
+    /*
+        execute steps until the next conflict step
+    */
     void nextConflict();
+
+    /*
+        skip forward to the next restart step
+    */
     void nextRestart();
+
+    /*
+        skip forward to the last restart step in the tracefile
+    */
     void lastRestart();
     void backtrack(int level);
     bool isFinished();
+    /* 
+        remove edges that have at least one endpoint with degree higher than the parameter
+    */
     void cull(int degree);
     void relayout();
     const std::string getSVGPath() const;
@@ -63,7 +85,15 @@ public:
 protected:
     void loadFromGML(std::string glmPath);
     void readTrace(std::string tracePath);
+    /*
+        Reads and parses one entry from the tracefile
+    */
     StepType readTraceStep();
+
+    /*
+        Reads one entry from the tracefile
+        Tracefile is in binary. Format is char followed by int
+    */
     void readBlock(char& type, int& data);
     // returns true if a node has been colored
     void applyClause(int i = -1);

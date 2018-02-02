@@ -322,13 +322,21 @@ StepType Stepper::readTraceStep() {
     const bool value = data >= 0;
     const auto stepType = stepFromCharacter[type];
     if (stepType == StepType::LEARNEDCLAUSE) {
+        // when we encounter a Clause, first block tells us:
+        // type = Clause
+        // data = ID of Clause Node
         assert(data >= 0);
         m_learnedClauses.push_back({stepType, static_cast<uint>(data), {}});
         int length;
         char unused;
         readBlock(unused, length);
         assert(unused == 'S');
+        // second block denotes
+        // type = "S" Start
+        // data = number of literals in the clause
         for (size_t i = 0; i < length; ++i) {
+            // read literal info
+            // node = literal node ID
             int node;
             readBlock(unused, node);
             assert(unused == 'x');
