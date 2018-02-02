@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QFileDialog>
+#include <QPainter>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QSvgRenderer>
@@ -73,6 +74,17 @@ void SatWindow::handleStepButton() {
     m_stepper.step();
     reloadSvg();
     endOfTrace(m_stepper.isFinished());
+}
+
+void SatWindow::exportToPNG(const std::string &filename) {
+    QImage image(m_svgWidget->size(), QImage::Format_RGB32);
+    QPainter painter;
+    painter.begin(&image);
+    painter.fillRect(0, 0, image.width(), image.height(),
+                     QColor(255, 255, 255));
+    m_svgWidget->renderer()->render(&painter);
+    painter.end();
+    image.save(QString::fromStdString(filename), "PNG");
 }
 
 void SatWindow::handleBranchButton() {

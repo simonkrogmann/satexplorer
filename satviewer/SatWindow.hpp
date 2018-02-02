@@ -41,6 +41,7 @@ protected:
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar* scrollBar, double factor);
     void reloadSvg();
+    void exportToPNG(const std::string& filename);
     void setInitialWindowSize(QSize imageSize);
     // These pointers belong to the QToolbar and are its responsibility
     QAction* m_stepAction;
