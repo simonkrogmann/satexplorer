@@ -49,6 +49,7 @@ public:
 
     // set layout options and layout the graph
     // uses _layoutType to switch between layouting methods
+    // view http://amber-v7.cs.tu-dortmund.de/doku.php/tech:layouter for an explanation of different layout types
     void layout() const;
 
     // write the graph to <filename>.<format>
@@ -91,11 +92,12 @@ public:
     // set a layout algorithm to use for layouting the graph
     void setLayoutType(LayoutType type);
 
-    // returns 1 if the node was added to the label map (label is an integer)
-    // returns 0 if the nodeID is already present in the label map
-    // returns 2 if the nodeID is not an int
+    // returns true if the node was added to the label map (label is an integer)
+    // returns false if the nodeID is already present in the label map
     bool addNode(NodeID nodeID);
 
+    // returns true if the Node was successfully removed
+    // returns false if the node does not exist in the graph
     bool removeNode(NodeID nodeID);
 
     // sets the x and y coordinate of node to the arithmetic middle of the nodes
