@@ -7,12 +7,12 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QSvgRenderer>
-#include <QSvgWidget>
 #include <QTimer>
+#include <iostream>
 
 SatWindow::SatWindow(QWidget *parent)
     : QMainWindow(parent)
-    , m_svgWidget(new QSvgWidget)
+    , m_svgWidget(new SelectionSvgWidget)
     , m_scrollArea(new QScrollArea)
     , m_stepper()
     , m_toolbar(tr("Graph"), this)
@@ -46,6 +46,9 @@ SatWindow::SatWindow(QWidget *parent)
 
     addToolBar(Qt::BottomToolBarArea, &m_toolbar);
     setWindowTitle(tr("SatExplorer"));
+
+    QObject::connect(m_svgWidget, SIGNAL(rectangleDrawn(TwoPoints)), this,
+                     SLOT(handleRectangleDrawn(TwoPoints)));
 }
 
 void SatWindow::run() {
@@ -145,6 +148,12 @@ void SatWindow::handleShowAllButton() {
     m_cullBox.clear();
     reloadSvg();
     setInitialWindowSize(m_svgWidget->sizeHint());
+}
+
+void SatWindow::handleRectangleDrawn(TwoPoints rectangle) {
+    m_stepper.colorNodesInRect(rectangle.p1.x(), rectangle.p2.x(),
+                               rectangle.p1.y(), rectangle.p2.y());
+    reloadSvg();
 }
 
 void SatWindow::setFilename(std::string filename) {

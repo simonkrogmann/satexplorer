@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include <QToolBar>
 
+#include "SelectionSvgWidget.hpp"
 #include "Stepper.hpp"
 
 class ogdfWrapper;
@@ -13,7 +14,6 @@ class QLineEdit;
 class QIntValidator;
 class QScrollArea;
 class QScrollBar;
-class QSvgWidget;
 
 /*
     Manages main window, SVG renderer, scrolling and toolbar buttons
@@ -32,7 +32,7 @@ public:
     void setShowSimplified(bool showSimplified);
 
 protected:
-    QSvgWidget* m_svgWidget;
+    SelectionSvgWidget* m_svgWidget;
     QScrollArea* m_scrollArea;
     Stepper m_stepper;
     QToolBar m_toolbar;
@@ -69,4 +69,5 @@ private slots:
     void startTimer();
     void zoomIn();
     void zoomOut();
+    void handleRectangleDrawn(TwoPoints rectangle);
 };

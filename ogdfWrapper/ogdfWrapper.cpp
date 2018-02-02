@@ -297,4 +297,28 @@ void ogdfWrapper::moveToCenter(NodeID node, const std::vector<uint>& anchors) {
     _p_graphAttributes->x(node_p) = x;
     _p_graphAttributes->y(node_p) = y;
 }
+
+std::vector<ogdf::NodeElement*> ogdfWrapper::nodesInRectangle(float xMin,
+                                                              float xMax,
+                                                              float yMin,
+                                                              float yMax) {
+    auto graphWidth = _p_graphAttributes->boundingBox().width();
+    auto graphHeight = _p_graphAttributes->boundingBox().height();
+    std::vector<ogdf::NodeElement*> containedNodes;
+    xMin *= graphWidth;
+    xMax *= graphWidth;
+    yMin *= graphHeight;
+    yMax *= graphHeight;
+
+    for (auto node : _m_nodes) {
+        if (xMin <= _p_graphAttributes->x(node) &&
+            _p_graphAttributes->x(node) <= xMax &&
+            yMin <= _p_graphAttributes->y(node) &&
+            _p_graphAttributes->y(node) <= yMax) {
+            containedNodes.push_back(node);
+        }
+    }
+
+    return containedNodes;
+}
 }  // namespace graphdrawer

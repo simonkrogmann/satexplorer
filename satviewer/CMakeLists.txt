@@ -5,12 +5,14 @@ set(target satviewer-bin)
 set(sources
     main.cpp
     SatWindow.cpp
-    SatWindow.hpp
     Stepper.cpp
-    Stepper.hpp
+    SelectionSvgWidget.cpp
 )
 
 set(includes
+    SatWindow.hpp
+    Stepper.hpp
+    SelectionSvgWidget.hpp
 )
 
 set(libraries

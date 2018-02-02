@@ -82,6 +82,7 @@ public:
     void cull(int degree);
     void relayout();
     const std::string getSVGPath() const;
+    void colorNodesInRect(float xMin, float xMax, float yMin, float yMax);
 
 protected:
     void loadFromGML(std::string glmPath);

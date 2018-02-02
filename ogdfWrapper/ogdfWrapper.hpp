@@ -76,6 +76,7 @@ public:
 
     // colors the node in the given color
     void colorNode(NodeID nodeID, NodeColor color);
+    void colorNode(ogdf::NodeElement* node_p, NodeColor color);
 
     // colors all edges black, and resets the stroke width to 1
     void colorEdges();
@@ -105,6 +106,9 @@ public:
     // in literals the ids within literals are treated as nodes of type LITERAL
     void moveToCenter(NodeID node, const std::vector<uint>& literals);
 
+    std::vector<ogdf::NodeElement*> nodesInRectangle(float xMin, float xMax,
+                                                     float yMin, float yMax);
+
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
     std::unique_ptr<ogdf::GraphAttributes> _p_graphAttributes;
@@ -117,6 +121,5 @@ private:
 
     // rebuilds the label_map
     void _updateGraph();
-    void colorNode(ogdf::NodeElement* node_p, NodeColor color);
 };
 }  // namespace graphdrawer

@@ -383,3 +383,11 @@ void Stepper::cull(int degree) {
 const std::string Stepper::getSVGPath() const {
     return m_svgPath;
 }
+
+void Stepper::colorNodesInRect(float xMin, float xMax, float yMin, float yMax) {
+    auto containedNodes = m_graph.nodesInRectangle(xMin, xMax, yMin, yMax);
+    for (auto& node : containedNodes) {
+        m_graph.colorNode(node, graphdrawer::NodeColor::SET_TRUE);
+    }
+    m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
+}
