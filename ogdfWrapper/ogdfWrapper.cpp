@@ -60,21 +60,24 @@ void ogdfWrapper::readGraph(const std::string& filename) {
     _updateGraph();
 }
 
+NodeID ogdfWrapper::_nodeIDforPointer(ogdf::NodeElement* node_p) {
+    std::string label = _p_graphAttributes->label(node_p);
+
+    // first character denotes node type
+    // c = clause
+    // l = literal
+    // see cnfToGML.py
+    uint id = std::stoi(label.substr(1));
+    return {id, nodeTypeFromCharacter.at(label[0])};
+}
+
 void ogdfWrapper::_updateGraph() {
     _p_graph->allNodes(_m_nodes);
     _p_graph->allEdges(_m_edges);
 
     _label_map.clear();
     for (auto node_p : _m_nodes) {
-        std::string label = _p_graphAttributes->label(node_p);
-
-        // first character denotes node type
-        // c = clause
-        // l = literal
-        // see cnfToGML.py
-        uint id = std::stoi(label.substr(1));
-        _label_map.emplace(std::make_pair(
-            NodeID{id, nodeTypeFromCharacter.at(label[0])}, node_p));
+        _label_map.emplace(_nodeIDforPointer(node_p), node_p);
     }
 }
 
@@ -298,13 +301,11 @@ void ogdfWrapper::moveToCenter(NodeID node, const std::vector<uint>& anchors) {
     _p_graphAttributes->y(node_p) = y;
 }
 
-std::vector<ogdf::NodeElement*> ogdfWrapper::nodesInRectangle(float xMin,
-                                                              float xMax,
-                                                              float yMin,
-                                                              float yMax) {
+std::vector<NodeID> ogdfWrapper::nodesInRectangle(float xMin, float xMax,
+                                                  float yMin, float yMax) {
     auto graphWidth = _p_graphAttributes->boundingBox().width();
     auto graphHeight = _p_graphAttributes->boundingBox().height();
-    std::vector<ogdf::NodeElement*> containedNodes;
+    std::vector<NodeID> containedNodes;
     xMin *= graphWidth;
     xMax *= graphWidth;
     yMin *= graphHeight;
@@ -315,7 +316,7 @@ std::vector<ogdf::NodeElement*> ogdfWrapper::nodesInRectangle(float xMin,
             _p_graphAttributes->x(node) <= xMax &&
             yMin <= _p_graphAttributes->y(node) &&
             _p_graphAttributes->y(node) <= yMax) {
-            containedNodes.push_back(node);
+            containedNodes.push_back(_nodeIDforPointer(node));
         }
     }
 

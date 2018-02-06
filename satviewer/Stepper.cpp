@@ -93,6 +93,9 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve,
 
 void Stepper::relayout() {
     m_graph.layout();
+    for (const auto & [ nodeID, color ] : m_coloredNodes) {
+        m_graph.colorNode(nodeID, color);
+    }
     m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
 
@@ -281,7 +284,7 @@ bool Stepper::applyStep(int i) {
     return true;
 }
 
-void Stepper::loadFromGML(std::string gmlPath) {
+void Stepper::loadFromGML(const std::string& gmlPath) {
     m_branchCount = 0;
     m_graph.readGraph(gmlPath);
     m_graph.setNodeShapeAll();
@@ -290,7 +293,7 @@ void Stepper::loadFromGML(std::string gmlPath) {
 }
 
 // opens the tracefile
-void Stepper::readTrace(std::string tracePath) {
+void Stepper::readTrace(const std::string& tracePath) {
     m_tracefileSize = getFileSize(tracePath);
     m_readBlocks = 0;
     m_tracefile.open(tracePath, std::ios::binary | std::ios::in);
@@ -377,6 +380,9 @@ void Stepper::cull(int degree) {
     for (int i = 0; i < m_learnedClauses.size(); ++i) {
         applyClause(i);
     }
+    for (const auto & [ nodeID, color ] : m_coloredNodes) {
+        m_graph.colorNode(nodeID, color);
+    }
     m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
 
@@ -386,9 +392,10 @@ const std::string Stepper::getSVGPath() const {
 
 void Stepper::colorNodesInRect(float xMin, float xMax, float yMin, float yMax,
                                graphdrawer::NodeColor color) {
-    auto containedNodes = m_graph.nodesInRectangle(xMin, xMax, yMin, yMax);
-    for (auto& node : containedNodes) {
+    for (const auto node : m_graph.nodesInRectangle(xMin, xMax, yMin, yMax)) {
         m_graph.colorNode(node, color);
+        m_coloredNodes[node] = color;
     }
+
     m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }

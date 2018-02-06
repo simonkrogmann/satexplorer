@@ -106,8 +106,8 @@ public:
     // in literals the ids within literals are treated as nodes of type LITERAL
     void moveToCenter(NodeID node, const std::vector<uint>& literals);
 
-    std::vector<ogdf::NodeElement*> nodesInRectangle(float xMin, float xMax,
-                                                     float yMin, float yMax);
+    std::vector<NodeID> nodesInRectangle(float xMin, float xMax, float yMin,
+                                         float yMax);
 
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
@@ -121,5 +121,6 @@ private:
 
     // rebuilds the label_map
     void _updateGraph();
+    NodeID _nodeIDforPointer(ogdf::NodeElement* node_p);
 };
 }  // namespace graphdrawer

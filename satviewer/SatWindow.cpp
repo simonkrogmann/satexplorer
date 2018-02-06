@@ -83,8 +83,7 @@ void SatWindow::exportToPNG(const std::string &filename) {
     QImage image(m_svgWidget->size(), QImage::Format_RGB32);
     QPainter painter;
     painter.begin(&image);
-    painter.fillRect(0, 0, image.width(), image.height(),
-                     QColor(255, 255, 255));
+    painter.fillRect(QRect({}, image.size()), QColor(255, 255, 255));
     m_svgWidget->renderer()->render(&painter);
     painter.end();
     image.save(QString::fromStdString(filename), "PNG");

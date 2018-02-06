@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <string>
+#include <unordered_set>
 
 enum class StepType {
     SET,
@@ -86,8 +87,8 @@ public:
                           graphdrawer::NodeColor color);
 
 protected:
-    void loadFromGML(std::string glmPath);
-    void readTrace(std::string tracePath);
+    void loadFromGML(const std::string& gmlPath);
+    void readTrace(const std::string& tracePath);
     /*
         Reads and parses one entry from the tracefile
     */
@@ -123,4 +124,7 @@ protected:
 
     int m_lastCull;
     int m_branchCount;
+
+    std::unordered_map<graphdrawer::NodeID, graphdrawer::NodeColor>
+        m_coloredNodes;
 };
