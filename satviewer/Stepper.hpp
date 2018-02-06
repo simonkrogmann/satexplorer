@@ -82,7 +82,8 @@ public:
     void cull(int degree);
     void relayout();
     const std::string getSVGPath() const;
-    void colorNodesInRect(float xMin, float xMax, float yMin, float yMax);
+    void colorNodesInRect(float xMin, float xMax, float yMin, float yMax,
+                          graphdrawer::NodeColor color);
 
 protected:
     void loadFromGML(std::string glmPath);

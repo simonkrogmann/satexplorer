@@ -16,7 +16,7 @@ public:
         : QSvgWidget(parent), rubberBand(0) {}
 
 signals:
-    void rectangleDrawn(TwoPoints rectangle);
+    void rectangleDrawn(TwoPoints rectangle, bool set);
 
 private:
     QRubberBand *rubberBand;

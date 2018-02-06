@@ -47,8 +47,8 @@ SatWindow::SatWindow(QWidget *parent)
     addToolBar(Qt::BottomToolBarArea, &m_toolbar);
     setWindowTitle(tr("SatExplorer"));
 
-    QObject::connect(m_svgWidget, SIGNAL(rectangleDrawn(TwoPoints)), this,
-                     SLOT(handleRectangleDrawn(TwoPoints)));
+    QObject::connect(m_svgWidget, SIGNAL(rectangleDrawn(TwoPoints, bool)), this,
+                     SLOT(handleRectangleDrawn(TwoPoints, bool)));
 }
 
 void SatWindow::run() {
@@ -150,9 +150,11 @@ void SatWindow::handleShowAllButton() {
     setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
-void SatWindow::handleRectangleDrawn(TwoPoints rectangle) {
+void SatWindow::handleRectangleDrawn(TwoPoints rectangle, bool set) {
+    auto nodeColor = set ? graphdrawer::NodeColor ::SET_TRUE
+                         : graphdrawer::NodeColor::UNPROCESSED;
     m_stepper.colorNodesInRect(rectangle.p1.x(), rectangle.p2.x(),
-                               rectangle.p1.y(), rectangle.p2.y());
+                               rectangle.p1.y(), rectangle.p2.y(), nodeColor);
     reloadSvg();
 }
 

@@ -22,8 +22,10 @@ void SelectionSvgWidget::mouseMoveEvent(QMouseEvent *event) {
 
 void SelectionSvgWidget::mouseReleaseEvent(QMouseEvent *event) {
     rubberBand->hide();
+    bool set = event->button() == Qt::LeftButton;
     auto p1 = normalize(origin, size());
     auto p2 = normalize(event->pos(), size());
     emit rectangleDrawn({{std::min(p1.x(), p2.x()), std::min(p1.y(), p2.y())},
-                         {std::max(p1.x(), p2.x()), std::max(p1.y(), p2.y())}});
+                         {std::max(p1.x(), p2.x()), std::max(p1.y(), p2.y())}},
+                        set);
 }

@@ -69,5 +69,5 @@ private slots:
     void startTimer();
     void zoomIn();
     void zoomOut();
-    void handleRectangleDrawn(TwoPoints rectangle);
+    void handleRectangleDrawn(TwoPoints rectangle, bool set);
 };
