@@ -127,5 +127,6 @@ private:
     // rebuilds the label_map
     void _updateGraph();
     NodeID _nodeIDforPointer(ogdf::NodeElement* node_p);
+    bool _isLiteral(ogdf::NodeElement* node_p);
 };
 }  // namespace graphdrawer

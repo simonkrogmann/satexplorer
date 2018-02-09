@@ -66,8 +66,13 @@ void ogdfWrapper::readGraph(const std::string& filename) {
     _updateGraph();
 }
 
+bool ogdfWrapper::_isLiteral(ogdf::NodeElement* node_p) {
+    const auto& label = _p_graphAttributes->label(node_p);
+    return label[0] == 'l';
+}
+
 NodeID ogdfWrapper::_nodeIDforPointer(ogdf::NodeElement* node_p) {
-    std::string label = _p_graphAttributes->label(node_p);
+    const auto& label = _p_graphAttributes->label(node_p);
 
     // first character denotes node type
     // c = clause
@@ -105,7 +110,6 @@ void ogdfWrapper::setNodeShape(NodeID nodeID, double width, double height) {
     auto& node_p = _label_map.at(nodeID);
     _p_graphAttributes->width(node_p) = width;
     _p_graphAttributes->height(node_p) = height;
-    _p_graphAttributes->shape(node_p) = ogdf::Shape::Ellipse;
 }
 
 void ogdfWrapper::setNodeShapeAll(double width, double height) {
@@ -113,7 +117,11 @@ void ogdfWrapper::setNodeShapeAll(double width, double height) {
     _p_graphAttributes->setAllHeight(height);
     for (auto node_p : _m_nodes) {
         auto& shape = _p_graphAttributes->shape(node_p);
-        shape = ogdf::Shape::Ellipse;
+        if (_isLiteral(node_p)) {
+            shape = ogdf::Shape::Ellipse;
+        } else {
+            shape = ogdf::Shape::Rect;
+        }
     }
 }
 
