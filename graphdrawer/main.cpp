@@ -26,19 +26,35 @@ int main(int ac, char* av[]) {
             wrapper.removeNodes(cfg.cull_graph());
         }
         wrapper.layout();
-        wrapper.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
+        // wrapper.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
         // Node Ids are picked arbitrarily here
         // If you indend to run this, change these IDs to some that exist in
         // your input graph
-        wrapper.colorNode({34, graphdrawer::NodeType::LITERAL},
-                          graphdrawer::NodeColor::SET_TRUE);
-        wrapper.setNodeShape({34, graphdrawer::NodeType::LITERAL},
-                             cfg.node_width(), cfg.node_height());
-        wrapper.colorNode({18, graphdrawer::NodeType::LITERAL},
-                          graphdrawer::NodeColor::STEP_SELECTED);
-        wrapper.setNodeShape({18, graphdrawer::NodeType::LITERAL},
-                             cfg.node_width(), cfg.node_height());
-        wrapper.writeGraph(cfg.output_filename(), cfg.output_filetype());
+        // wrapper.colorNode({34, graphdrawer::NodeType::LITERAL},
+        //                   graphdrawer::NodeColor::SET_TRUE);
+        // wrapper.setNodeShape({34, graphdrawer::NodeType::LITERAL},
+        //                      cfg.node_width(), cfg.node_height());
+        // wrapper.colorNode({18, graphdrawer::NodeType::LITERAL},
+        //                   graphdrawer::NodeColor::STEP_SELECTED);
+        // wrapper.setNodeShape({18, graphdrawer::NodeType::LITERAL},
+        //                      cfg.node_width(), cfg.node_height());
+        // wrapper.writeGraph(cfg.output_filename(), cfg.output_filetype());
+        auto node_coordinates = wrapper.getLayoutCoordinates();
+
+        std::ofstream output_file(cfg.output_filename());
+        for (auto node_coordinate : node_coordinates) {
+            auto prefix =
+                node_coordinate.first.type == graphdrawer::NodeType::LITERAL
+                    ? 'l'
+                    : 'c';
+            auto id = node_coordinate.first.id;
+            auto x_coordinate = node_coordinate.second.first;
+            auto y_coordinate = node_coordinate.second.second;
+            output_file << prefix << id << " " << x_coordinate << " "
+                        << y_coordinate << std::endl;
+        }
+        output_file.flush();
+        output_file.close();
     } catch (std::exception& e) {
         std::cerr << "error: " << e.what() << "\n";
         return 1;

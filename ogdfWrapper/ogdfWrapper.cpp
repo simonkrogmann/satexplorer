@@ -322,4 +322,20 @@ std::vector<NodeID> ogdfWrapper::nodesInRectangle(float xMin, float xMax,
 
     return containedNodes;
 }
+
+std::unordered_map<NodeID, std::pair<double, double>> ogdfWrapper::
+    getLayoutCoordinates() const {
+    std::unordered_map<NodeID, std::pair<double, double>> layout_coordinates;
+
+    for (auto node : _label_map) {
+        auto x_coordinate = _p_graphAttributes->x(node.second);
+        auto y_coordinate = _p_graphAttributes->y(node.second);
+
+        layout_coordinates.emplace(node.first,
+                                   std::make_pair(x_coordinate, y_coordinate));
+    }
+
+    return layout_coordinates;
+}
+
 }  // namespace graphdrawer

@@ -44,7 +44,7 @@ public:
     ogdfWrapper();
     ~ogdfWrapper();
 
-    // read graph from file in graphml format
+    // read graph from file in GML format
     void readGraph(const std::string& filename);
 
     // set layout options and layout the graph
@@ -108,6 +108,9 @@ public:
 
     std::vector<NodeID> nodesInRectangle(float xMin, float xMax, float yMin,
                                          float yMax);
+                                         
+    std::unordered_map<NodeID, std::pair<double, double>> getLayoutCoordinates()
+        const;
 
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
@@ -115,7 +118,7 @@ private:
     ogdfVector<ogdf::NodeElement*> _m_nodes;
     ogdfVector<ogdf::EdgeElement*> _m_edges;
     std::unordered_map<NodeID, ogdf::NodeElement*> _label_map;
-    LayoutType _layoutType;
+    LayoutType _layoutType = LayoutType::FMMM;
 
     void _setOptions(ogdf::FMMMLayout& layout) const;
 
