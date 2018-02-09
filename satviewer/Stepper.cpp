@@ -287,9 +287,9 @@ bool Stepper::applyStep(int i) {
 void Stepper::loadFromGML(const std::string& gmlPath) {
     m_branchCount = 0;
     m_graph.readGraph(gmlPath);
-    m_graph.setNodeShapeAll();
-    m_graph.colorEdges();
-    m_graph.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
+    m_graph.resetNodeShapeAll();
+    m_graph.resetEdgeStyleAll();
+    m_graph.colorAllNodes(graphdrawer::NodeColor::UNPROCESSED);
 }
 
 // opens the tracefile
