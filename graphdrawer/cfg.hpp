@@ -12,6 +12,10 @@ public:
 
     std::string input_filename() const;
     std::string output_filename() const;
+    std::string node_clustering_filename() const;
+    std::string layout_coordinates_filename() const;
+    bool node_clustering_enabled() const;
+    bool layout_coordinates_enabled() const;
     FileType output_filetype() const;
     bool validate_config() const;
     int cull_graph() const;

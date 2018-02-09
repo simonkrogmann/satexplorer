@@ -3,6 +3,7 @@
 import networkx as nx
 import numpy as np
 import itertools
+from random import shuffle
 from sklearn.cluster import KMeans
 from sklearn import metrics
 import sys
@@ -16,13 +17,13 @@ feature_list = list()
 node_ids = list()
 with open(sys.argv[1], "r") as file:
     for line in file:
-        id, x ,y = file.readline().split()
+        id, x ,y = line.split()
         feature_list.append([x,y])
         node_ids.append(id)
 
 numpy_features = np.array(feature_list)
 
-kmeans = KMeans(n_clusters=14, n_init=10, max_iter=300, n_jobs=-2)
+kmeans = KMeans(n_clusters=14, n_init=20, max_iter=300, n_jobs=-2)
 
 kmeans.fit(numpy_features)
 

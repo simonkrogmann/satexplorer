@@ -12,22 +12,25 @@ cfg::cfg(int ac, char* av[]) : _vm(), _config_valid(true) {
     po::options_description generic("Generic options");
     generic.add_options()("version,v", "print version string")(
         "help", "produce help message")(
-        "config,c",
+        "config",
         po::value<std::string>(&config_file)->default_value("graphdrawer.cfg"),
         "configuration file.");
 
     // Declare a group of options that will be
     // allowed both on command line and in
     // config file
+    // clang-format off
     po::options_description config("Configuration");
-    config.add_options()("gml", "output a .gml file")(
-        "out", po::value<std::string>()->default_value("converted-graph"),
-        "output filename")("cull", po::value<int>(),
-                           "remove nodes with degree > arg")(
-        "width,w", po::value<int>()->default_value(50), "width of drawn nodes")(
-        "height,h", po::value<int>()->default_value(50),
-        "height of drawn nodes");
+    config.add_options()
+        ("gml", "output a .gml file")
+        ("out", po::value<std::string>()->default_value("converted-graph"),"output filename")
+        ("cull", po::value<int>(),"remove nodes with degree > arg")
+        ("width,w", po::value<int>()->default_value(50), "width of drawn nodes")
+        ("height,h", po::value<int>()->default_value(50), "height of drawn nodes")
+        ("clustering,c", po::value<std::string>(), "load a clustering from file")
+        ("layout_coordinates,l", po::value<std::string>(), "calculate and write layout coordinates to file");
 
+    // clang-format on
     // Hidden options, will be allowed both on command line and
     // in config file, but will not be shown to the user.
     po::options_description hidden("Hidden options");
@@ -83,6 +86,22 @@ std::string cfg::output_filename() const {
         default:
             assert(false);
     }
+}
+
+std::string cfg::node_clustering_filename() const {
+    return _vm["clustering"].as<std::string>();
+}
+
+bool cfg::node_clustering_enabled() const {
+    return _vm.count("clustering");
+}
+
+std::string cfg::layout_coordinates_filename() const {
+    return _vm["layout_coordinates"].as<std::string>();
+}
+
+bool cfg::layout_coordinates_enabled() const {
+    return _vm.count("layout_coordinates");
 }
 
 FileType cfg::output_filetype() const {

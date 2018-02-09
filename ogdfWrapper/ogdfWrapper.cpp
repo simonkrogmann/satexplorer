@@ -25,10 +25,16 @@ ogdf::Color::Name getColor(NodeColor color) {
         {NodeColor::SET_TRUE, ogdf::Color::Name::Green},
         {NodeColor::SET_FALSE, ogdf::Color::Name::Red},
         {NodeColor::STEP_SELECTED, ogdf::Color::Name::Blue},
-        {NodeColor::BRANCH_TRUE, ogdf::Color::Name::Blue},
+        {NodeColor::BRANCH_TRUE, ogdf::Color::Name::Darkblue},
         {NodeColor::BRANCH_FALSE, ogdf::Color::Name::Orange},
-        {NodeColor::CONFLICT, ogdf::Color::Name::Black},
-    };
+        {NodeColor::Brown, ogdf::Color::Name::Brown},
+        {NodeColor::Cyan, ogdf::Color::Name::Cyan},
+        {NodeColor::Gray, ogdf::Color::Name::Gray},
+        {NodeColor::Yellow, ogdf::Color::Name::Yellow},
+        {NodeColor::Purple, ogdf::Color::Name::Purple},
+        {NodeColor::Pink, ogdf::Color::Name::Pink},
+        {NodeColor::Olive, ogdf::Color::Name::Olive},
+        {NodeColor::Yellowgreen, ogdf::Color::Name::Yellowgreen}};
     return ogdfColors[color];
 }
 
@@ -84,6 +90,14 @@ void ogdfWrapper::_updateGraph() {
 void ogdfWrapper::colorNodes(NodeColor color) {
     for (auto node_p : _m_nodes) {
         colorNode(node_p, color);
+    }
+}
+
+void ogdfWrapper::colorNodes(NodeColor color, std::vector<NodeID> nodes) {
+    for (auto node : nodes) {
+        if (_label_map.count(node)) {
+            colorNode(_label_map.at(node), color);
+        }
     }
 }
 

@@ -60,9 +60,6 @@ public:
     // onlyEdges will keep the high degree Nodes and just remove their edges
     int removeNodes(int maxDegree, bool onlyEdges = false);
 
-    // colors all nodes with the given color
-    void colorNodes(NodeColor color);
-
     // sets the node shape of every node to elliptical
     // and gives each node the given dimensions
     void setNodeShapeAll(double width = 20.0, double height = 20.0);
@@ -77,6 +74,11 @@ public:
     // colors the node in the given color
     void colorNode(NodeID nodeID, NodeColor color);
     void colorNode(ogdf::NodeElement* node_p, NodeColor color);
+
+    // colors all nodes with the given color
+    void colorNodes(NodeColor color);
+    // colors the nodes in the array with the given color
+    void colorNodes(NodeColor color, std::vector<NodeID> nodes);
 
     // colors all edges black, and resets the stroke width to 1
     void colorEdges();
@@ -108,7 +110,7 @@ public:
 
     std::vector<NodeID> nodesInRectangle(float xMin, float xMax, float yMin,
                                          float yMax);
-                                         
+
     std::unordered_map<NodeID, std::pair<double, double>> getLayoutCoordinates()
         const;
 

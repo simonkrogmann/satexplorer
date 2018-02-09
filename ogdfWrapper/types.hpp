@@ -10,7 +10,15 @@ enum class NodeColor {
     BRANCH_TRUE,
     BRANCH_FALSE,
     CONFLICT,
-    STEP_SELECTED
+    STEP_SELECTED,
+    Brown,
+    Cyan,
+    Gray,
+    Yellow,
+    Purple,
+    Pink,
+    Olive,
+    Yellowgreen
 };
 
 // view http://amber-v7.cs.tu-dortmund.de/doku.php/tech:layouter for an
@@ -27,6 +35,16 @@ struct NodeID {
     static NodeID clause(uint id) { return NodeID{id, NodeType::CLAUSE}; }
 
     static NodeID literal(uint id) { return NodeID{id, NodeType::LITERAL}; }
+
+    static NodeID fromCharType(char type, uint id) {
+        switch (type) {
+            case 'l':
+                return literal(id);
+            case 'c':
+                return clause(id);
+        }
+        throw std::invalid_argument("No NodeType for " + type);
+    }
 
     inline bool operator==(const NodeID& other) const {
         return this->id == other.id && this->type == other.type;
