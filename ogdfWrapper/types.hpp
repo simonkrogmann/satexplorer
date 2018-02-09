@@ -20,8 +20,11 @@ enum class NodeColor {
     Purple,
     Pink,
     Olive,
-    Yellowgreen
+    Yellowgreen  // this has to stay the last color
 };
+
+const int numNodeColors =
+    static_cast<int>(graphdrawer::NodeColor::Yellowgreen) + 1;
 
 // view http://amber-v7.cs.tu-dortmund.de/doku.php/tech:layouter for an
 // explanation of different layout types

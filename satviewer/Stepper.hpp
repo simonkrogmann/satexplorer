@@ -82,6 +82,7 @@ public:
     */
     void cull(int degree);
     void relayout();
+    void cluster();
     const std::string getSVGPath() const;
     void colorNodesInRect(float xMin, float xMax, float yMin, float yMax,
                           graphdrawer::NodeColor color);
@@ -118,9 +119,11 @@ protected:
     const std::string minisat = "./minisat-solver";
     const std::string outputPath = "data/";
     const std::string scriptPath = "../scripts/";
+    const std::string clusteringScript = "louvain_clustering.py";
 
     std::string m_svgPath;
     std::string m_gmlPath;
+    std::string m_clusterPath;
 
     int m_lastCull;
     int m_branchCount;

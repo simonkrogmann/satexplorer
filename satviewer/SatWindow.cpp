@@ -35,6 +35,7 @@ SatWindow::SatWindow(QWidget *parent)
     m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
     m_toolbar.addAction("Zoom In", this, &SatWindow::zoomIn);
     m_toolbar.addAction("Zoom Out", this, &SatWindow::zoomOut);
+    m_toolbar.addAction("Cluster", this, &SatWindow::cluster);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
     m_validator.setBottom(0);
@@ -145,6 +146,12 @@ void SatWindow::handleCullInput() {
 void SatWindow::handleShowAllButton() {
     m_stepper.cull(std::numeric_limits<int>::max());
     m_cullBox.clear();
+    reloadSvg();
+    setInitialWindowSize(m_svgWidget->sizeHint());
+}
+
+void SatWindow::cluster() {
+    m_stepper.cluster();
     reloadSvg();
     setInitialWindowSize(m_svgWidget->sizeHint());
 }
