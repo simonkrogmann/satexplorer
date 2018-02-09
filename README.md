@@ -8,6 +8,7 @@ Dependencies:
 - OGDF (clone, copy files from ogdf_installation to OGDF source and then execute the copied install script)
 - boost
 - python-networkx
+- python-louvain
 - zlib
 - bison
 - flex
