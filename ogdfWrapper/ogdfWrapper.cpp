@@ -206,7 +206,6 @@ void ogdfWrapper::_setOptions(ogdf::FMMMLayout& layout) const {
 }
 
 void ogdfWrapper::writeGraph(const std::string& filename, FileType format) {
-    std::cout << "writing " << filename;
     std::fstream file(filename, file.out);
     ogdf::GraphIO::SVGSettings settings;
     switch (format) {
@@ -222,7 +221,7 @@ void ogdfWrapper::writeGraph(const std::string& filename, FileType format) {
         default:
             throw std::invalid_argument("Unknown FileType");
     }
-    std::cout << " ...done." << std::endl;
+    std::cout << "Wrote " << filename << std::endl;
 }
 
 bool ogdfWrapper::hasNode(NodeID nodeID) {
