@@ -74,7 +74,15 @@ public:
         skip forward to the last restart step in the tracefile
     */
     void lastRestart();
+
+    /*
+        backtrack to a given level
+    */
     void backtrack(int level);
+
+    /*
+        returns whether there are any steps left
+    */
     bool isFinished();
     /*
         remove edges that have at least one endpoint with degree higher than the
@@ -82,8 +90,16 @@ public:
     */
     void cull(int degree);
     void relayout();
+
+    /*
+        cluster and color the graph using the louvain method
+    */
     void cluster();
     const std::string getSVGPath() const;
+
+    /*
+        color all nodes with placements inside the given rectangle
+    */
     void colorNodesInRect(float xMin, float xMax, float yMin, float yMax,
                           graphdrawer::NodeColor color);
 
@@ -100,8 +116,8 @@ protected:
         Tracefile is in binary. Format is char followed by int
     */
     void readBlock(char& type, int& data);
-    // returns true if a node has been colored
     void applyClause(int i = -1);
+    // returns true if a node has been colored
     bool applyStep(int i = -1);
     void stepUntil(StepType stepType, bool layout);
     void printProgress();
@@ -128,6 +144,7 @@ protected:
     int m_lastCull;
     int m_branchCount;
 
+    // stores the colors of nodes colored by something other than a step
     std::unordered_map<graphdrawer::NodeID, graphdrawer::NodeColor>
         m_coloredNodes;
 };

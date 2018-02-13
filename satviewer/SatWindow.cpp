@@ -1,13 +1,11 @@
 #include "SatWindow.hpp"
 
-#include <QApplication>
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QPainter>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QSvgRenderer>
-#include <QTimer>
 #include <iostream>
 
 SatWindow::SatWindow(QWidget *parent)
@@ -112,12 +110,6 @@ void SatWindow::handleLastRestartButton() {
     m_stepper.lastRestart();
     reloadSvg();
     m_lastRestartAction->setDisabled(true);
-}
-
-void SatWindow::startTimer() {
-    QTimer timer;
-    connect(&timer, SIGNAL(timeout()), this, SLOT(handleStepButton()));
-    timer.start(100);
 }
 
 void SatWindow::endOfTrace(bool eof) {
