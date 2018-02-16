@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 namespace graphdrawer {
 enum class FileType { GML, SVG };
 
@@ -18,8 +20,11 @@ enum class NodeColor {
     Purple,
     Pink,
     Olive,
-    Yellowgreen
+    Yellowgreen  // this has to stay the last color
 };
+
+const int numNodeColors =
+    static_cast<int>(graphdrawer::NodeColor::Yellowgreen) + 1;
 
 // view http://amber-v7.cs.tu-dortmund.de/doku.php/tech:layouter for an
 // explanation of different layout types
@@ -27,23 +32,35 @@ enum class LayoutType { FMMM, SUGIYAMA };
 
 enum class NodeType { CLAUSE, LITERAL };
 
+namespace {
+
+NodeType nodeTypeFromCharacter(char c) {
+    switch (c) {
+        case 'l':
+            return NodeType::LITERAL;
+        case 'c':
+            return NodeType::CLAUSE;
+    }
+    assert(false);
+}
+
+}  // namespace
+
 // used to distinguish between clause and literal nodes
 struct NodeID {
-    uint id;
+    unsigned int id;
     NodeType type;
 
-    static NodeID clause(uint id) { return NodeID{id, NodeType::CLAUSE}; }
+    static NodeID clause(unsigned int id) {
+        return NodeID{id, NodeType::CLAUSE};
+    }
 
-    static NodeID literal(uint id) { return NodeID{id, NodeType::LITERAL}; }
+    static NodeID literal(unsigned int id) {
+        return NodeID{id, NodeType::LITERAL};
+    }
 
-    static NodeID fromCharType(char type, uint id) {
-        switch (type) {
-            case 'l':
-                return literal(id);
-            case 'c':
-                return clause(id);
-        }
-        throw std::invalid_argument("No NodeType for " + type);
+    static NodeID fromCharType(char type, unsigned int id) {
+        return {id, nodeTypeFromCharacter(type)};
     }
 
     inline bool operator==(const NodeID& other) const {

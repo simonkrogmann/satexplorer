@@ -1,13 +1,11 @@
 #include "SatWindow.hpp"
 
-#include <QApplication>
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QPainter>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QSvgRenderer>
-#include <QTimer>
 #include <iostream>
 
 SatWindow::SatWindow(QWidget *parent)
@@ -35,6 +33,7 @@ SatWindow::SatWindow(QWidget *parent)
     m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
     m_toolbar.addAction("Zoom In", this, &SatWindow::zoomIn);
     m_toolbar.addAction("Zoom Out", this, &SatWindow::zoomOut);
+    m_toolbar.addAction("Cluster", this, &SatWindow::cluster);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
     m_validator.setBottom(0);
@@ -113,12 +112,6 @@ void SatWindow::handleLastRestartButton() {
     m_lastRestartAction->setDisabled(true);
 }
 
-void SatWindow::startTimer() {
-    QTimer timer;
-    connect(&timer, SIGNAL(timeout()), this, SLOT(handleStepButton()));
-    timer.start(100);
-}
-
 void SatWindow::endOfTrace(bool eof) {
     if (eof) {
         m_stepAction->setDisabled(true);
@@ -145,6 +138,12 @@ void SatWindow::handleCullInput() {
 void SatWindow::handleShowAllButton() {
     m_stepper.cull(std::numeric_limits<int>::max());
     m_cullBox.clear();
+    reloadSvg();
+    setInitialWindowSize(m_svgWidget->sizeHint());
+}
+
+void SatWindow::cluster() {
+    m_stepper.cluster();
     reloadSvg();
     setInitialWindowSize(m_svgWidget->sizeHint());
 }

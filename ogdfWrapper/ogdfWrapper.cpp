@@ -27,6 +27,7 @@ ogdf::Color::Name getColor(NodeColor color) {
         {NodeColor::STEP_SELECTED, ogdf::Color::Name::Blue},
         {NodeColor::BRANCH_TRUE, ogdf::Color::Name::Darkblue},
         {NodeColor::BRANCH_FALSE, ogdf::Color::Name::Orange},
+        {NodeColor::CONFLICT, ogdf::Color::Name::Black},
         {NodeColor::Brown, ogdf::Color::Name::Brown},
         {NodeColor::Cyan, ogdf::Color::Name::Cyan},
         {NodeColor::Gray, ogdf::Color::Name::Gray},
@@ -38,8 +39,8 @@ ogdf::Color::Name getColor(NodeColor color) {
     return ogdfColors[color];
 }
 
-std::unordered_map<char, NodeType> nodeTypeFromCharacter{
-    {'c', NodeType::CLAUSE}, {'l', NodeType::LITERAL}};
+const std::unordered_map<char, ogdf::Shape> nodeShapeFromCharacter{
+    {'c', ogdf::Shape::Rect}, {'l', ogdf::Shape::Ellipse}};
 }  // namespace
 
 ogdfWrapper::ogdfWrapper() {}
@@ -66,15 +67,19 @@ void ogdfWrapper::readGraph(const std::string& filename) {
     _updateGraph();
 }
 
-NodeID ogdfWrapper::_nodeIDforPointer(ogdf::NodeElement* node_p) {
-    std::string label = _p_graphAttributes->label(node_p);
+ogdf::Shape ogdfWrapper::_nodeShapeforPointer(ogdf::NodeElement* node_p) {
+    const auto& label = _p_graphAttributes->label(node_p)[0];
+    return nodeShapeFromCharacter.at(label);
+}
 
+NodeID ogdfWrapper::_nodeIDforPointer(ogdf::NodeElement* node_p) {
+    const auto& label = _p_graphAttributes->label(node_p);
     // first character denotes node type
     // c = clause
     // l = literal
     // see cnfToGML.py
-    uint id = std::stoi(label.substr(1));
-    return {id, nodeTypeFromCharacter.at(label[0])};
+    const uint id = std::stoi(label.substr(1));
+    return NodeID::fromCharType(label.at(0), id);
 }
 
 void ogdfWrapper::_updateGraph() {
@@ -83,19 +88,20 @@ void ogdfWrapper::_updateGraph() {
 
     _label_map.clear();
     for (auto node_p : _m_nodes) {
-        _label_map.emplace(_nodeIDforPointer(node_p), node_p);
+        _label_map[_nodeIDforPointer(node_p)] = node_p;
     }
 }
 
-void ogdfWrapper::colorNodes(NodeColor color) {
+void ogdfWrapper::colorAllNodes(NodeColor color) {
     for (auto node_p : _m_nodes) {
         colorNode(node_p, color);
     }
 }
 
-void ogdfWrapper::colorNodes(NodeColor color, std::vector<NodeID> nodes) {
+void ogdfWrapper::colorNodes(NodeColor color,
+                             const std::vector<NodeID>& nodes) {
     for (auto node : nodes) {
-        if (_label_map.count(node)) {
+        if (hasNode(node)) {
             colorNode(_label_map.at(node), color);
         }
     }
@@ -105,19 +111,18 @@ void ogdfWrapper::setNodeShape(NodeID nodeID, double width, double height) {
     auto& node_p = _label_map.at(nodeID);
     _p_graphAttributes->width(node_p) = width;
     _p_graphAttributes->height(node_p) = height;
-    _p_graphAttributes->shape(node_p) = ogdf::Shape::Ellipse;
 }
 
-void ogdfWrapper::setNodeShapeAll(double width, double height) {
+void ogdfWrapper::resetNodeShapeAll(double width, double height) {
     _p_graphAttributes->setAllWidth(width);
     _p_graphAttributes->setAllHeight(height);
     for (auto node_p : _m_nodes) {
         auto& shape = _p_graphAttributes->shape(node_p);
-        shape = ogdf::Shape::Ellipse;
+        shape = _nodeShapeforPointer(node_p);
     }
 }
 
-void ogdfWrapper::setStrokeWidth(float width) {
+void ogdfWrapper::setEdgeWidth(float width) {
     for (auto node_p : _m_nodes) {
         auto& strokeWidth = _p_graphAttributes->strokeWidth(node_p);
         strokeWidth = width;
@@ -141,7 +146,7 @@ void ogdfWrapper::colorNode(NodeID nodeID, NodeColor color) {
     colorNode(node_p, color);
 }
 
-void ogdfWrapper::colorEdges() {
+void ogdfWrapper::resetEdgeStyleAll() {
     for (auto edge_p : _m_edges) {
         auto& stroke_color = _p_graphAttributes->strokeColor(edge_p);
         stroke_color = ogdf::Color(ogdf::Color::Name::Black);
@@ -291,7 +296,7 @@ bool ogdfWrapper::removeNode(NodeID nodeID) {
 }
 
 void ogdfWrapper::moveToCenter(NodeID node, const std::vector<uint>& anchors) {
-    if (!_label_map.count(node)) {
+    if (!hasNode(node)) {
         return;
     }
     double x = 0;

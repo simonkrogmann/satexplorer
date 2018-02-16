@@ -8,7 +8,10 @@ struct TwoPoints {
     QPointF p2;
 };
 
-// the example applied to authors code as requested
+/*
+    expands the svg widget with the ability to draw a rectangle and send its
+   coordinates to the managing window
+*/
 class SelectionSvgWidget : public QSvgWidget {
     Q_OBJECT
 public:

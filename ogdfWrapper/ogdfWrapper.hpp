@@ -14,6 +14,7 @@ class GraphAttributes;
 class EdgeElement;
 class NodeElement;
 class FMMMLayout;
+enum class Shape;
 }  // namespace ogdf
 
 namespace std {
@@ -25,9 +26,8 @@ struct hash<graphdrawer::NodeID> {
                 return hash<int>()(-1 * nodeID.id);
             case graphdrawer::NodeType::LITERAL:
                 return hash<int>()(nodeID.id);
-            default:
-                assert(false);
         }
+        assert(false);
     }
 };
 }  // namespace std
@@ -62,26 +62,24 @@ public:
 
     // sets the node shape of every node to elliptical
     // and gives each node the given dimensions
-    void setNodeShapeAll(double width = 20.0, double height = 20.0);
+    void resetNodeShapeAll(double width = 20.0, double height = 20.0);
 
     // sets the node shape of a specific node to elliptical and gives it the
     // given dimensions
     void setNodeShape(NodeID nodeID, double width = 20.0, double height = 20.0);
 
-    // sets the width of edges
-    void setStrokeWidth(float width);
+    void setEdgeWidth(float width);
 
     // colors the node in the given color
     void colorNode(NodeID nodeID, NodeColor color);
     void colorNode(ogdf::NodeElement* node_p, NodeColor color);
 
-    // colors all nodes with the given color
-    void colorNodes(NodeColor color);
+    void colorAllNodes(NodeColor color);
     // colors the nodes in the array with the given color
-    void colorNodes(NodeColor color, std::vector<NodeID> nodes);
+    void colorNodes(NodeColor color, const std::vector<NodeID>& nodes);
 
-    // colors all edges black, and resets the stroke width to 1
-    void colorEdges();
+    // colors all edges black, and sets the stroke width to 1
+    void resetEdgeStyleAll();
 
     bool hasNode(NodeID nodeID);
 
@@ -127,5 +125,6 @@ private:
     // rebuilds the label_map
     void _updateGraph();
     NodeID _nodeIDforPointer(ogdf::NodeElement* node_p);
+    ogdf::Shape _nodeShapeforPointer(ogdf::NodeElement* node_p);
 };
 }  // namespace graphdrawer

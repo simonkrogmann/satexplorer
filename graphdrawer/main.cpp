@@ -43,7 +43,7 @@ int main(int ac, char* av[]) {
         if (cfg.cull_graph()) {
             wrapper.removeNodes(cfg.cull_graph());
         }
-        wrapper.setNodeShapeAll();
+        wrapper.resetNodeShapeAll();
         wrapper.layout();
 
         // wrapper.colorNodes(graphdrawer::NodeColor::UNPROCESSED);

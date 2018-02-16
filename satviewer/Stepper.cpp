@@ -53,6 +53,7 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve,
     const auto tracePath = outputPath + cnfFilename + ".trace";
     const auto baseOutputname = outputPath + cnfFilename;
     m_svgPath = outputPath + cnfFilename + ".svg";
+    m_clusterPath = outputPath + cnfFilename + ".clustering";
 
     // create output directory
     system(("mkdir -p " + outputPath).c_str());
@@ -287,9 +288,9 @@ bool Stepper::applyStep(int i) {
 void Stepper::loadFromGML(const std::string& gmlPath) {
     m_branchCount = 0;
     m_graph.readGraph(gmlPath);
-    m_graph.setNodeShapeAll();
-    m_graph.colorEdges();
-    m_graph.colorNodes(graphdrawer::NodeColor::UNPROCESSED);
+    m_graph.resetNodeShapeAll();
+    m_graph.resetEdgeStyleAll();
+    m_graph.colorAllNodes(graphdrawer::NodeColor::UNPROCESSED);
 }
 
 // opens the tracefile
@@ -396,6 +397,67 @@ void Stepper::colorNodesInRect(float xMin, float xMax, float yMin, float yMax,
         m_graph.colorNode(node, color);
         m_coloredNodes[node] = color;
     }
+
+    m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
+}
+
+// String splitting copied from StackOverflow
+// TODO: Link
+template <typename Out>
+void split(const std::string& s, char delim, Out result) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        *(result++) = item;
+    }
+}
+
+std::vector<std::string> split(const std::string& s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, std::back_inserter(elems));
+    return elems;
+}
+
+void Stepper::cluster() {
+    QProcess process;
+    std::string clusterCmd = "python " + scriptPath + clusteringScript + " " +
+                             m_gmlPath + " " + m_clusterPath;
+    std::cout << "Clustering graph..." << std::endl << clusterCmd << std::endl;
+    process.start(QString::fromStdString(clusterCmd));
+    process.waitForFinished(-1);
+    std::cout << "Done." << std::endl;
+
+    std::cout << "Loading clustering";
+    std::unordered_map<int, std::vector<graphdrawer::NodeID>> cluster_node_map;
+    std::ifstream clustering_file(m_clusterPath);
+    std::string line;
+    while (std::getline(clustering_file, line)) {
+        auto line_split = split(line, ' ');
+        assert(line_split.size() == 2);
+
+        auto node_type = line_split[0][0];
+        auto node_id_nr = std::stoi(line_split[0].substr(1));
+        auto node_id = graphdrawer::NodeID::fromCharType(node_type, node_id_nr);
+        int cluster_id = std::stoi(line_split[1]);
+
+        if (!cluster_node_map.count(cluster_id)) {
+            cluster_node_map.emplace(cluster_id,
+                                     std::vector<graphdrawer::NodeID>());
+        }
+
+        cluster_node_map[cluster_id].push_back(node_id);
+    }
+    std::cout << "...done" << std::endl;
+    std::cout << "Applying clustering";
+    for (auto[cluster_id, node_ids] : cluster_node_map) {
+        const auto color =
+            graphdrawer::NodeColor(cluster_id % graphdrawer::numNodeColors);
+        m_graph.colorNodes(color, node_ids);
+        for (auto node_id : node_ids) {
+            m_coloredNodes[node_id] = color;
+        }
+    }
+    std::cout << "...done" << std::endl;
 
     m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
