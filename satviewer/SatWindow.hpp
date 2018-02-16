@@ -27,9 +27,8 @@ public:
     explicit SatWindow(QWidget* parent = 0);
     virtual ~SatWindow() = default;
 
-    void setFilename(std::string filename);
-    void setForceSolve(bool forceSolve);
-    void setShowSimplified(bool showSimplified);
+    void setFilename(const std::string& filename);
+    void setSolverOptions(const SolverOptions& options);
 
 protected:
     SelectionSvgWidget* m_svgWidget;
@@ -37,6 +36,7 @@ protected:
     Stepper m_stepper;
     QToolBar m_toolbar;
     double m_scaleFactor;
+    SolverOptions m_solverOptions;
 
     void endOfTrace(bool eof);
     void scaleImage(double factor);
@@ -51,8 +51,6 @@ protected:
     QAction* m_restartAction;
     QAction* m_lastRestartAction;
     std::string m_filename;
-    bool m_forceSolve;
-    bool m_showSimplified;
 
     QLineEdit m_cullBox;
     QIntValidator m_validator;

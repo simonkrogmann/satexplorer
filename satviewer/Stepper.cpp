@@ -42,8 +42,7 @@ bool isEOF(std::ifstream& file) {
 
 }  // namespace
 
-void Stepper::initialize(std::string cnfPath, bool forceSolve,
-                         bool showSimplified) {
+void Stepper::initialize(std::string cnfPath, SolverOptions options) {
     m_lastCull = std::numeric_limits<int>::max();
 
     // calculate file paths based on cnf file path
@@ -60,7 +59,7 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve,
     QProcess process;
 
     // run minisat, if instance not solved yet
-    if (!std::ifstream(tracePath) || forceSolve) {
+    if (!std::ifstream(tracePath) || options.forceRecomputation) {
         auto satCmd = minisat + " " + cnfPath + " " + baseOutputname;
         std::cout << "Solving SAT instance..." << std::endl
                   << satCmd << std::endl;
@@ -69,16 +68,23 @@ void Stepper::initialize(std::string cnfPath, bool forceSolve,
         std::cout << "Done." << std::endl;
     }
 
-    if (showSimplified) {
+    m_gmlPath = outputPath + cnfFilename;
+    if (options.simplified) {
         cnfPath = outputPath + cnfFilename + ".simplified";
+        m_gmlPath += ".simplified";
     }
-    m_gmlPath = outputPath + cnfFilename +
-                (showSimplified ? ".simplified" : "") + ".gml";
+    if (options.onlyImplications) {
+        m_gmlPath += ".implications";
+    }
+    m_gmlPath += ".gml";
 
     // convert cnf to gml via python script, if not converted yet
-    if (!std::ifstream(m_gmlPath) || forceSolve) {
+    if (!std::ifstream(m_gmlPath) || options.forceRecomputation) {
         auto conversionCmd =
             scriptPath + conversionScript + " " + cnfPath + " " + m_gmlPath;
+        if (options.onlyImplications) {
+            conversionCmd += " -implications";
+        }
         std::cout << "Converting to gml for layouting..." << std::endl
                   << conversionCmd << std::endl;
         process.start(QString::fromStdString(conversionCmd));
