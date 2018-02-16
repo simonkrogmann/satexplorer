@@ -1,3 +1,6 @@
+#include <fstream>
+#include <iostream>
+
 #include <QApplication>
 #include <QCommandLineParser>
 
@@ -29,7 +32,12 @@ int main(int argc, char *argv[]) {
     SatWindow window;
     window.setSolverOptions(options);
     if (parser.positionalArguments().size() > 0) {
-        window.setFilename(parser.positionalArguments().at(0).toStdString());
+        const auto filename = parser.positionalArguments().at(0).toStdString();
+        if (!std::ifstream(filename)) {
+            std::cout << "file not found: " << filename << std::endl;
+            exit(1);
+        }
+        window.setFilename(filename);
     }
 
     window.run();
