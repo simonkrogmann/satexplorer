@@ -35,6 +35,7 @@ SatWindow::SatWindow(QWidget *parent)
     m_toolbar.addAction("Zoom Out", this, &SatWindow::zoomOut);
     m_toolbar.addAction("Cluster", this, &SatWindow::cluster);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
+    m_toolbar.addAction("Export Image", this, &SatWindow::handleExportButton);
 
     m_validator.setBottom(0);
     m_cullBox.setValidator(&m_validator);
@@ -76,6 +77,12 @@ void SatWindow::handleStepButton() {
     m_stepper.step();
     reloadSvg();
     endOfTrace(m_stepper.isFinished());
+}
+
+void SatWindow::handleExportButton() {
+    const std::string filename = "data/exported_image.png";
+    exportToPNG(filename);
+    std::cout << "Created image " << filename << std::endl;
 }
 
 void SatWindow::exportToPNG(const std::string &filename) {
