@@ -21,9 +21,17 @@ Create a build folder and `cd` into it, execute `cmake ..` and `make -j4`.
 
 ## Usage
 
-Run `./satviewer-bin` in build folder.
-You can specify a `.cnf` file as the first parameter to skip the file select dialouge.
-`-f` forces re-solving the sat instance
+Run `./satviewer-bin [sat-instance] [options]` in build folder.
+The sat instance must be in cnf format.
+If none is specified, a file dialog will open to select one.
+
+### Options
+
+| Flag | Description |
+| --- | --- |
+| -f | force recomputation of the solution instead of reusing a previous trace file |
+| -s | visualize the graph simplified by minisat instead of the original graph |
+| -i | display an implication, i.e., only edges for clauses with two variables |
 
 
 ### VSCODE launch configuration
