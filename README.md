@@ -28,24 +28,24 @@ You can specify a `.cnf` file as the first parameter to skip the file select dia
 
 ### VSCODE launch configuration
 
-``
+```
 {
-            "name": "debug",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/satviewer-bin",
-            "args": ["path/to/file.cnf"],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build/",
-            "environment": [], 
-            "externalConsole": true,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
+    "name": "debug",
+    "type": "cppdbg",
+    "request": "launch",
+    "program": "${workspaceFolder}/build/satviewer-bin",
+    "args": ["path/to/file.cnf"],
+    "stopAtEntry": false,
+    "cwd": "${workspaceFolder}/build/",
+    "environment": [],
+    "externalConsole": true,
+    "MIMode": "gdb",
+    "setupCommands": [
+        {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
         }
-``
+    ]
+}
+```
