@@ -102,12 +102,10 @@ int main(int ac, char* av[]) {
             }
             std::cout << "...done" << std::endl;
             std::cout << "Applying clustering";
-            uint i = 0;
-            for (auto pair : cluster_node_map) {
-                wrapper.colorNodes(graphdrawer::NodeColor(i), pair.second);
-                ++i;
-                i %=
-                    (static_cast<int>(graphdrawer::NodeColor::Yellowgreen) + 1);
+            for (auto[cluster_id, node_ids] : cluster_node_map) {
+                const auto color = graphdrawer::NodeColor(
+                    cluster_id % graphdrawer::numNodeColors);
+                wrapper.colorNodes(color, node_ids);
             }
             std::cout << "...done" << std::endl;
 
