@@ -1,30 +1,22 @@
 #!/usr/bin/python3
 
-import argparse
-
-parser = argparse.ArgumentParser(description='Convert a clause literal incident graph from csv to cnf.')
-parser.add_argument('inputFile', metavar='I', type=str,
-                    help='name of the csv file')
-parser.add_argument('outputFile', metavar='O', type=str,
-                    help='name of the cnf file')
-
+import cli
 
 def main():
+    input_file, output_file = cli.get_file_conversion_arguments('input.csv', 'output.cnf')
 
-    args = parser.parse_args()
-
-    with open(args.inputFile, 'r') as csv:
+    with open(input_file, 'r') as csv:
         clig = csv.read()
     lines = clig.splitlines()
 
     # sort by clauseIDs
-    lines.sort(key=lambda x: int(x.split(" ")[0]))
+    lines.sort(key=lambda x: int(x.split(' ')[0]))
 
     variables = set()
     clauses = []
     clauseID = None
     for line in lines:
-        pair = [int(x) for x in line.split(" ")]
+        pair = [int(x) for x in line.split(' ')]
         if pair[0] != clauseID:
             clauses.append([])
             clauseID = pair[0]
@@ -32,11 +24,11 @@ def main():
         variables.add(abs(pair[1]))
 
 
-    with open(args.outputFile, 'w') as cnf:
-        cnf.write("c converted from {}\n".format(args.inputFile))
-        cnf.write("p cnf {} {}\n".format(len(variables), len(clauses)))
+    with open(output_file, 'w') as cnf:
+        cnf.write(f'c converted from {input_file}\n')
+        cnf.write(f'p cnf {len(variables)} {len(clauses)}\n')
         for clause in clauses:
-            cnf.write(" ".join([str(x) for x in clause]) + " 0\n")
+            cnf.write(' '.join([str(x) for x in clause]) + ' 0\n')
 
 
 if __name__ == '__main__':

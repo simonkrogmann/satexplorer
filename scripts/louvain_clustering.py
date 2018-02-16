@@ -1,18 +1,18 @@
 #!/bin/python3
 """Clusters a graph"""
 import networkx as nx
-import itertools
 import community as lv
-import sys
+import cli
 
-if len(sys.argv) < 3:
-    print("Usage: louvain_clustering.py <file> <output_file>")
-    exit(1)
+def main():
+    input_file, output_file = cli.get_file_conversion_arguments('input.gml', 'clustering_file')
 
-graph = nx.read_gml(sys.argv[1])
-partition = lv.best_partition(graph)
+    graph = nx.read_gml(input_file)
+    partition = lv.best_partition(graph)
 
-with open(sys.argv[2], "w") as file:
-    for node in partition.keys():
-        file.write(node + " " + str(partition[node]) + "\n")
+    with open(output_file, "w") as file:
+        for node in partition.keys():
+            file.write(node + " " + str(partition[node]) + "\n")
 
+if __name__ == '__main__':
+    main()
