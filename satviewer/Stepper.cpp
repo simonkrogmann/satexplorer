@@ -329,7 +329,7 @@ StepType Stepper::readTraceStep() {
     assert(m_tracefile.is_open() && !m_tracefile.eof());
 
     char type;
-    int data;
+    int32_t data;
     readBlock(type, data);
 
     // std::cout << type << " " << data << std::endl;
@@ -340,8 +340,8 @@ StepType Stepper::readTraceStep() {
         // type = Clause
         // data = ID of Clause Node
         assert(data >= 0);
-        m_learnedClauses.push_back({stepType, static_cast<uint>(data), {}});
-        int length;
+        m_learnedClauses.push_back({stepType, static_cast<uint32_t>(data), {}});
+        int32_t length;
         char unused;
         readBlock(unused, length);
         assert(unused == 'S');
@@ -351,18 +351,19 @@ StepType Stepper::readTraceStep() {
         for (size_t i = 0; i < length; ++i) {
             // read literal info
             // node = literal node ID
-            int node;
+            int32_t node;
             readBlock(unused, node);
             assert(unused == 'x');
             m_learnedClauses.back().variables.push_back(
-                static_cast<uint>(abs(node)));
+                static_cast<uint32_t>(abs(node)));
         }
     } else if (stepType == StepType::UNLEARNEDCLAUSE) {
         assert(data >= 0);
-        m_learnedClauses.push_back({stepType, static_cast<uint>(data), {}});
+        m_learnedClauses.push_back({stepType, static_cast<uint32_t>(data), {}});
         // TODO: clean clauses from m_learnedClauses
     } else {
-        m_eventStack.push_back({stepType, static_cast<uint>(abs(data)), value});
+        m_eventStack.push_back(
+            {stepType, static_cast<uint32_t>(abs(data)), value});
     }
 
     return stepType;

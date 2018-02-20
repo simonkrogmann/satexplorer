@@ -28,10 +28,10 @@ struct Step {
     StepType type;
     // either node or backtrack level or restart number
     union {
-        uint data;  // for where we don't care what kind of step it is
-        uint level;
-        uint numberOfRestarts;
-        uint variable;
+        uint32_t data;  // for where we don't care what kind of step it is
+        uint32_t level;
+        uint32_t numberOfRestarts;
+        uint32_t variable;
     };
     bool nodeValue;
     graphdrawer::NodeID inline nodeID() const {
@@ -41,8 +41,8 @@ struct Step {
 
 struct Clause {
     StepType type;
-    uint id;
-    std::vector<uint> variables;
+    uint32_t id;
+    std::vector<uint32_t> variables;
     graphdrawer::NodeID inline nodeID() const {
         return {id, graphdrawer::NodeType::LITERAL};
     };
@@ -121,7 +121,7 @@ protected:
         Reads one entry from the tracefile
         Tracefile is in binary. Format is char followed by int
     */
-    void readBlock(char& type, int& data);
+    void readBlock(char& type, int32_t& data);
     void applyClause(int i = -1);
     // returns true if a node has been colored
     bool applyStep(int i = -1);
