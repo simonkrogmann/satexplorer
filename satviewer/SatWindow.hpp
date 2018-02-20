@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QIntValidator>
+#include <QLabel>
 #include <QLineEdit>
 #include <QMainWindow>
 #include <QToolBar>
@@ -51,6 +52,7 @@ protected:
     QAction* m_restartAction;
     QAction* m_lastRestartAction;
     std::string m_filename;
+    QLabel m_label;
 
     QLineEdit m_cullBox;
     QIntValidator m_validator;

@@ -8,26 +8,49 @@
 #include <QSvgRenderer>
 #include <iostream>
 
+void nameAction(QToolBar *bar, QAction *action, const char *name = nullptr) {
+    if (name && action->objectName().isEmpty()) {
+        action->setObjectName(name);
+    }
+    bar->widgetForAction(action)->setObjectName(action->objectName());
+}
+
 SatWindow::SatWindow(QWidget *parent)
     : QMainWindow(parent)
     , m_svgWidget(new SelectionSvgWidget)
     , m_scrollArea(new QScrollArea)
     , m_stepper()
     , m_toolbar(tr("Graph"), this)
-    , m_scaleFactor(1) {
+    , m_scaleFactor(1)
+    , m_label("Next... ") {
     m_svgWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
     m_scrollArea->setWidget(m_svgWidget);
     setCentralWidget(m_scrollArea);
 
+    m_toolbar.addWidget(&m_label);
     m_stepAction =
         m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
     m_branchAction =
         m_toolbar.addAction("Branch", this, &SatWindow::handleBranchButton);
-    m_conflictAction = m_toolbar.addAction("Next conflict", this,
-                                           &SatWindow::handleConflictButton);
-    m_restartAction = m_toolbar.addAction("Next Restart", this,
-                                          &SatWindow::handleRestartButton);
+    m_conflictAction =
+        m_toolbar.addAction("Conflict", this, &SatWindow::handleConflictButton);
+    m_restartAction =
+        m_toolbar.addAction("Restart", this, &SatWindow::handleRestartButton);
+    nameAction(&m_toolbar, m_stepAction, "left");
+    nameAction(&m_toolbar, m_branchAction, "left");
+    nameAction(&m_toolbar, m_conflictAction, "left");
+    nameAction(&m_toolbar, m_restartAction, "right");
+    m_toolbar.setStyleSheet(R"(
+        QToolBar { spacing:0px; border-width = 0px; }
+        QToolButton#right, #left {
+            border-width: 1px;  margin-top: 3px; margin-bottom: 3px;
+            border-color: #bbbbbb; border-style: solid; padding: 1px;
+            padding-left: -3px; padding-right: -3px; }
+        QToolButton#left { border-right: 0px;}
+        QToolButton#right:hover, #left:hover { background: white; }
+        QToolButton#right:pressed, #left:pressed { background: lightgrey; }
+        )");
     m_lastRestartAction = m_toolbar.addAction(
         "Last Restart", this, &SatWindow::handleLastRestartButton);
     m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
