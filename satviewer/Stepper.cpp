@@ -342,9 +342,9 @@ StepType Stepper::readTraceStep() {
         assert(data >= 0);
         m_learnedClauses.push_back({stepType, static_cast<uint>(data), {}});
         int length;
-        char unused;
-        readBlock(unused, length);
-        assert(unused == 'S');
+        char flag;
+        readBlock(flag, length);
+        assert(flag == 'S');
         // second block denotes
         // type = "S" Start
         // data = number of literals in the clause
@@ -352,8 +352,8 @@ StepType Stepper::readTraceStep() {
             // read literal info
             // node = literal node ID
             int node;
-            readBlock(unused, node);
-            assert(unused == 'x');
+            readBlock(flag, node);
+            assert(flag == 'x');
             m_learnedClauses.back().variables.push_back(
                 static_cast<uint>(abs(node)));
         }
