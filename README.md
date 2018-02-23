@@ -25,6 +25,25 @@ Run `./satviewer-bin [sat-instance] [options]` in build folder.
 The sat instance must be in cnf format.
 If none is specified, a file dialog will open to select one.
 
+Functionality:
+
+- Step, Branch, Next Conflict, Next Restart: Skip forward and display to the next entry in the tracefile matching the clicked type.
+- Last restart: Skip forward to the last restart entry in the tracefile
+- Relayout: re-run the layouting algorithm
+- Zoom in/out: does what it says
+- Cluster: run the clustering script and apply the resulting clustering (via colors)
+- Show all: resets node culling - all nodes and edges will be visible. also relayouts the graph.
+- Exports the underlying `.svg` as `.png` - will be saved in ${working_directory}/data/exported_image.png
+- Textbox: insert a number here to cull nodes with degree larger than the entered value.
+- Draw a rectangle with the mouse (click&drag) to color all nodes in the rectangle. Rightclicking and drawing will reset the color to white.
+
+Color coding:
+
+When stepping through the tracefile, (variable-)nodes are assigned a color based on their state within minisat at that time.
+- Red/Green: It was inferred that the variable has to be set to `false`/`true`
+- Orange/Blue: Minisat branched on this Node (It tries out different 'paths') and set it to `false`/`true`
+- Black: A conflict was detected in this variable. That means it was inferred that this variable has to be set to both `true` and `false` to satisfy the formula.
+
 ### Options
 
 | Flag | Description |
