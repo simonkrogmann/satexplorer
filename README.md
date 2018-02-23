@@ -57,7 +57,7 @@ If none is specified, a file dialog will open to select one.
     ]
 }
 ```
-## How it works
+## How satviewer works
 The program takes files in `DIMACS` (`.cnf`) format. For detailed information refer to [http://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html](http://people.sc.fsu.edu/~jburkardt/data/cnf/cnf.html)
 The input file is converted to the `GML` format via a python script. The `.gml` file can then be read by the [OGDF](http://amber-v7.cs.tu-dortmund.de/doku.php/start) library.
 
@@ -77,3 +77,16 @@ Clustering is done via a python script using the [python-louvain](https://github
 
 ### Interface and Drawing
 We are using Qt5 for the GUI. The graph image is rendered as an `.svg` by the OGDF Library.
+
+## Custom Libraries and tools
+
+### ogdfWrapper
+As the name tells, this is a wrapper around the OGDF library. It simplyfies access to OGDF's functions.
+Its purpose is to hold and manage a graph instance.
+It can 
+- read a graph from a `.gml` file
+- write/render the graph to `.gml` and `.svg`
+- layout the graph using different layout algorithms
+- set color, shape and size of nodes
+- add and remove nodes/edges
+- set height of nodes, useful for rendering order
