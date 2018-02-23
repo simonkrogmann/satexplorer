@@ -409,7 +409,7 @@ void Stepper::colorNodesInRect(float xMin, float xMax, float yMin, float yMax,
 }
 
 // String splitting copied from StackOverflow
-// TODO: Link
+// https://stackoverflow.com/questions/236129/the-most-elegant-way-to-iterate-the-words-of-a-string
 template <typename Out>
 void split(const std::string& s, char delim, Out result) {
     std::stringstream ss(s);
