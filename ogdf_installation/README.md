@@ -1,4 +1,4 @@
-# How to install OGDF
+# How to install OGDF with our patches
 
 ## Method 1: Use `PKGBUILD` in Arch Linux
 
@@ -11,8 +11,18 @@
 
 1. Clone the latest ogdf snapshot from the git repository `git@github.com:ogdf/ogdf.git`
     (we used commit `8836cfd4bb4d3702b753178690711b0de1c1baf2`)
-2. Copy the following files into the cloned ogdf git repository:
+2. Copy the following files from this folder into the cloned ogdf git repository:
     - `install`
     - `RemoveAsserts.patch`
     - `CompressSVG.patch`
 3. Execute the install script inside the ogdf folder. It installs the patched ogdf library to the system, so it will ask for a root password.
+
+# Patch Descriptions
+
+## RemoveAsserts
+
+When using OGDF in release mode, some assert are triggered, for which the code is missing from the compiled binary, we removed those asserts in release mode.
+
+## CompressSVG
+
+This speeds up generation and rendering of the SVG files we use in our viewer. It also adds an option for disabling node labels.
