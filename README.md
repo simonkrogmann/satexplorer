@@ -5,7 +5,7 @@
 Dependencies:
 
 - qt5-base (libqt5 on Ubuntu)
-- OGDF (clone, copy files from ogdf_installation to OGDF source and then execute the copied install script)
+- OGDF with our patches (Find detailed instructions in [ogdf_installation/README.md](ogdf_installation/README.md))
 - boost
 - python-networkx
 - python-louvain
@@ -31,7 +31,7 @@ If none is specified, a file dialog will open to select one.
 | --- | --- |
 | -f | force recomputation of the solution instead of reusing a previous trace file |
 | -s | visualize the graph simplified by minisat instead of the original graph |
-| -i | display an implication, i.e., only edges for clauses with two variables |
+| -i | display an implication graph, i.e., only edges for clauses with two variables |
 
 
 ### VSCODE launch configuration
