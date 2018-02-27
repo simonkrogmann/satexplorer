@@ -68,8 +68,8 @@ void ogdfWrapper::readGraph(const std::string& filename) {
 }
 
 ogdf::Shape ogdfWrapper::_nodeShapeforPointer(ogdf::NodeElement* node_p) {
-    const auto& label = _p_graphAttributes->label(node_p)[0];
-    return nodeShapeFromCharacter.at(label);
+    const auto& labelChar = _p_graphAttributes->label(node_p)[0];
+    return nodeShapeFromCharacter.at(labelChar);
 }
 
 NodeID ogdfWrapper::_nodeIDforPointer(ogdf::NodeElement* node_p) {
@@ -280,7 +280,7 @@ bool ogdfWrapper::addNode(NodeID nodeID) {
         return false;
     }
     const auto node_p = _p_graph->newNode();
-    _p_graphAttributes->label(node_p) = nodeID.id;
+    _p_graphAttributes->label(node_p) = nodeID.toString();
     _label_map.emplace(std::make_pair(nodeID, node_p));
     setNodeShape(nodeID);
     return true;
