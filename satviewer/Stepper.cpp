@@ -36,7 +36,7 @@ long getFileSize(std::string filename) {
 
 bool isEOF(std::ifstream& file) {
     const bool eof = file.peek() == std::ifstream::traits_type::eof();
-    if (eof) std::cout << "end of file" << std::endl;
+    if (eof) std::cout << "Reached end of file" << std::endl;
     return eof;
 }
 
@@ -120,7 +120,7 @@ void Stepper::step() {
     printProgress();
 }
 
-void Stepper::stepUntil(StepType finalType, bool layout) {
+void Stepper::stepUntil(StepType finalType, bool drawAfter) {
     int propagateCount = 0;
     int branchCount = 0;
     int invisibleCount = 0;
@@ -145,7 +145,7 @@ void Stepper::stepUntil(StepType finalType, bool layout) {
             if (shouldColor(type) && !nodeColored) ++invisibleCount;
         }
         if (type == finalType) {
-            if (layout)
+            if (drawAfter)
                 m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
             break;
         }
@@ -177,16 +177,16 @@ void Stepper::nextRestart() {
     if (m_eventStack.back().type == StepType::RESTART) {
         std::cout << "Restart " << m_eventStack.back().numberOfRestarts
                   << std::endl;
-    } else {
-        std::cout << "Restart " << m_numberOfRestarts << std::endl;
     }
 }
 
 void Stepper::lastRestart() {
-    for (int i = 0; i < m_numberOfRestarts; ++i) {
+    do {
         stepUntil(StepType::RESTART, false);
-        assert(!isEOF(m_tracefile));
-    }
+        if (isEOF(m_tracefile)) {
+            break;
+        }
+    } while (m_eventStack.back().numberOfRestarts < m_numberOfRestarts);
     m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
 

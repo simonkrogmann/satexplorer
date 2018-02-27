@@ -125,7 +125,7 @@ protected:
     void applyClause(int i = -1);
     // returns true if a node has been colored
     bool applyStep(int i = -1);
-    void stepUntil(StepType stepType, bool layout);
+    void stepUntil(StepType stepType, bool drawAfter);
     void printProgress();
 
     std::vector<Step> m_eventStack;
