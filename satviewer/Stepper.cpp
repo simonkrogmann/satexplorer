@@ -224,9 +224,9 @@ void Stepper::backtrack(int level) {
     }
 }
 
-void Stepper::applyClause(int i) {
-    if (i == -1) i = m_learnedClauses.size() - 1;
-    const auto& clause = m_learnedClauses.back();
+void Stepper::applyClause(int clauseIndex) {
+    if (clauseIndex == -1) clauseIndex = m_learnedClauses.size() - 1;
+    const auto& clause = m_learnedClauses.at(clauseIndex);
     if (clause.type == StepType::LEARNEDCLAUSE) {
         m_graph.addNode(clause.nodeID());
         m_graph.moveToCenter(clause.nodeID(), clause.variables);
