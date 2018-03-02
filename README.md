@@ -30,6 +30,12 @@ Create a build folder and `cd` into it, execute `cmake ..` and `make -j4`.
 [Our fork of Minisat](https://github.com/simonkrogmann/minisat) provides a headerfile which contains functions, that can be used for writing the tracefile, that is rendered in satexplorer.
 Call these functions at the relevant spots in the solver and than change the solver command in the initialize function in [satviewer/Stepper.cpp](satviewer/Stepper.cpp) with your own solver.
 
+## Related Tools
+
+The following tools convert circuits to SAT instances for hardware verification:
+- [bmc](http://www.cs.cmu.edu/~modelcheck/bmc.html) ([fork for modern compilers](https://github.com/simonkrogmann/bmc))
+- [bcsat](https://github.com/scrippie/bcsat) ([fork for modern compilers](https://github.com/simonkrogmann/bcsat))
+
 ## Usage
 
 Run `./satviewer-bin [sat-instance] [options]` in build folder.
