@@ -191,7 +191,6 @@ int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
 }
 
 void ogdfWrapper::layout() const {
-    std::cout << "generating layout" << std::endl;
     switch (_layoutType) {
         case LayoutType::FMMM: {
             ogdf::FMMMLayout fmmmLayout;
@@ -211,7 +210,6 @@ void ogdfWrapper::layout() const {
             sugiyamaLayout.call(*_p_graphAttributes);
         } break;
     }
-    std::cout << "layout complete" << std::endl;
 }
 
 void ogdfWrapper::_setOptions(ogdf::FMMMLayout& layout) const {
@@ -281,7 +279,7 @@ bool ogdfWrapper::addNode(NodeID nodeID) {
     }
     const auto node_p = _p_graph->newNode();
     _p_graphAttributes->label(node_p) = nodeID.toString();
-    _label_map.emplace(std::make_pair(nodeID, node_p));
+    _label_map[nodeID] = node_p;
     setNodeShape(nodeID);
     return true;
 }
@@ -345,12 +343,11 @@ std::unordered_map<NodeID, std::pair<double, double>> ogdfWrapper::
     getLayoutCoordinates() const {
     std::unordered_map<NodeID, std::pair<double, double>> layout_coordinates;
 
-    for (auto node : _label_map) {
-        auto x_coordinate = _p_graphAttributes->x(node.second);
-        auto y_coordinate = _p_graphAttributes->y(node.second);
+    for (auto[label, node] : _label_map) {
+        auto x_coordinate = _p_graphAttributes->x(node);
+        auto y_coordinate = _p_graphAttributes->y(node);
 
-        layout_coordinates.emplace(node.first,
-                                   std::make_pair(x_coordinate, y_coordinate));
+        layout_coordinates[label] = std::make_pair(x_coordinate, y_coordinate);
     }
 
     return layout_coordinates;
@@ -358,6 +355,28 @@ std::unordered_map<NodeID, std::pair<double, double>> ogdfWrapper::
 
 void ogdfWrapper::toggleLabelRendering() {
     _m_labelRendering = !_m_labelRendering;
+}
+
+void ogdfWrapper::exportLayout(const std::string& filename) {
+    std::ofstream layout(filename);
+    layout << "size " << _label_map.size() << std::endl;
+    for (auto[label, node] : _label_map) {
+        layout << label.toString() << " " << _p_graphAttributes->x(node) << " "
+               << _p_graphAttributes->y(node) << std::endl;
+    }
+}
+
+void ogdfWrapper::importLayout(const std::string& filename) {
+    std::ifstream layout(filename);
+    std::string header;
+    unsigned int size;
+    layout >> header >> size;
+    for (int i = 0; i < size; ++i) {
+        std::string name;
+        layout >> name;
+        auto node = _label_map[NodeID::fromString(name)];
+        layout >> _p_graphAttributes->x(node) >> _p_graphAttributes->y(node);
+    }
 }
 
 }  // namespace graphdrawer

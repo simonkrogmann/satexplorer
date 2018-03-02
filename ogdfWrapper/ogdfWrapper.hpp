@@ -114,6 +114,9 @@ public:
 
     void toggleLabelRendering();
 
+    void exportLayout(const std::string& filename);
+    void importLayout(const std::string& filename);
+
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
     std::unique_ptr<ogdf::GraphAttributes> _p_graphAttributes;

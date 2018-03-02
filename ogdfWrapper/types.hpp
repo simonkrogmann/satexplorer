@@ -74,11 +74,17 @@ struct NodeID {
         return {id, nodeTypeFromCharacter(type)};
     }
 
+    static NodeID fromString(const std::string& s) {
+        // std::stoui doesn't exist for some reason
+        return {static_cast<unsigned int>(std::stoul(s.substr(1))),
+                nodeTypeFromCharacter(s[0])};
+    }
+
     inline bool operator==(const NodeID& other) const {
         return this->id == other.id && this->type == other.type;
     }
 
-    inline std::string toString() {
+    inline std::string toString() const {
         return characterFromNodeType(type) + std::to_string(id);
     }
 };

@@ -53,6 +53,7 @@ void Stepper::initialize(std::string cnfPath, SolverOptions options) {
     const auto baseOutputname = outputPath + cnfFilename;
     m_svgPath = outputPath + cnfFilename + ".svg";
     m_clusterPath = outputPath + cnfFilename + ".clustering";
+    auto layoutPath = outputPath + cnfFilename + ".layout";
 
     // create output directory
     system(("mkdir -p " + outputPath).c_str());
@@ -72,9 +73,11 @@ void Stepper::initialize(std::string cnfPath, SolverOptions options) {
     if (options.simplified) {
         cnfPath = outputPath + cnfFilename + ".simplified";
         m_gmlPath += ".simplified";
+        layoutPath += ".simplified";
     }
     if (options.onlyImplications) {
         m_gmlPath += ".implications";
+        layoutPath += ".implications";
     }
     m_gmlPath += ".gml";
 
@@ -94,8 +97,19 @@ void Stepper::initialize(std::string cnfPath, SolverOptions options) {
 
     readTrace(tracePath);
     loadFromGML(m_gmlPath);
-    m_graph.setLayoutType(graphdrawer::LayoutType::FMMM);
-    relayout();
+
+    // create a layout, if not done yet
+    if (!std::ifstream(layoutPath) || options.forceRecomputation) {
+        std::cout << "Crating a layout..." << std::endl;
+        m_graph.setLayoutType(graphdrawer::LayoutType::FMMM);
+        m_graph.layout();
+        m_graph.exportLayout(layoutPath);
+        std::cout << "Done." << std::endl;
+    } else {
+        m_graph.importLayout(layoutPath);
+    }
+
+    m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
 
 void Stepper::relayout() {
