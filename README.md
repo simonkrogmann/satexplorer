@@ -11,8 +11,7 @@ TODO: add a screenshot
 Dependencies:
 
 - qt5-base (libqt5 on Ubuntu)
-- OGDF with our patches (Find detailed instructions in [ogdf_installation/README.md](ogdf_installation/README.md))
-- boost
+- OGDF with our patches (Find detailed instructions in [ogdf_installation/README.md](ogdf_installation/README.md)) 
 - python-networkx
 - python-louvain
 - zlib
