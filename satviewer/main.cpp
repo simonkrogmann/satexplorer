@@ -30,6 +30,8 @@ int main(int argc, char *argv[]) {
     options.simplified = parser.isSet(simplified);
 
     SatWindow window;
+    QSvgWidget legend;
+    legend.load(QString("../legend.svg"));
     window.setSolverOptions(options);
     if (parser.positionalArguments().size() > 0) {
         const auto filename = parser.positionalArguments().at(0).toStdString();
@@ -42,6 +44,7 @@ int main(int argc, char *argv[]) {
 
     window.run();
     window.show();
+    legend.show();
 
     return app.exec();
 }
