@@ -21,14 +21,13 @@ SatWindow::SatWindow(QWidget *parent)
     , m_scrollArea(new QScrollArea)
     , m_stepper()
     , m_toolbar(tr("Graph"), this)
-    , m_scaleFactor(1)
-    , m_label("Next... ") {
+    , m_scaleFactor(1) {
     m_svgWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
     m_scrollArea->setWidget(m_svgWidget);
     setCentralWidget(m_scrollArea);
 
-    m_toolbar.addWidget(&m_label);
+    auto nextLabel = m_toolbar.addAction("Next..");
     m_stepAction =
         m_toolbar.addAction("Step", this, &SatWindow::handleStepButton);
     m_branchAction =
@@ -37,10 +36,28 @@ SatWindow::SatWindow(QWidget *parent)
         m_toolbar.addAction("Conflict", this, &SatWindow::handleConflictButton);
     m_restartAction =
         m_toolbar.addAction("Restart", this, &SatWindow::handleRestartButton);
+    m_lastRestartAction = m_toolbar.addAction(
+        "Last Restart", this, &SatWindow::handleLastRestartButton);
+    auto zoomOutAction = m_toolbar.addAction(" - ", this, &SatWindow::zoomOut);
+    auto zoomLabel = m_toolbar.addAction("Zoom");
+    auto zoomInAction = m_toolbar.addAction("+", this, &SatWindow::zoomIn);
+    m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
+    m_toolbar.addAction("Cluster", this, &SatWindow::cluster);
+    m_toolbar.addAction("Toggle Labels", this, &SatWindow::handleLabelButton);
+    m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
+    m_toolbar.addAction("Export Image", this, &SatWindow::handleExportButton);
+
+    zoomLabel->setDisabled(true);
+    nextLabel->setDisabled(true);
+
+    nameAction(&m_toolbar, nextLabel, "label");
     nameAction(&m_toolbar, m_stepAction, "left");
     nameAction(&m_toolbar, m_branchAction, "left");
     nameAction(&m_toolbar, m_conflictAction, "left");
     nameAction(&m_toolbar, m_restartAction, "right");
+    nameAction(&m_toolbar, zoomOutAction, "left");
+    nameAction(&m_toolbar, zoomLabel, "left");
+    nameAction(&m_toolbar, zoomInAction, "right");
     m_toolbar.setStyleSheet(R"(
         QToolBar { spacing:0px; border-width = 0px; }
         QToolButton#right, #left {
@@ -48,18 +65,10 @@ SatWindow::SatWindow(QWidget *parent)
             border-color: #bbbbbb; border-style: solid; padding: 1px;
             padding-left: -3px; padding-right: -3px; }
         QToolButton#left { border-right: 0px;}
+        QToolButton#right:disabled, #left:disabled, #label { color: black; }
         QToolButton#right:hover, #left:hover { background: white; }
         QToolButton#right:pressed, #left:pressed { background: lightgrey; }
         )");
-    m_lastRestartAction = m_toolbar.addAction(
-        "Last Restart", this, &SatWindow::handleLastRestartButton);
-    m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
-    m_toolbar.addAction("Zoom In", this, &SatWindow::zoomIn);
-    m_toolbar.addAction("Zoom Out", this, &SatWindow::zoomOut);
-    m_toolbar.addAction("Cluster", this, &SatWindow::cluster);
-    m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
-    m_toolbar.addAction("Export Image", this, &SatWindow::handleExportButton);
-    m_toolbar.addAction("Toggle Labels", this, &SatWindow::handleLabelButton);
 
     m_validator.setBottom(0);
     m_cullBox.setValidator(&m_validator);

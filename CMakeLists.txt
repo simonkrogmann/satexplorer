@@ -50,7 +50,6 @@ endif()
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 
-add_subdirectory(graphdrawer)
 add_subdirectory(satviewer)
 add_subdirectory(ogdfWrapper)
 add_subdirectory(minisat)
