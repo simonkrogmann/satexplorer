@@ -126,10 +126,6 @@ It can
 - add and remove nodes/edges
 - set height of nodes, useful for rendering order
 
-### graphdrawer
-Tool used to test the functionality of ogdfWrapper. Also used to test some things used in satviewer.
-Its like a playground. Use `graphdrawer --help` to get a list of things it can do.
-
 ### sripts
 
 - **cligToCNF** converts a clause-literal-incidence-graph in `.csv` format to `.cnf` format.
