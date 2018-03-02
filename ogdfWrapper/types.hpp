@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <string>
 
 namespace graphdrawer {
 enum class FileType { GML, SVG };
@@ -44,6 +45,16 @@ NodeType nodeTypeFromCharacter(char c) {
     assert(false);
 }
 
+char characterFromNodeType(NodeType n) {
+    switch (n) {
+        case NodeType::LITERAL:
+            return 'l';
+        case NodeType::CLAUSE:
+            return 'c';
+    }
+    assert(false);
+}
+
 }  // namespace
 
 // used to distinguish between clause and literal nodes
@@ -65,6 +76,10 @@ struct NodeID {
 
     inline bool operator==(const NodeID& other) const {
         return this->id == other.id && this->type == other.type;
+    }
+
+    inline std::string toString() {
+        return characterFromNodeType(type) + std::to_string(id);
     }
 };
 

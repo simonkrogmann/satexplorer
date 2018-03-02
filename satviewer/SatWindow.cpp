@@ -155,27 +155,23 @@ void SatWindow::endOfTrace(bool eof) {
 void SatWindow::handleRelayoutButton() {
     m_stepper.relayout();
     reloadSvg();
-    setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
 void SatWindow::handleCullInput() {
     int degree = m_cullBox.text().toInt();
     m_stepper.cull(degree);
     reloadSvg();
-    setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
 void SatWindow::handleShowAllButton() {
     m_stepper.cull(std::numeric_limits<int>::max());
     m_cullBox.clear();
     reloadSvg();
-    setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
 void SatWindow::cluster() {
     m_stepper.cluster();
     reloadSvg();
-    setInitialWindowSize(m_svgWidget->sizeHint());
 }
 
 void SatWindow::handleRectangleDrawn(TwoPoints rectangle, bool set) {

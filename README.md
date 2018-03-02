@@ -5,7 +5,7 @@
 Dependencies:
 
 - qt5-base (libqt5 on Ubuntu)
-- OGDF (clone, copy files from ogdf_installation to OGDF source and then execute the copied install script)
+- OGDF with our patches (Find detailed instructions in [ogdf_installation/README.md](ogdf_installation/README.md))
 - boost
 - python-networkx
 - python-louvain
