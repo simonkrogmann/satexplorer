@@ -1,5 +1,11 @@
 # satexplorer
 
+This tool can be used to visualize the process of solving SAT instances.
+It can layout the clause variable incidence graph and be used to step through a trace of a solution process, highlighting the variables which are touched.
+The default solver is Minisat, but we a provide a header file, that hopefully makes it easy to integrate tracing into other SAT solvers using CDCL.
+
+TODO: add a screenshot
+
 ## Install
 
 Dependencies:
@@ -18,6 +24,11 @@ remember to init and update git submodules
 ## Build
 
 Create a build folder and `cd` into it, execute `cmake ..` and `make -j4`.
+
+### Using your own SAT solver
+
+[Our fork of Minisat](https://github.com/simonkrogmann/minisat) provides a headerfile which contains functions, that can be used for writing the tracefile, that is rendered in satexplorer.
+Call these functions at the relevant spots in the solver and than change the solver command in the initialize function in [satviewer/Stepper.cpp](satviewer/Stepper.cpp) with your own solver.
 
 ## Usage
 
