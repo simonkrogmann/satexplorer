@@ -109,6 +109,8 @@ public:
     void colorNodesInRect(float xMin, float xMax, float yMin, float yMax,
                           graphdrawer::NodeColor color);
 
+    void toggleLabelRendering();
+
 protected:
     void loadFromGML(const std::string& gmlPath);
     void readTrace(const std::string& tracePath);

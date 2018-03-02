@@ -468,3 +468,8 @@ void Stepper::cluster() {
 
     m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
+
+void Stepper::toggleLabelRendering() {
+    m_graph.toggleLabelRendering();
+    m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
+}

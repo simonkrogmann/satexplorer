@@ -234,7 +234,7 @@ void ogdfWrapper::writeGraph(const std::string& filename, FileType format) {
         case FileType::SVG:
             // rebuild ogdf with updated CompressSVG.patch if textRendering is
             // not found
-            settings.textRendering(false);
+            settings.textRendering(_m_labelRendering);
             ogdf::GraphIO::drawSVG(*_p_graphAttributes, file, settings);
             break;
         default:
@@ -354,6 +354,10 @@ std::unordered_map<NodeID, std::pair<double, double>> ogdfWrapper::
     }
 
     return layout_coordinates;
+}
+
+void ogdfWrapper::toggleLabelRendering() {
+    _m_labelRendering = !_m_labelRendering;
 }
 
 }  // namespace graphdrawer

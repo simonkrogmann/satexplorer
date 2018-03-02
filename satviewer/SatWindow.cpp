@@ -59,6 +59,7 @@ SatWindow::SatWindow(QWidget *parent)
     m_toolbar.addAction("Cluster", this, &SatWindow::cluster);
     m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
     m_toolbar.addAction("Export Image", this, &SatWindow::handleExportButton);
+    m_toolbar.addAction("Toggle Labels", this, &SatWindow::handleLabelButton);
 
     m_validator.setBottom(0);
     m_cullBox.setValidator(&m_validator);
@@ -169,13 +170,18 @@ void SatWindow::handleShowAllButton() {
     reloadSvg();
 }
 
+void SatWindow::handleLabelButton() {
+    m_stepper.toggleLabelRendering();
+    reloadSvg();
+}
+
 void SatWindow::cluster() {
     m_stepper.cluster();
     reloadSvg();
 }
 
 void SatWindow::handleRectangleDrawn(TwoPoints rectangle, bool set) {
-    auto nodeColor = set ? graphdrawer::NodeColor ::SET_TRUE
+    auto nodeColor = set ? graphdrawer::NodeColor::SET_TRUE
                          : graphdrawer::NodeColor::UNPROCESSED;
     m_stepper.colorNodesInRect(rectangle.p1.x(), rectangle.p2.x(),
                                rectangle.p1.y(), rectangle.p2.y(), nodeColor);

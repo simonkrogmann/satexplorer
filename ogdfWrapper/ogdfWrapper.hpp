@@ -112,11 +112,14 @@ public:
     std::unordered_map<NodeID, std::pair<double, double>> getLayoutCoordinates()
         const;
 
+    void toggleLabelRendering();
+
 private:
     std::unique_ptr<ogdf::Graph> _p_graph;
     std::unique_ptr<ogdf::GraphAttributes> _p_graphAttributes;
     ogdfVector<ogdf::NodeElement*> _m_nodes;
     ogdfVector<ogdf::EdgeElement*> _m_edges;
+    bool _m_labelRendering = false;
     std::unordered_map<NodeID, ogdf::NodeElement*> _label_map;
     LayoutType _layoutType = LayoutType::FMMM;
 
