@@ -100,7 +100,7 @@ void Stepper::initialize(std::string cnfPath, SolverOptions options) {
 
     // create a layout, if not done yet
     if (!std::ifstream(layoutPath) || options.forceRecomputation) {
-        std::cout << "Crating a layout..." << std::endl;
+        std::cout << "Creating a layout..." << std::endl;
         m_graph.setLayoutType(graphdrawer::LayoutType::FMMM);
         m_graph.layout();
         m_graph.exportLayout(layoutPath);

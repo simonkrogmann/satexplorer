@@ -44,6 +44,7 @@ int main(int argc, char *argv[]) {
 
     window.run();
     window.show();
+    legend.setWindowFlags(Qt::Tool);
     legend.show();
 
     return app.exec();
