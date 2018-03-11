@@ -44,8 +44,10 @@ SatWindow::SatWindow(QWidget *parent)
     m_toolbar.addAction("Relayout", this, &SatWindow::handleRelayoutButton);
     m_toolbar.addAction("Cluster", this, &SatWindow::cluster);
     m_toolbar.addAction("Toggle Labels", this, &SatWindow::handleLabelButton);
-    m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
+    m_toolbar.addAction("Import Layout", this,
+                        &SatWindow::handleImportLayoutButton);
     m_toolbar.addAction("Export Image", this, &SatWindow::handleExportButton);
+    m_toolbar.addAction("Show All", this, &SatWindow::handleShowAllButton);
 
     zoomLabel->setDisabled(true);
     nextLabel->setDisabled(true);
@@ -89,7 +91,7 @@ void SatWindow::run() {
     pal.setColor(QPalette::Window, Qt::white);
     m_svgWidget->setPalette(pal);
 
-    // TODO: Button to open File dialogue?
+    // TODO: Button to open File dialog?
     if (m_filename == "") {
         m_filename = QFileDialog::getOpenFileName(this, "Open Image", "/home/",
                                                   "Image Files (*.cnf)")
@@ -181,6 +183,15 @@ void SatWindow::handleShowAllButton() {
 
 void SatWindow::handleLabelButton() {
     m_stepper.toggleLabelRendering();
+    reloadSvg();
+}
+
+void SatWindow::handleImportLayoutButton() {
+    // TODO: FileDialog, correct ending, handle cancel button
+    auto filename = QFileDialog::getOpenFileName(this, "Open Layout", "/home/",
+                                                 "Layout Files (*.layout)")
+                        .toStdString();
+    m_stepper.importLayout(filename);
     reloadSvg();
 }
 

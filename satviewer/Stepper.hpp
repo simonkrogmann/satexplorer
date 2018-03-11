@@ -111,6 +111,8 @@ public:
 
     void toggleLabelRendering();
 
+    void importLayout(const std::string& filename);
+
 protected:
     void loadFromGML(const std::string& gmlPath);
     void readTrace(const std::string& tracePath);

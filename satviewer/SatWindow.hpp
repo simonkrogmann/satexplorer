@@ -66,6 +66,7 @@ private slots:
     void handleShowAllButton();
     void handleExportButton();
     void handleLabelButton();
+    void handleImportLayoutButton();
     void zoomIn();
     void zoomOut();
     void cluster();

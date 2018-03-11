@@ -487,3 +487,8 @@ void Stepper::toggleLabelRendering() {
     m_graph.toggleLabelRendering();
     m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
 }
+
+void Stepper::importLayout(const std::string& filename) {
+    std::cout << "Not implemented yet... (filename: " << filename << ")"
+              << std::endl;
+}
