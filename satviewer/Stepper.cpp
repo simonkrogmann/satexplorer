@@ -53,7 +53,7 @@ void Stepper::initialize(std::string cnfPath, SolverOptions options) {
     const auto baseOutputname = outputPath + cnfFilename;
     m_svgPath = outputPath + cnfFilename + ".svg";
     m_clusterPath = outputPath + cnfFilename + ".clustering";
-    auto layoutPath = outputPath + cnfFilename + ".layout";
+    auto layoutPath = outputPath + cnfFilename;
 
     // create output directory
     system(("mkdir -p " + outputPath).c_str());
@@ -80,6 +80,7 @@ void Stepper::initialize(std::string cnfPath, SolverOptions options) {
         layoutPath += ".implications";
     }
     m_gmlPath += ".gml";
+    layoutPath += ".layout";
 
     // convert cnf to gml via python script, if not converted yet
     if (!std::ifstream(m_gmlPath) || options.forceRecomputation) {

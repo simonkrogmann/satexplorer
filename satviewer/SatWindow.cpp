@@ -187,10 +187,13 @@ void SatWindow::handleLabelButton() {
 }
 
 void SatWindow::handleImportLayoutButton() {
-    // TODO: FileDialog, correct ending, handle cancel button
-    auto filename = QFileDialog::getOpenFileName(this, "Open Layout", "/home/",
-                                                 "Layout Files (*.layout)")
-                        .toStdString();
+    const auto filename =
+        QFileDialog::getOpenFileName(this, "Open Layout", "/home/",
+                                     "Layout Files (*.layout)")
+            .toStdString();
+    if (filename == "") {
+        return;
+    }
     m_stepper.importLayout(filename);
     reloadSvg();
 }
