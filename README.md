@@ -147,4 +147,5 @@ It can
 
 - **cligToCNF** converts a clause-literal-incidence-graph in `.csv` format to `.cnf` format.
 - **cnfToGML** converts a SAT instance in `.cnf` (DIMACS) format to `.gml`
+- **vigToGML** converts a variable-incidence-graph in `.csv` format to `.gml` format.
 - **louvain_clustering** calculates a clustering on a graph in `.gml` format using the louvain community detection algorithm. Output format is a textfile with [node id] [cluster number] in each line.
