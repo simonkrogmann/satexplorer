@@ -3,6 +3,7 @@
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QPainter>
+#include <QPalette>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QSvgRenderer>
@@ -90,6 +91,8 @@ void SatWindow::run() {
     QPalette pal;
     pal.setColor(QPalette::Window, Qt::white);
     m_svgWidget->setPalette(pal);
+    setAutoFillBackground(true);
+    setPalette(pal);
 
     // TODO: Button to open File dialog?
     if (m_filename == "") {

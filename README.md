@@ -4,25 +4,25 @@ This tool can be used to visualize the process of solving SAT instances.
 It can layout the clause variable incidence graph and be used to step through a trace of a solution process, highlighting the variables which are touched.
 The default solver is Minisat, but we a provide a header file, that hopefully makes it easy to integrate tracing into other SAT solvers using CDCL.
 
-TODO: add a screenshot
+![Screenshot](screenshot.png)
 
-## Install
+## Build
 
-Dependencies:
+We tested installation on Linux (Ubuntu and Archlinux), but Mac OS and Windows might also work.
+
+Install the dependencies:
 
 - qt5-base (libqt5 on Ubuntu)
-- OGDF with our patches (Find detailed instructions in [ogdf_installation/README.md](ogdf_installation/README.md)) 
+- OGDF with our patches (Find detailed instructions in [ogdf_installation/README.md](ogdf_installation/README.md))
 - python-networkx
 - python-louvain
 - zlib
 - bison
 - flex
 
-remember to init and update git submodules
+Remember to init and update git submodules
 
-## Build
-
-Create a build folder and `cd` into it, execute `cmake ..` and `make -j4`.
+Inside the repository create a build folder and `cd` into it, execute `cmake ..` and `make`.
 
 ### Using your own SAT solver
 
@@ -103,7 +103,7 @@ The tracefile encodes the steps taken by minisat in binary. The format is `char`
 
 For the Step Types that set a variable to `true` or `false` the sign of the integer corresponds to `true` for positive and `false` for negative. (e.g '+' and 1000 would set variable 1000 to `true`, while '+' and -1000 woould set it to `false`)
 
-Clauses are handled a bit differently. The start of a clause is indicated by **'L'** or **'U'**. Its followed by the ID of the new clause (minisat makes sure it does not conflict with existing clauses). 
+Clauses are handled a bit differently. The start of a clause is indicated by **'L'** or **'U'**. Its followed by the ID of the new clause (minisat makes sure it does not conflict with existing clauses).
 The next block has to have the flag 'S', indicating the start of the variable sequence. The integer denotes the amount of variables in the clause.
 The following blocks represent the variables that are part of the clause. the `char` will be 'x' and the integer contains the ID of the variable.
 
@@ -118,7 +118,7 @@ We are using Qt5 for the GUI. The graph image is rendered as an `.svg` by the OG
 ### ogdfWrapper
 As the name tells, this is a wrapper around the OGDF library. It simplyfies access to OGDF's functions.
 Its purpose is to hold and manage a graph instance.
-It can 
+It can
 - read a graph from a `.gml` file
 - write/render the graph to `.gml` and `.svg`
 - layout the graph using different layout algorithms

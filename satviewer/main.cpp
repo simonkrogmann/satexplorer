@@ -41,9 +41,7 @@ int main(int argc, char *argv[]) {
         }
         window.setFilename(filename);
     }
-
     window.run();
-    window.show();
     legend.setWindowFlags(Qt::Tool);
     legend.show();
 
