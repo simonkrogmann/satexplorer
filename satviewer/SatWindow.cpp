@@ -188,7 +188,7 @@ void SatWindow::handleLabelButton() {
 
 void SatWindow::handleImportLayoutButton() {
     const auto filename =
-        QFileDialog::getOpenFileName(this, "Open Layout", "/home/",
+        QFileDialog::getOpenFileName(this, "Open Layout", "",
                                      "Layout Files (*.layout)")
             .toStdString();
     if (filename == "") {

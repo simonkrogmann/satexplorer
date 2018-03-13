@@ -490,6 +490,8 @@ void Stepper::toggleLabelRendering() {
 }
 
 void Stepper::importLayout(const std::string& filename) {
-    std::cout << "Not implemented yet... (filename: " << filename << ")"
-              << std::endl;
+    loadFromGML(m_gmlPath);
+    m_graph.importLayout(filename);
+    m_graph.writeGraph(m_svgPath, graphdrawer::FileType::SVG);
+    std::cout << "Imported layout from " << filename << std::endl;
 }

@@ -1,8 +1,8 @@
 #include "ogdfWrapper.hpp"
 
 #include <iostream>
-#include <set>
 #include <string>
+#include <unordered_set>
 
 #include <ogdf/basic/Array.h>
 #include <ogdf/basic/GraphAttributes.h>
@@ -157,7 +157,7 @@ void ogdfWrapper::resetEdgeStyleAll() {
 
 int ogdfWrapper::removeNodes(int maxDegree, bool onlyEdges) {
     int removedEntities = 0;
-    std::set<ogdf::EdgeElement*> edgesToRemove;
+    std::unordered_set<ogdf::EdgeElement*> edgesToRemove;
     std::vector<ogdf::NodeElement*> nodesToRemove;
     for (auto node_p : _m_nodes) {
         if (node_p->degree() > maxDegree) {
@@ -371,11 +371,18 @@ void ogdfWrapper::importLayout(const std::string& filename) {
     std::string header;
     unsigned int size;
     layout >> header >> size;
+    std::unordered_set<ogdf::NodeElement*> nodesToKeep;
     for (int i = 0; i < size; ++i) {
         std::string name;
         layout >> name;
         auto node = _label_map[NodeID::fromString(name)];
         layout >> _p_graphAttributes->x(node) >> _p_graphAttributes->y(node);
+        nodesToKeep.insert(node);
+    }
+    for (auto node_p : _m_nodes) {
+        if (nodesToKeep.find(node_p) == nodesToKeep.end()) {
+            removeNode(_nodeIDforPointer(node_p));
+        }
     }
 }
 
