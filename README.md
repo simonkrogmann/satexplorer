@@ -68,6 +68,23 @@ When stepping through the tracefile, (variable-)nodes are assigned a color based
 | -s | visualize the graph simplified by minisat instead of the original graph |
 | -i | display an implication graph, i.e., only edges for clauses with two variables |
 
+### Importing Layouts
+Using the button `Import Layout` you can import files with the ending `.layout` in the following format:
+
+The first line contains the word `size` followed by a space and then the number of graph nodes `n` to be shown.
+After that follow `n` lines, with the name of the node and then the coordinates separated by spaces.
+The name is either `c<index of clause in cnf file>` (starting from 0) or `l<name of variable in cnf file>`.
+
+#### Example:
+```
+size 5
+c0 30 50
+c1 40 60
+l0 0 0
+l1 0 50
+l2 50 0
+```
+This means, that two clauses and three variables are shown (five graph nodes in total).
 
 ### VSCODE launch configuration
 
