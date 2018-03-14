@@ -64,7 +64,7 @@ When stepping through the tracefile, (variable-)nodes are assigned a color based
 
 | Flag | Description |
 | --- | --- |
-| -f | force recomputation of the solution instead of reusing a previous trace file |
+| -f | force recomputation of the solution instead of reusing a previous tracefile |
 | -s | visualize the graph simplified by Minisat instead of the original graph |
 | -i | display an implication graph, i.e., only edges for clauses with two variables |
 
@@ -156,7 +156,7 @@ It can
 - add and remove nodes/edges
 - set height of nodes, useful for rendering order
 
-### sripts
+### scripts
 
 - **cligToCNF** converts a clause-literal-incidence-graph in `.csv` format to `.cnf` format.
 - **cnfToGML** converts a SAT instance in `.cnf` (DIMACS) format to `.gml`
