@@ -64,7 +64,7 @@ When stepping through the tracefile, (variable-)nodes are assigned a color based
 
 | Flag | Description |
 | --- | --- |
-| -f | force recomputation of the solution instead of reusing a previous trace file |
+| -f | force recomputation of the solution instead of reusing a previous tracefile |
 | -s | visualize the graph simplified by minisat instead of the original graph |
 | -i | display an implication graph, i.e., only edges for clauses with two variables |
 
