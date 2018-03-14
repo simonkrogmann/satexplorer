@@ -143,7 +143,7 @@ It can
 - add and remove nodes/edges
 - set height of nodes, useful for rendering order
 
-### sripts
+### scripts
 
 - **cligToCNF** converts a clause-literal-incidence-graph in `.csv` format to `.cnf` format.
 - **cnfToGML** converts a SAT instance in `.cnf` (DIMACS) format to `.gml`
