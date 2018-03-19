@@ -100,6 +100,10 @@ void SatWindow::run() {
                                                   "Image Files (*.cnf)")
                          .toStdString();
     }
+    if (m_filename == "") {
+        std::cout << "No file selected, program will exit." << std::endl;
+        exit(0);
+    }
     m_stepper.initialize(m_filename, m_solverOptions);
     m_svgWidget->setAutoFillBackground(true);
     m_svgWidget->renderer()->setViewBox(QRect(QPoint(0, 0), QSize(500, 500)));
