@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+'''
+Checks whether a CNF formula is part of a base class as defined by Thomas J. Schaefer 
+in "The Complexity of satisfiability problems"
+'''
 
 import cli
 
@@ -13,7 +17,6 @@ class Clause:
                 self.positive_literals.append(literal)
     def __len__(self):
         return len(self.positive_literals) + len(self.negative_literals)
-        
 
 def main():
     input_file, output_file = cli.get_file_conversion_arguments('CLIG.cnf', 'output.log')
