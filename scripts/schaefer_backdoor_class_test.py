@@ -5,18 +5,7 @@ in "The Complexity of satisfiability problems"
 '''
 
 import cli
-
-class Clause:
-    def __init__(self, literals):
-        self.positive_literals = []
-        self.negative_literals = []
-        for literal in literals:
-            if literal < 0:
-                self.negative_literals.append(literal)
-            else:
-                self.positive_literals.append(literal)
-    def __len__(self):
-        return len(self.positive_literals) + len(self.negative_literals)
+from satlib import Clause
 
 def main():
     input_file, output_file = cli.get_file_conversion_arguments('CLIG.cnf', 'output.log')
