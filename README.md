@@ -32,7 +32,7 @@ Call these functions at the relevant spots in the solver and than change the sol
 ## Related Tools
 
 The following tools convert circuits to SAT instances for hardware verification:
-- [bmc](http://www.cs.cmu.edu/~modelcheck/bmc.html) ([fork for modern compilers](https://github.com/simonkrogmann/bmc))
+- [bmc](http://www.cs.cmu.edu/~modelcheck/bmc.html)
 - [bcsat](https://github.com/scrippie/bcsat)
 
 ## Usage
