@@ -8,3 +8,4 @@ build*
 **.user
 .idea
 __pycache__
+ogdf_installation/ogdf-git.patch

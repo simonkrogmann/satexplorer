@@ -13,7 +13,7 @@ We tested installation on Linux (Ubuntu and Archlinux), but Mac OS and Windows m
 Install the dependencies:
 
 - qt5-base (libqt5 on Ubuntu)
-- OGDF with our patches (Find detailed instructions in [ogdf_installation/README.md](ogdf_installation/README.md))
+- OGDF (We highly recommend our patches for more performance, but standard OGDF will also work, find detailed instructions in [ogdf_installation/README.md](ogdf_installation/README.md))
 - python-networkx
 - python-louvain
 - zlib

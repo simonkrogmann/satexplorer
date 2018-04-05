@@ -13,15 +13,10 @@
     (we used commit `8836cfd4bb4d3702b753178690711b0de1c1baf2`)
 2. Copy the following files from this folder into the cloned ogdf git repository:
     - `install`
-    - `RemoveAsserts.patch`
     - `CompressSVG.patch`
 3. Execute the install script inside the ogdf folder. It installs the patched ogdf library to the system, so it will ask for a root password.
 
 # Patch Descriptions
-
-## RemoveAsserts
-
-When using OGDF in release mode, some assert are triggered, for which the code is missing from the compiled binary, we removed those asserts in release mode.
 
 ## CompressSVG
 

@@ -4,6 +4,10 @@
 #include <string>
 #include <unordered_set>
 
+#ifndef NDEBUG
+#define NDEBUG
+#define RESTORE_NDEBUG
+#endif
 #include <ogdf/basic/Array.h>
 #include <ogdf/basic/GraphAttributes.h>
 #include <ogdf/basic/Graph_d.h>
@@ -16,6 +20,9 @@
 #include <ogdf/layered/OptimalHierarchyLayout.h>
 #include <ogdf/layered/OptimalRanking.h>
 #include <ogdf/layered/SugiyamaLayout.h>
+#ifdef RESTORE_NDEBUG
+#undef NDEBUG
+#endif
 
 namespace graphdrawer {
 namespace {
