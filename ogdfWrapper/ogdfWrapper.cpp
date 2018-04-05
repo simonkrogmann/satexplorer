@@ -232,7 +232,9 @@ void ogdfWrapper::writeGraph(const std::string& filename, FileType format) {
         case FileType::SVG:
             // rebuild ogdf with updated CompressSVG.patch if textRendering is
             // not found
+#ifdef OGDF_TEXTRENDERING_PATCH
             settings.textRendering(_m_labelRendering);
+#endif
             ogdf::GraphIO::drawSVG(*_p_graphAttributes, file, settings);
             break;
         default:
@@ -343,7 +345,7 @@ std::unordered_map<NodeID, std::pair<double, double>> ogdfWrapper::
     getLayoutCoordinates() const {
     std::unordered_map<NodeID, std::pair<double, double>> layout_coordinates;
 
-    for (auto[label, node] : _label_map) {
+    for (auto [label, node] : _label_map) {
         auto x_coordinate = _p_graphAttributes->x(node);
         auto y_coordinate = _p_graphAttributes->y(node);
 
@@ -360,7 +362,7 @@ void ogdfWrapper::toggleLabelRendering() {
 void ogdfWrapper::exportLayout(const std::string& filename) {
     std::ofstream layout(filename);
     layout << "size " << _label_map.size() << std::endl;
-    for (auto[label, node] : _label_map) {
+    for (auto [label, node] : _label_map) {
         layout << label.toString() << " " << _p_graphAttributes->x(node) << " "
                << _p_graphAttributes->y(node) << std::endl;
     }

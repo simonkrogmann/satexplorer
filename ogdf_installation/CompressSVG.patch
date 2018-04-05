@@ -1,8 +1,17 @@
 diff --git a/include/ogdf/fileformats/GraphIO.h b/include/ogdf/fileformats/GraphIO.h
-index 32c42cf..51155b3 100644
+index 32c42cf..fd94da6 100644
 --- a/include/ogdf/fileformats/GraphIO.h
 +++ b/include/ogdf/fileformats/GraphIO.h
-@@ -74,6 +74,7 @@ public:
+@@ -38,6 +38,8 @@
+ #include <ogdf/graphalg/steiner_tree/EdgeWeightedGraph.h>
+ #include <sstream>
+ 
++#define OGDF_TEXTRENDERING_PATCH
++
+ 
+ namespace ogdf {
+ 
+@@ -74,6 +76,7 @@ public:
  		string m_fontFamily;
  		string m_width;
  		string m_height;
@@ -10,7 +19,7 @@ index 32c42cf..51155b3 100644
  
  	public:
  		SVGSettings();
-@@ -102,6 +103,9 @@ public:
+@@ -102,6 +105,9 @@ public:
  		//! Returns the default height
  		const string &height() const { return m_height; }
  
@@ -20,7 +29,7 @@ index 32c42cf..51155b3 100644
  		//! Sets the size of the margin around the drawing to \p m.
  		void margin(double m) { m_margin = m; }
  
-@@ -136,6 +140,9 @@ public:
+@@ -136,6 +142,9 @@ public:
  		 * The value should include a unit of measure (e.g., percentage for relative height or pixel values).
  		 */
  		void height(const string &height) { m_height = height; }
