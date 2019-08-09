@@ -23,7 +23,7 @@ prepare() {
 
 build() {
 	cd "$srcdir/${pkgname}"
-	cmake -DCMAKE_CXX_FLAGS:STRING="${CXXFLAGS} ${CPPFLAGS}" \
+	cmake -DCMAKE_CXX_FLAGS:STRING="${CXXFLAGS} ${CPPFLAGS} -w" \
 		-DCMAKE_EXE_LINKER_FLAGS:STRING="${LDFLAGS}" \
 	        -DCMAKE_INSTALL_PREFIX="$pkgdir" \
 				-DCMAKE_BUILD_TYPE=Release .
